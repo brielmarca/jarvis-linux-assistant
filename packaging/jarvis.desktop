@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Jarvis Linux Assistant
+Comment=AI-powered Linux desktop assistant with contextual awareness, voice control, and workflow automation
+Exec=python3 /home/brielmarca/Documents/JARVIS.MILHONARI_PROJECT/jarvis-linux-assistant/main.py
+Icon=jarvis
+Terminal=false
+Type=Application
+Categories=Utility;AI;Assistant;
+StartupNotify=true
+StartupWMClass=Jarvis
+Keywords=assistant;ai;voice;automation;

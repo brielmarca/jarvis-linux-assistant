@@ -1,0 +1,24 @@
+# Core
+pyyaml>=6.0
+requests>=2.31.0
+
+# UI (PyQt6)
+PyQt6>=6.5.0
+
+# Speech-to-Text (optional)
+faster-whisper>=1.0.0
+
+# Wake Word (optional)
+#openwakeword>=0.5.0
+
+# Audio
+pyaudio>=0.2.11
+numpy>=1.24.0
+soundfile>=0.12.0
+
+# Testing
+pytest>=7.4.0
+pytest-mock>=3.11.0
+
+# Automation (system packages)
+# sudo apt install xdotool wmctrl playerctl pulseaudio-utils pipewire-pulse

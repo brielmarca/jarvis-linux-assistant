@@ -1,0 +1,64 @@
+assistant_name: Jarvis
+context:
+  enabled_sections:
+  - project
+  - session
+  - activity
+  - semantic
+  - preferences
+  - active
+  max_tokens: 4096
+  reserve_tokens: 1024
+context_include_desktop_state: true
+context_include_recent_activity: true
+context_max_tokens: '2048'
+default_project_paths:
+- /home/brielmarca/Documents/JARVIS.MILHONARI_PROJECT
+- /home/brielmarca/Documents
+enable_tts: true
+enable_voice: true
+enable_wake_word: true
+enabled_skills:
+- system
+- apps
+- browser
+- media
+- dev
+- opencode
+language: pt-PT
+memory:
+  decay_rate: 0.05
+  importance_decay_days: 30
+  max_semantic_entries: 2000
+  semantic_enabled: true
+memory_max_short_term: '100'
+memory_semantic_enabled: false
+memory_semantic_search: true
+metrics_enabled: true
+ollama_context_length: '16384'
+ollama_host: http://localhost:11434
+ollama_model: llama3:latest
+ollama_timeout: 30
+permissions:
+  dangerous_commands:
+  - shutdown
+  - reboot
+  - rm
+  - dd
+  - mkfs
+  - kill
+  opencode:
+    allow_file_ops: false
+    allow_run: false
+    require_confirmation: true
+require_confirmation_for_dangerous_commands: true
+tts_model: default
+voice_follow_up_timeout: '8.0'
+voice_vad_threshold: '0.3'
+voice_wake_word_cooldown: '1.0'
+wake_word: jarvis
+wake_word_model: hey_jarvis
+wake_word_sensitivity: 0.5
+whisper_device: auto
+whisper_model: large
+workflows_enabled: true
