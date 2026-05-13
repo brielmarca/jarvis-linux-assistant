@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QPainter, QColor, QPen, QBrush, QPainterPath
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 class ToggleSwitch(QWidget):
@@ -111,7 +112,7 @@ class SkillCard(QWidget):
         layout.addWidget(text_area, 1)
 
         badge_color = Theme.ACCENT_SECONDARY if self.permission_level == "normal" else Theme.ACCENT_WARNING
-        badge = QLabel(self.permission_level)
+        badge = QLabel(t("skills." + self.permission_level))
         badge.setStyleSheet(f"""
             color: {badge_color};
             font-size: 10px;
@@ -141,14 +142,14 @@ class SkillCard(QWidget):
 
     def _default_description(self):
         descs = {
-            "system": "System info, time, date, shutdown",
-            "apps": "Launch apps, open projects, Docker",
-            "browser": "Web search, open URLs",
-            "media": "Volume & media playback control",
-            "dev": "Dev mode, open projects, git",
-            "opencode": "AI-assisted code changes",
+            "system": t("skills.system"),
+            "apps": t("skills.apps"),
+            "browser": t("skills.browser"),
+            "media": t("skills.media"),
+            "dev": t("skills.dev"),
+            "opencode": t("skills.opencode"),
         }
-        return descs.get(self.skill_name, f"Handles {self.skill_name} commands")
+        return descs.get(self.skill_name, t("skills.handles", name=self.skill_name))
 
     def _on_toggle(self, checked):
         self._enabled = checked

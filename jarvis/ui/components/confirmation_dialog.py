@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 class ConfirmationDialog(QDialog):
@@ -18,7 +19,7 @@ class ConfirmationDialog(QDialog):
         self.setup_ui()
 
     def setup_ui(self):
-        self.setWindowTitle("Confirmation Required")
+        self.setWindowTitle(t("confirmation.title"))
         self.setFixedSize(480, 220)
         self.setStyleSheet(f"""
             QDialog {{
@@ -46,7 +47,7 @@ class ConfirmationDialog(QDialog):
         icon.setFixedWidth(32)
         header.addWidget(icon)
 
-        title = QLabel("Confirm Command")
+        title = QLabel(t("confirmation.confirm_command"))
         title.setStyleSheet(f"font-size: 17px; font-weight: 700; color: {Theme.TEXT_PRIMARY}; background: transparent;")
         header.addWidget(title, 1)
 
@@ -65,7 +66,7 @@ class ConfirmationDialog(QDialog):
         cmd_layout.setContentsMargins(14, 10, 14, 10)
         cmd_layout.setSpacing(4)
 
-        cmd_label = QLabel("This command requires your confirmation:")
+        cmd_label = QLabel(t("confirmation.requires"))
         cmd_label.setStyleSheet(f"font-size: 12px; color: {Theme.TEXT_SECONDARY}; background: transparent;")
         cmd_layout.addWidget(cmd_label)
 
@@ -92,7 +93,7 @@ class ConfirmationDialog(QDialog):
         buttons = QHBoxLayout()
         buttons.setSpacing(10)
 
-        cancel_btn = QPushButton("Cancel")
+        cancel_btn = QPushButton(t("confirmation.cancel"))
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: rgba(255, 64, 112, 0.1);
@@ -112,7 +113,7 @@ class ConfirmationDialog(QDialog):
 
         buttons.addStretch()
 
-        confirm_btn = QPushButton("Confirm & Execute")
+        confirm_btn = QPushButton(t("confirmation.execute"))
         confirm_btn.setObjectName("accent")
         confirm_btn.setStyleSheet(f"""
             QPushButton {{

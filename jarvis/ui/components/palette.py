@@ -3,27 +3,28 @@ from PyQt6.QtCore import Qt, pyqtSignal, QTimer
 from PyQt6.QtGui import QKeyEvent
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 QUICK_COMMANDS = [
-    ("open terminal", "Launch terminal emulator"),
-    ("open firefox", "Open web browser"),
-    ("system info", "Show system information"),
-    ("increase volume", "Volume up by 5%"),
-    ("decrease volume", "Volume down by 5%"),
-    ("mute", "Toggle mute"),
-    ("play/pause", "Toggle media playback"),
-    ("next track", "Skip to next track"),
-    ("search for ", "Search the web (add query)"),
-    ("open project ", "Open a project (add name)"),
-    ("git status", "Check git status"),
-    ("programming mode", "Launch VS Code + terminal"),
-    ("docker status", "Check Docker status"),
-    ("shutdown", "Shutdown the system"),
-    ("reboot", "Reboot the system"),
-    ("reload skills", "Reload all skills"),
-    ("remember ", "Save a memory (add text)"),
-    ("recall ", "Search memories (add query)"),
+    ("open terminal", t("palette.open_terminal")),
+    ("open firefox", t("palette.open_firefox")),
+    ("system info", t("palette.system_info")),
+    ("increase volume", t("palette.volume_up")),
+    ("decrease volume", t("palette.volume_down")),
+    ("mute", t("palette.mute")),
+    ("play/pause", t("palette.play_pause")),
+    ("next track", t("palette.next_track")),
+    ("search for ", t("palette.search")),
+    ("open project ", t("palette.open_project")),
+    ("git status", t("palette.git_status")),
+    ("programming mode", t("palette.programming_mode")),
+    ("docker status", t("palette.docker_status")),
+    ("shutdown", t("palette.shutdown")),
+    ("reboot", t("palette.reboot")),
+    ("reload skills", t("palette.reload_skills")),
+    ("remember ", t("palette.remember")),
+    ("recall ", t("palette.recall")),
 ]
 
 
@@ -57,7 +58,7 @@ class CommandPalette(QWidget):
         layout.setSpacing(4)
 
         self.search_input = QLineEdit()
-        self.search_input.setPlaceholderText("Type a command...")
+        self.search_input.setPlaceholderText(t("palette.placeholder"))
         self.search_input.setStyleSheet(f"""
             QLineEdit {{
                 background-color: rgba(20, 20, 40, 0.6);

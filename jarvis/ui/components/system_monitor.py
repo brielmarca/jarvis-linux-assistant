@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, Q
 from PyQt6.QtCore import Qt, QTimer
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 from jarvis.automation.linux import run_cmd
 
 
@@ -139,24 +140,24 @@ class SystemMonitorCard(QWidget):
         layout.setContentsMargins(16, 12, 16, 12)
         layout.setSpacing(8)
 
-        header = QLabel("System Monitor")
+        header = QLabel(t("monitor.title"))
         header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 700; background: transparent;")
         layout.addWidget(header)
 
-        self.cpu_bar = StatBar("CPU", Theme.ACCENT_PRIMARY)
+        self.cpu_bar = StatBar(t("monitor.cpu"), Theme.ACCENT_PRIMARY)
         layout.addWidget(self.cpu_bar)
 
-        self.mem_bar = StatBar("RAM", Theme.ACCENT_SECONDARY)
+        self.mem_bar = StatBar(t("monitor.ram"), Theme.ACCENT_SECONDARY)
         layout.addWidget(self.mem_bar)
 
-        self.disk_bar = StatBar("Disk", Theme.ACCENT_WARNING)
+        self.disk_bar = StatBar(t("monitor.disk"), Theme.ACCENT_WARNING)
         layout.addWidget(self.disk_bar)
 
-        self.gpu_bar = StatBar("GPU", Theme.ACCENT_INFO)
+        self.gpu_bar = StatBar(t("monitor.gpu"), Theme.ACCENT_INFO)
         self.gpu_bar.hide()
         layout.addWidget(self.gpu_bar)
 
-        self.gpu_mem_bar = StatBar("VRAM", Theme.ACCENT_ERROR)
+        self.gpu_mem_bar = StatBar(t("monitor.vram"), Theme.ACCENT_ERROR)
         self.gpu_mem_bar.hide()
         layout.addWidget(self.gpu_mem_bar)
 

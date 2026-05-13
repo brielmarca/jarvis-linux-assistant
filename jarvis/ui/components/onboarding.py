@@ -7,12 +7,13 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 class OnboardingWizard(QWizard):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Welcome to Jarvis")
+        self.setWindowTitle(t("onboarding.welcome_title"))
         self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
         self.setMinimumSize(520, 440)
         self.setStyleSheet(f"""
@@ -91,12 +92,12 @@ class WelcomePage(QWizardPage):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(16)
 
-        title = QLabel("Welcome to Jarvis")
+        title = QLabel(t("onboarding.welcome_title"))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet(f"font-size: 28px; font-weight: 800; color: {Theme.TEXT_PRIMARY}; letter-spacing: -0.5px;")
         layout.addWidget(title)
 
-        subtitle = QLabel("Your AI-powered Linux Desktop Assistant")
+        subtitle = QLabel(t("onboarding.welcome_subtitle"))
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setStyleSheet(f"font-size: 14px; color: {Theme.ACCENT_PRIMARY}; font-weight: 500; letter-spacing: 2px;")
         layout.addWidget(subtitle)
@@ -104,11 +105,11 @@ class WelcomePage(QWizardPage):
         layout.addSpacing(12)
 
         features = [
-            "◉  Contextual AI with semantic memory",
-            "◉  Voice control with wake word",
-            "◉  Desktop awareness & automation",
-            "◉  Workflow orchestration",
-            "◉  Code & terminal integration",
+            "◉  " + t("onboarding.feature_context"),
+            "◉  " + t("onboarding.feature_voice"),
+            "◉  " + t("onboarding.feature_desktop"),
+            "◉  " + t("onboarding.feature_workflows"),
+            "◉  " + t("onboarding.feature_code"),
         ]
         for f in features:
             lbl = QLabel(f)
@@ -120,11 +121,11 @@ class WelcomePage(QWizardPage):
 class ConfigPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("Basic Configuration")
+        self.setTitle(t("onboarding.page_config"))
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
 
-        info = QLabel("Choose your assistant name, language, and AI model.")
+        info = QLabel(t("onboarding.config_info"))
         info.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 12px;")
         info.setWordWrap(True)
         layout.addWidget(info)
@@ -132,20 +133,20 @@ class ConfigPage(QWizardPage):
         layout.addSpacing(8)
 
         row1 = QHBoxLayout()
-        row1.addWidget(QLabel("Assistant Name:"))
+        row1.addWidget(QLabel(t("onboarding.assistant_name")))
         self.name_input = QLineEdit("Jarvis")
         row1.addWidget(self.name_input)
         layout.addLayout(row1)
 
         row2 = QHBoxLayout()
-        row2.addWidget(QLabel("Language:"))
+        row2.addWidget(QLabel(t("onboarding.language")))
         self.lang_combo = QComboBox()
         self.lang_combo.addItems(["en-US", "pt-PT", "es-ES", "fr-FR", "de-DE"])
         row2.addWidget(self.lang_combo)
         layout.addLayout(row2)
 
         row3 = QHBoxLayout()
-        row3.addWidget(QLabel("Ollama Model:"))
+        row3.addWidget(QLabel(t("onboarding.ollama_model")))
         self.model_combo = QComboBox()
         self.model_combo.addItems(["llama3:latest", "llama3.1:8b", "mistral", "phi3:mini", "llama3.2:3b"])
         self.model_combo.setCurrentText("llama3:latest")
@@ -165,31 +166,31 @@ class ConfigPage(QWizardPage):
 class VoicePage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("Voice Settings")
+        self.setTitle(t("onboarding.page_voice"))
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
 
-        info = QLabel("Configure voice features. You can change these later in Settings.")
+        info = QLabel(t("onboarding.voice_info"))
         info.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 12px;")
         info.setWordWrap(True)
         layout.addWidget(info)
 
         layout.addSpacing(8)
 
-        self.voice_check = QCheckBox("Enable Voice Assistant")
+        self.voice_check = QCheckBox(t("onboarding.enable_voice"))
         self.voice_check.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; spacing: 8px;")
         layout.addWidget(self.voice_check)
 
-        self.wake_check = QCheckBox("Enable Wake Word ('Jarvis')")
+        self.wake_check = QCheckBox(t("onboarding.enable_wake_word"))
         self.wake_check.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; spacing: 8px;")
         layout.addWidget(self.wake_check)
 
-        self.tts_check = QCheckBox("Enable Text-to-Speech")
+        self.tts_check = QCheckBox(t("onboarding.enable_tts"))
         self.tts_check.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; spacing: 8px;")
         layout.addWidget(self.tts_check)
 
         mic_row = QHBoxLayout()
-        mic_row.addWidget(QLabel("Microphone:"))
+        mic_row.addWidget(QLabel(t("onboarding.microphone")))
         self.mic_combo = QComboBox()
         self.mic_combo.addItems(["default", "sysdefault", "hw:0,0", "hw:1,0"])
         mic_row.addWidget(self.mic_combo)
@@ -207,11 +208,11 @@ class VoicePage(QWizardPage):
 class ProjectPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("Project Folder")
+        self.setTitle(t("onboarding.page_project"))
         layout = QVBoxLayout(self)
         layout.setSpacing(12)
 
-        info = QLabel("Choose a default folder for your projects. Jarvis will use this context when helping with code.")
+        info = QLabel(t("onboarding.project_info"))
         info.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 12px;")
         info.setWordWrap(True)
         layout.addWidget(info)
@@ -220,15 +221,15 @@ class ProjectPage(QWizardPage):
 
         row = QHBoxLayout()
         self.path_input = QLineEdit()
-        self.path_input.setPlaceholderText("Select default project folder...")
+        self.path_input.setPlaceholderText(t("onboarding.project_placeholder"))
         row.addWidget(self.path_input)
-        browse_btn = QPushButton("Browse")
+        browse_btn = QPushButton(t("onboarding.browse"))
         browse_btn.clicked.connect(self._browse)
         row.addWidget(browse_btn)
         layout.addLayout(row)
 
     def _browse(self):
-        folder = QFileDialog.getExistingDirectory(self, "Select Project Folder")
+        folder = QFileDialog.getExistingDirectory(self, t("onboarding.select_folder"))
         if folder:
             self.path_input.setText(folder)
 
@@ -239,28 +240,28 @@ class ProjectPage(QWizardPage):
 class FinishPage(QWizardPage):
     def __init__(self):
         super().__init__()
-        self.setTitle("Ready")
+        self.setTitle(t("onboarding.page_ready"))
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(16)
 
-        title = QLabel("You're all set!")
+        title = QLabel(t("onboarding.ready_title"))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet(f"font-size: 26px; font-weight: 700; color: {Theme.ACCENT_SUCCESS};")
         layout.addWidget(title)
 
-        subtitle = QLabel("Jarvis is ready to help you manage your Linux desktop.")
+        subtitle = QLabel(t("onboarding.ready_subtitle"))
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setWordWrap(True)
         subtitle.setStyleSheet(f"font-size: 13px; color: {Theme.TEXT_SECONDARY};")
         layout.addWidget(subtitle)
 
-        health = QLabel("Run a health check to ensure everything is working.")
+        health = QLabel(t("onboarding.ready_health"))
         health.setAlignment(Qt.AlignmentFlag.AlignCenter)
         health.setStyleSheet(f"font-size: 11px; color: {Theme.TEXT_MUTED};")
         layout.addWidget(health)
 
-        self.health_check = QCheckBox("Run health check on finish")
+        self.health_check = QCheckBox(t("onboarding.run_health"))
         self.health_check.setChecked(True)
         self.health_check.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; spacing: 8px;")
         layout.addWidget(self.health_check)

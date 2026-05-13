@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QKeyEvent
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 class CommandInput(QWidget):
@@ -23,7 +24,7 @@ class CommandInput(QWidget):
 
         self.mic_btn = QPushButton()
         self.mic_btn.setFixedSize(44, 44)
-        self.mic_btn.setToolTip("Voice input (not available)")
+        self.mic_btn.setToolTip(t("command_input.voice_tooltip"))
         self.mic_btn.setEnabled(False)
         self.mic_btn.setStyleSheet(f"""
             QPushButton {{
@@ -40,7 +41,7 @@ class CommandInput(QWidget):
         layout.addWidget(self.mic_btn)
 
         self.input_field = QLineEdit()
-        self.input_field.setPlaceholderText("Ask me anything...")
+        self.input_field.setPlaceholderText(t("command_input.placeholder"))
         self.input_field.setStyleSheet(f"""
             QLineEdit {{
                 background-color: {Theme.BG_CARD};
@@ -59,7 +60,7 @@ class CommandInput(QWidget):
         self.input_field.returnPressed.connect(self._submit)
         layout.addWidget(self.input_field, 1)
 
-        self.send_btn = QPushButton("Send")
+        self.send_btn = QPushButton(t("command_input.send"))
         self.send_btn.setObjectName("accent")
         self.send_btn.setFixedWidth(90)
         self.send_btn.setFixedHeight(44)

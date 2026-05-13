@@ -15,6 +15,7 @@ from PyQt6.QtGui import QIcon, QAction, QKeySequence, QShortcut, QPixmap
 from jarvis.core.assistant import Assistant, events, EventType, log as jarvis_log
 from jarvis.automation import linux as linux_auto
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t, tr
 from jarvis.ui.components.status_indicator import StatusIndicator
 from jarvis.ui.components.command_input import CommandInput
 from jarvis.ui.components.timeline_card import TimelineCard
@@ -118,11 +119,11 @@ class DashboardTab(QWidget):
         h = QHBoxLayout(header)
         h.setContentsMargins(0, 0, 0, 0)
 
-        name = QLabel("Jarvis")
+        name = QLabel(t("app.name"))
         name.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 26px; font-weight: 800; background: transparent; letter-spacing: -0.5px;")
         h.addWidget(name)
 
-        ver = QLabel("v1.0")
+        ver = QLabel(t("app.version"))
         ver.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent; margin-top: 6px;")
         h.addWidget(ver)
 
@@ -131,7 +132,7 @@ class DashboardTab(QWidget):
         self.status_indicator = StatusIndicator()
         h.addWidget(self.status_indicator)
 
-        self.status_label = QLabel("Idle")
+        self.status_label = QLabel(t("app.status_idle"))
         self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; font-weight: 500; background: transparent;")
         h.addWidget(self.status_label)
 
@@ -155,12 +156,12 @@ class DashboardTab(QWidget):
         a_layout.setSpacing(8)
 
         actions = [
-            ("■", "Terminal", "open terminal"),
-            ("◎", "Firefox", "open firefox"),
-            ("♪", "Volume +", "increase volume"),
-            ("♪", "Volume -", "decrease volume"),
-            ("⚙", "System", "system info"),
-            ("<>", "Code", "programming mode"),
+            ("■", t("dashboard.terminal"), "open terminal"),
+            ("◎", t("dashboard.firefox"), "open firefox"),
+            ("♪", t("dashboard.volume_up"), "increase volume"),
+            ("♪", t("dashboard.volume_down"), "decrease volume"),
+            ("⚙", t("dashboard.system"), "system info"),
+            ("<>", t("dashboard.code"), "programming mode"),
         ]
 
         for icon, label, cmd in actions:
@@ -186,11 +187,12 @@ class DashboardTab(QWidget):
 
         a_layout.addStretch()
 
-        self.mic_status = QLabel("🎤  Off")
+        self.mic_status = QLabel("🎤  " + t("app.status_idle"))
         self.mic_status.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent; padding-right: 8px;")
         a_layout.addWidget(self.mic_status)
 
-        self.ai_status = QLabel("AI: " + ("Live" if self.main.assistant.ollama.is_available() else "Off"))
+        live_text = t("dashboard.ai_live") if self.main.assistant.ollama.is_available() else t("dashboard.ai_off")
+        self.ai_status = QLabel("AI: " + live_text)
         ai_color = Theme.ACCENT_SUCCESS if self.main.assistant.ollama.is_available() else Theme.ACCENT_ERROR
         self.ai_status.setStyleSheet(f"color: {ai_color}; font-size: 11px; background: transparent;")
 
@@ -229,13 +231,14 @@ class DashboardTab(QWidget):
         layout.setSpacing(12)
 
         self.stats_labels = {}
+        _stat_names = {"CPU": t("dashboard.cpu"), "Mem": t("dashboard.mem"), "Disk": t("dashboard.disk")}
         for key in ["CPU", "Mem", "Disk"]:
             block = QWidget()
             block.setStyleSheet("background: transparent;")
             bl = QVBoxLayout(block)
             bl.setContentsMargins(0, 0, 0, 0)
             bl.setSpacing(1)
-            k = QLabel(key)
+            k = QLabel(_stat_names.get(key, key))
             k.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 9px; background: transparent;")
             k.setAlignment(Qt.AlignmentFlag.AlignCenter)
             bl.addWidget(k)
@@ -261,12 +264,13 @@ class DashboardTab(QWidget):
         layout.addWidget(self.timeline, 1)
 
     def update_stats(self, info):
-        cpu = info.get("cpu", "N/A")
+        na = t("dashboard.na")
+        cpu = info.get("cpu", na)
         if len(cpu) > 12:
             cpu = cpu.split("@")[0].strip() if "@" in cpu else cpu[:12]
         self.stats_labels["CPU"].setText(cpu)
-        self.stats_labels["Mem"].setText(info.get("memory", "N/A"))
-        self.stats_labels["Disk"].setText(info.get("disk", "N/A"))
+        self.stats_labels["Mem"].setText(info.get("memory", na))
+        self.stats_labels["Disk"].setText(info.get("disk", na))
 
     def add_timeline_entry(self, entry):
         self.timeline.add_entry(entry)
@@ -283,11 +287,11 @@ class SkillsTab(QWidget):
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        title = QLabel("Skills")
+        title = QLabel(t("skills.title"))
         title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
         layout.addWidget(title)
 
-        desc = QLabel("Enable or disable assistant skills")
+        desc = QLabel(t("skills.description"))
         desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
         layout.addWidget(desc)
 
@@ -339,11 +343,11 @@ class SettingsTab(QWidget):
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        title = QLabel("Settings")
+        title = QLabel(t("settings.title"))
         title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
         layout.addWidget(title)
 
-        desc = QLabel("Configure Jarvis to your preference")
+        desc = QLabel(t("settings.description"))
         desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
         layout.addWidget(desc)
 
@@ -356,7 +360,7 @@ class SettingsTab(QWidget):
         self.restart_banner.setVisible(False)
         rb_layout = QHBoxLayout(self.restart_banner)
         rb_layout.setContentsMargins(14, 8, 14, 8)
-        rb_label = QLabel("⚡ Restart required for some changes to take effect")
+        rb_label = QLabel("⚡ " + t("settings.restart_banner"))
         rb_label.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 12px; background: transparent;")
         rb_layout.addWidget(rb_label)
         layout.addWidget(self.restart_banner)
@@ -376,47 +380,47 @@ class SettingsTab(QWidget):
         self.cl = QVBoxLayout(container)
         self.cl.setSpacing(12)
 
-        self.cl.addWidget(self._make_group("AI & Language", [
-            ("Ollama Model", QComboBox(), "ollama_model", ["llama3:latest", "llama3.1:8b", "mistral", "phi3:mini", "llama3.2:3b"]),
-            ("Language", QComboBox(), "language", ["pt-PT", "en-US", "es-ES", "fr-FR", "de-DE"]),
-            ("Context Length", QComboBox(), "ollama_context_length", ["2048", "4096", "8192", "16384"]),
+        self.cl.addWidget(self._make_group(t("settings.group_ai"), [
+            (t("settings.ollama_model"), QComboBox(), "ollama_model", ["llama3:latest", "llama3.1:8b", "mistral", "phi3:mini", "llama3.2:3b"]),
+            (t("settings.language"), QComboBox(), "language", ["pt-PT", "en-US", "es-ES", "fr-FR", "de-DE"]),
+            (t("settings.context_length"), QComboBox(), "ollama_context_length", ["2048", "4096", "8192", "16384"]),
         ]))
 
-        self.cl.addWidget(self._make_group("Speech & Voice", [
-            ("Whisper Model", QComboBox(), "whisper_model", ["base", "small", "medium", "large"]),
-            ("Enable Voice", QCheckBox(), "enable_voice", None),
-            ("Enable Wake Word", QCheckBox(), "enable_wake_word", None),
-            ("Enable TTS", QCheckBox(), "enable_tts", None),
-            ("VAD Threshold", QComboBox(), "voice_vad_threshold", ["0.1", "0.3", "0.5", "0.7", "0.9"]),
-            ("Wake Word Cooldown", QComboBox(), "voice_wake_word_cooldown", ["1.0", "2.0", "3.0", "5.0"]),
-            ("Follow-up Timeout", QComboBox(), "voice_follow_up_timeout", ["4.0", "8.0", "12.0", "20.0"]),
+        self.cl.addWidget(self._make_group(t("settings.group_voice"), [
+            (t("settings.whisper_model"), QComboBox(), "whisper_model", ["base", "small", "medium", "large"]),
+            (t("settings.enable_voice"), QCheckBox(), "enable_voice", None),
+            (t("settings.enable_wake_word"), QCheckBox(), "enable_wake_word", None),
+            (t("settings.enable_tts"), QCheckBox(), "enable_tts", None),
+            (t("settings.vad_threshold"), QComboBox(), "voice_vad_threshold", ["0.1", "0.3", "0.5", "0.7", "0.9"]),
+            (t("settings.wake_word_cooldown"), QComboBox(), "voice_wake_word_cooldown", ["1.0", "2.0", "3.0", "5.0"]),
+            (t("settings.follow_up_timeout"), QComboBox(), "voice_follow_up_timeout", ["4.0", "8.0", "12.0", "20.0"]),
         ]))
 
-        self.cl.addWidget(self._make_group("Memory", [
-            ("Semantic Search", QCheckBox(), "memory_semantic_search", None),
-            ("Semantic Enabled", QCheckBox(), "memory_semantic_enabled", None),
-            ("Max Short-term", QComboBox(), "memory_max_short_term", ["50", "100", "200", "500"]),
+        self.cl.addWidget(self._make_group(t("settings.group_memory"), [
+            (t("settings.semantic_search"), QCheckBox(), "memory_semantic_search", None),
+            (t("settings.semantic_enabled"), QCheckBox(), "memory_semantic_enabled", None),
+            (t("settings.max_short_term"), QComboBox(), "memory_max_short_term", ["50", "100", "200", "500"]),
         ]))
 
-        self.cl.addWidget(self._make_group("Context", [
-            ("Max Tokens", QComboBox(), "context_max_tokens", ["2048", "4096", "8192"]),
-            ("Include Desktop State", QCheckBox(), "context_include_desktop_state", None),
-            ("Include Recent Activity", QCheckBox(), "context_include_recent_activity", None),
+        self.cl.addWidget(self._make_group(t("settings.group_context"), [
+            (t("settings.max_tokens"), QComboBox(), "context_max_tokens", ["2048", "4096", "8192"]),
+            (t("settings.include_desktop_state"), QCheckBox(), "context_include_desktop_state", None),
+            (t("settings.include_recent_activity"), QCheckBox(), "context_include_recent_activity", None),
         ]))
 
-        self.cl.addWidget(self._make_group("Features", [
-            ("Workflows Enabled", QCheckBox(), "workflows_enabled", None),
-            ("Metrics Enabled", QCheckBox(), "metrics_enabled", None),
+        self.cl.addWidget(self._make_group(t("settings.group_features"), [
+            (t("settings.workflows_enabled"), QCheckBox(), "workflows_enabled", None),
+            (t("settings.metrics_enabled"), QCheckBox(), "metrics_enabled", None),
         ]))
 
-        self.cl.addWidget(self._make_group("Permissions", [
-            ("Confirm Dangerous Commands", QCheckBox(), "require_confirmation_for_dangerous_commands", None),
+        self.cl.addWidget(self._make_group(t("settings.group_permissions"), [
+            (t("settings.confirm_dangerous"), QCheckBox(), "require_confirmation_for_dangerous_commands", None),
         ]))
 
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
 
-        save_btn = QPushButton("Save Settings")
+        save_btn = QPushButton(t("settings.save"))
         save_btn.setObjectName("accent")
         save_btn.setFixedHeight(44)
         save_btn.clicked.connect(self._save_settings)
@@ -434,7 +438,7 @@ class SettingsTab(QWidget):
         """)
         btn_row.addWidget(save_btn)
 
-        reset_btn = QPushButton("Reset Defaults")
+        reset_btn = QPushButton(t("settings.reset"))
         reset_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(255,64,112,0.08); border: 1px solid {Theme.ACCENT_ERROR}44;
             border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
@@ -493,7 +497,7 @@ class SettingsTab(QWidget):
 
             if config_key in _RESTART_KEYS:
                 restart_icon = QLabel("⚡")
-                restart_icon.setToolTip("Restart required")
+                restart_icon.setToolTip(t("settings.restart_tooltip"))
                 restart_icon.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 11px; background: transparent;")
                 rl.addWidget(restart_icon)
 
@@ -576,20 +580,28 @@ class SettingsTab(QWidget):
 
         _save_config(self.config)
         CONFIG_CACHE.update(self.config)
+        if "language" in changed:
+            lang_map = {"en-US": "en", "es-ES": "es", "fr-FR": "fr", "de-DE": "de", "pt-PT": "pt_BR"}
+            new_lang = lang_map.get(self.config.get("language", "en-US"), "en")
+            tr.set_language(new_lang)
         self._dirty_keys.clear()
 
         status = self.findChild(QLabel, "settings_status")
         if status:
             if changed:
-                status.setText(f"✓ Saved ({len(changed)} change{'s' if len(changed)!=1 else ''})")
+                count = len(changed)
+                if count == 1:
+                    status.setText("✓ " + t("settings.saved", count=count))
+                else:
+                    status.setText("✓ " + t("settings.saved_plural", count=count))
             else:
-                status.setText("✓ No changes")
+                status.setText("✓ " + t("settings.no_changes"))
         self.restart_banner.setVisible(bool(self._dirty_keys & _RESTART_KEYS))
 
     def _reset_defaults(self):
         from PyQt6.QtWidgets import QMessageBox
-        reply = QMessageBox.question(self, "Reset Settings",
-            "Reset all settings to defaults? This cannot be undone.",
+        reply = QMessageBox.question(self, t("settings.reset_title"),
+            t("settings.reset_confirm"),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply != QMessageBox.StandardButton.Yes:
             return
@@ -621,13 +633,13 @@ class LogsTab(QWidget):
         h_layout = QHBoxLayout(header)
         h_layout.setContentsMargins(0, 0, 0, 0)
 
-        title = QLabel("Logs")
+        title = QLabel(t("logs.title"))
         title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
         h_layout.addWidget(title)
 
         h_layout.addStretch()
 
-        clear_btn = QPushButton("Clear")
+        clear_btn = QPushButton(t("logs.clear"))
         clear_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: rgba(255, 64, 112, 0.08);
@@ -703,7 +715,7 @@ class MonitorTab(QWidget):
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        title = QLabel("System Monitor")
+        title = QLabel(t("monitor.title"))
         title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
         layout.addWidget(title)
 
@@ -725,9 +737,10 @@ class MainWindow(QMainWindow):
         self.setup_tray()
         self.setup_events()
         self.start_refresh_timer()
+        tr.on_change(self.retranslate_ui)
 
     def setup_ui(self):
-        self.setWindowTitle("Jarvis")
+        self.setWindowTitle(t("app.name"))
         self.setMinimumSize(1024, 720)
         self.resize(1200, 800)
         self.setStyleSheet(Theme.get_stylesheet())
@@ -789,18 +802,19 @@ class MainWindow(QMainWindow):
         self.diagnostics_tab = DiagnosticsTab()
         self.health_tab = HealthTab()
 
-        self.tabs.addTab(self.dashboard, "Dashboard")
-        self.tabs.addTab(self.skills_tab, "Skills")
-        self.tabs.addTab(self.settings_tab, "Settings")
-        self.tabs.addTab(self.logs_tab, "Logs")
-        self.tabs.addTab(self.monitor_tab, "Monitor")
-        self.tabs.addTab(self.dev_mode_tab, "Dev Mode")
-        self.tabs.addTab(self.voice_tab, "Voice")
-        self.tabs.addTab(self.memory_tab, "Memory")
-        self.tabs.addTab(self.desktop_tab, "Desktop")
-        self.tabs.addTab(self.workflows_tab, "Workflows")
-        self.tabs.addTab(self.diagnostics_tab, "Diagnostics")
-        self.tabs.addTab(self.health_tab, "Health")
+        self._tab_labels = [
+            t("sidebar.dashboard"), t("sidebar.skills"), t("sidebar.settings"),
+            t("sidebar.logs"), t("sidebar.monitor"), t("sidebar.dev_mode"),
+            t("sidebar.voice"), t("sidebar.memory"), t("sidebar.desktop"),
+            t("sidebar.workflows"), t("sidebar.diagnostics"), t("sidebar.health"),
+        ]
+        tabs_data = [
+            self.dashboard, self.skills_tab, self.settings_tab, self.logs_tab,
+            self.monitor_tab, self.dev_mode_tab, self.voice_tab, self.memory_tab,
+            self.desktop_tab, self.workflows_tab, self.diagnostics_tab, self.health_tab,
+        ]
+        for i, tab in enumerate(tabs_data):
+            self.tabs.addTab(tab, self._tab_labels[i])
 
         self.notifications = NotificationManager(self)
         self.notifications.setFixedWidth(360)
@@ -809,6 +823,18 @@ class MainWindow(QMainWindow):
         self.command_palette = CommandPalette(self)
         self.command_palette.command_selected.connect(self.process_command)
         self.command_palette.closed.connect(self._focus_input)
+
+    def retranslate_ui(self):
+        self.setWindowTitle(t("app.name"))
+        self.tray_icon.setToolTip(t("app.title"))
+        new_tab_labels = [
+            t("sidebar.dashboard"), t("sidebar.skills"), t("sidebar.settings"),
+            t("sidebar.logs"), t("sidebar.monitor"), t("sidebar.dev_mode"),
+            t("sidebar.voice"), t("sidebar.memory"), t("sidebar.desktop"),
+            t("sidebar.workflows"), t("sidebar.diagnostics"), t("sidebar.health"),
+        ]
+        for i, label in enumerate(new_tab_labels):
+            self.tabs.setTabText(i, label)
 
     def setup_shortcuts(self):
         QShortcut(QKeySequence("Ctrl+Return"), self, self._focus_input)
@@ -834,13 +860,13 @@ class MainWindow(QMainWindow):
             self.tray_icon = QSystemTrayIcon(QIcon(str(icon_path)), self)
         else:
             self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setToolTip("Jarvis Linux Assistant")
+        self.tray_icon.setToolTip(t("app.title"))
 
         tray_menu = QMenu()
-        show_action = tray_menu.addAction("Show Window")
+        show_action = tray_menu.addAction(t("tray.show"))
         show_action.triggered.connect(self.show_and_focus)
         tray_menu.addSeparator()
-        quit_action = tray_menu.addAction("Quit")
+        quit_action = tray_menu.addAction(t("tray.quit"))
         quit_action.triggered.connect(self.close)
 
         self.tray_icon.setContextMenu(tray_menu)
@@ -876,8 +902,8 @@ class MainWindow(QMainWindow):
     def _minimize_to_tray(self):
         self.hide()
         self.tray_icon.showMessage(
-            "Jarvis",
-            "Running in the background",
+            t("app.name"),
+            t("app.running_background"),
             QSystemTrayIcon.MessageIcon.Information,
             2000,
         )
@@ -899,8 +925,13 @@ class MainWindow(QMainWindow):
     def _on_state_changed(self, data):
         state = data.get("state", "idle")
         self.dashboard.status_indicator.set_state(state)
-        text = state.replace("_", " ").title()
-        self.dashboard.status_label.setText(text)
+        state_map = {
+            "idle": t("app.status_idle"),
+            "listening": t("app.status_listening"),
+            "processing": t("app.status_processing"),
+            "ai_thinking": t("app.status_ai_thinking"),
+        }
+        self.dashboard.status_label.setText(state_map.get(state, state.replace("_", " ").title()))
 
         if state == "listening":
             self.dashboard.waveform.set_active(True)
@@ -928,7 +959,7 @@ class MainWindow(QMainWindow):
 
     def _on_command_failed(self, data):
         self.dashboard.add_timeline_entry(data)
-        response = data.get("response", "Command failed")
+        response = data.get("response", t("app.command_failed"))
         self.notifications.notify(response[:100], "error", 5000)
 
     def _on_log(self, level, message):
