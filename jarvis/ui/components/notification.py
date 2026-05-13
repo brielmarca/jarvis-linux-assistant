@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, pyqtSigna
 from PyQt6.QtGui import QColor
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 
 
 NOTIFICATION_TYPES = {

@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QTimer
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 from jarvis.core.metrics import metrics
 from jarvis.core.events import EventBus, EventType
 
@@ -13,11 +14,25 @@ from jarvis.core.events import EventBus, EventType
 class DiagnosticsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._header = None
+        self._desc = None
+        self.latency_widgets = {}
+        self.counter_widgets = {}
+        self.health_widgets = {}
+        self.latency_log = None
+        self.counter_log = None
+        self.events_log = None
+        self.health_log = None
         self.setup_ui()
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._refresh)
         self._timer.start(3000)
         self._refresh()
+        tr.languageChanged.connect(self.retranslate_ui)
+
+    def retranslate_ui(self):
+        self._header.setText(t("diagnostics.title"))
+        self._desc.setText(t("diagnostics.description"))
 
     def _make_stat_block(self, label: str, value: str = "0", color: str = Theme.ACCENT_PRIMARY):
         card = QWidget()
@@ -46,13 +61,13 @@ class DiagnosticsTab(QWidget):
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        header = QLabel("Diagnostics")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        layout.addWidget(header)
+        self._header = QLabel(t("diagnostics.title"))
+        self._header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        layout.addWidget(self._header)
 
-        desc = QLabel("Performance metrics, latency tracking, event traces, and error summaries")
-        desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
-        layout.addWidget(desc)
+        self._desc = QLabel(t("diagnostics.description"))
+        self._desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
+        layout.addWidget(self._desc)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
@@ -68,10 +83,10 @@ class DiagnosticsTab(QWidget):
             QTabBar::tab:hover {{ color: {Theme.TEXT_SECONDARY}; }}
         """)
 
-        tabs.addTab(self._build_latency_tab(), "Latency")
-        tabs.addTab(self._build_counters_tab(), "Counters")
-        tabs.addTab(self._build_events_tab(), "Events")
-        tabs.addTab(self._build_health_tab(), "Health")
+        tabs.addTab(self._build_latency_tab(), t("diagnostics.tab_latency"))
+        tabs.addTab(self._build_counters_tab(), t("diagnostics.tab_counters"))
+        tabs.addTab(self._build_events_tab(), t("diagnostics.tab_events"))
+        tabs.addTab(self._build_health_tab(), t("diagnostics.tab_health"))
 
         layout.addWidget(tabs, 1)
 
@@ -85,12 +100,11 @@ class DiagnosticsTab(QWidget):
         grid = QGridLayout()
         grid.setSpacing(10)
 
-        self.latency_widgets = {}
         latencies = [
-            ("cmd_latency", "Cmd Latency", "0ms", Theme.ACCENT_INFO),
-            ("ai_latency", "AI Latency", "0ms", Theme.ACCENT_PRIMARY),
-            ("voice_latency", "Voice Latency", "0ms", Theme.ACCENT_SECONDARY),
-            ("skill_latency", "Skill Latency", "0ms", Theme.ACCENT_WARNING),
+            ("cmd_latency", t("diagnostics.cmd_latency"), "0ms", Theme.ACCENT_INFO),
+            ("ai_latency", t("diagnostics.ai_latency"), "0ms", Theme.ACCENT_PRIMARY),
+            ("voice_latency", t("diagnostics.voice_latency"), "0ms", Theme.ACCENT_SECONDARY),
+            ("skill_latency", t("diagnostics.skill_latency"), "0ms", Theme.ACCENT_WARNING),
         ]
         for i, (key, label, val, color) in enumerate(latencies):
             card, vlabel = self._make_stat_block(label, val, color)
@@ -118,12 +132,11 @@ class DiagnosticsTab(QWidget):
         grid = QGridLayout()
         grid.setSpacing(10)
 
-        self.counter_widgets = {}
         counters = [
-            ("commands_total", "Commands", "0", Theme.ACCENT_PRIMARY),
-            ("ai_requests", "AI Requests", "0", Theme.ACCENT_INFO),
-            ("skills_called", "Skills Called", "0", Theme.ACCENT_SECONDARY),
-            ("errors", "Errors", "0", Theme.ACCENT_ERROR),
+            ("commands_total", t("diagnostics.commands"), "0", Theme.ACCENT_PRIMARY),
+            ("ai_requests", t("diagnostics.ai_requests"), "0", Theme.ACCENT_INFO),
+            ("skills_called", t("diagnostics.skills_called"), "0", Theme.ACCENT_SECONDARY),
+            ("errors", t("diagnostics.errors"), "0", Theme.ACCENT_ERROR),
         ]
         for i, (key, label, val, color) in enumerate(counters):
             card, vlabel = self._make_stat_block(label, val, color)
@@ -167,16 +180,15 @@ class DiagnosticsTab(QWidget):
         grid = QGridLayout()
         grid.setSpacing(10)
 
-        self.health_widgets = {}
         checks = [
-            ("ollama", "Ollama", "...", Theme.ACCENT_WARNING),
-            ("voice", "Voice Engine", "...", Theme.ACCENT_WARNING),
-            ("vad", "VAD", "...", Theme.ACCENT_WARNING),
-            ("tts", "TTS", "...", Theme.ACCENT_WARNING),
-            ("memory", "Memory", "...", Theme.ACCENT_WARNING),
-            ("semantic", "Semantic", "...", Theme.ACCENT_WARNING),
-            ("desktop", "Desktop State", "...", Theme.ACCENT_WARNING),
-            ("workflows", "Workflows", "...", Theme.ACCENT_WARNING),
+            ("ollama", t("diagnostics.ollama"), "...", Theme.ACCENT_WARNING),
+            ("voice", t("diagnostics.voice_engine"), "...", Theme.ACCENT_WARNING),
+            ("vad", t("diagnostics.vad"), "...", Theme.ACCENT_WARNING),
+            ("tts", t("diagnostics.tts"), "...", Theme.ACCENT_WARNING),
+            ("memory", t("diagnostics.memory"), "...", Theme.ACCENT_WARNING),
+            ("semantic", t("diagnostics.semantic"), "...", Theme.ACCENT_WARNING),
+            ("desktop", t("diagnostics.desktop_state"), "...", Theme.ACCENT_WARNING),
+            ("workflows", t("diagnostics.workflows"), "...", Theme.ACCENT_WARNING),
         ]
         for i, (key, label, val, color) in enumerate(checks):
             card, vlabel = self._make_stat_block(label, val, color)
@@ -186,7 +198,7 @@ class DiagnosticsTab(QWidget):
         layout.addLayout(grid)
 
         btn_row = QHBoxLayout()
-        check_btn = QPushButton("Run Health Check")
+        check_btn = QPushButton(t("diagnostics.run_health_check"))
         check_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(0,122,255,0.08); border: 0.5px solid {Theme.ACCENT_PRIMARY}44;
             border-radius: 14px; padding: 8px 24px; font-size: 12px; font-weight: 400; color: {Theme.ACCENT_PRIMARY}; }}
@@ -244,27 +256,27 @@ class DiagnosticsTab(QWidget):
                 latency_text.append(f"{k}: {v*1000:.0f}ms")
             else:
                 latency_text.append(f"{k}: {v}")
-        self.latency_log.setPlainText("\n".join(latency_text) if latency_text else "No latency data recorded yet.")
+        self.latency_log.setPlainText("\n".join(latency_text) if latency_text else t("diagnostics.no_latency"))
 
         counter_text = []
         for k, v in (counters.items() if isinstance(counters, dict) else []):
             counter_text.append(f"{k}: {v}")
-        self.counter_log.setPlainText("\n".join(counter_text) if counter_text else "No counter data recorded yet.")
+        self.counter_log.setPlainText("\n".join(counter_text) if counter_text else t("diagnostics.no_counters"))
 
     def _run_health_check(self):
-        self.health_log.setPlainText("Running health check...\n")
+        self.health_log.setPlainText(t("diagnostics.running_check") + "\n")
         checks = {}
 
         try:
             from jarvis.core.semantic_memory import semantic_memory
             stats = semantic_memory.get_stats()
-            checks["semantic"] = f"OK ({stats.get('total_entries', 0)} entries)"
+            checks["semantic"] = t("diagnostics.ok_entries", count=stats.get('total_entries', 0))
             self.health_widgets["semantic"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["semantic"].setText("OK")
+            self.health_widgets["semantic"].setText(t("diagnostics.ok"))
         except Exception as e:
-            checks["semantic"] = f"FAIL: {e}"
+            checks["semantic"] = t("diagnostics.fail", error=e)
             self.health_widgets["semantic"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["semantic"].setText("FAIL")
+            self.health_widgets["semantic"].setText(t("diagnostics.fail_short"))
 
         try:
             from jarvis.system.desktop_state import DesktopState
@@ -272,34 +284,34 @@ class DiagnosticsTab(QWidget):
             _ = ds.get_state()
             checks["desktop"] = "OK"
             self.health_widgets["desktop"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["desktop"].setText("OK")
+            self.health_widgets["desktop"].setText(t("diagnostics.ok"))
         except Exception as e:
-            checks["desktop"] = f"FAIL: {e}"
+            checks["desktop"] = t("diagnostics.fail", error=e)
             self.health_widgets["desktop"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["desktop"].setText("FAIL")
+            self.health_widgets["desktop"].setText(t("diagnostics.fail_short"))
 
         try:
             from jarvis.core.memory_manager import MemoryManager
             mm = MemoryManager()
-            checks["memory"] = f"OK ({len(mm.get_all_memories())} memories)"
+            checks["memory"] = t("diagnostics.ok_memories", count=len(mm.get_all_memories()))
             self.health_widgets["memory"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["memory"].setText("OK")
+            self.health_widgets["memory"].setText(t("diagnostics.ok"))
         except Exception as e:
-            checks["memory"] = f"FAIL: {e}"
+            checks["memory"] = t("diagnostics.fail", error=e)
             self.health_widgets["memory"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["memory"].setText("FAIL")
+            self.health_widgets["memory"].setText(t("diagnostics.fail_short"))
 
         try:
             from jarvis.automation.workflows import WorkflowManager
             wm = WorkflowManager()
             wf_count = len(wm.list_workflows())
-            checks["workflows"] = f"OK ({wf_count} workflows)"
+            checks["workflows"] = t("diagnostics.ok_workflows", count=wf_count)
             self.health_widgets["workflows"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["workflows"].setText("OK")
+            self.health_widgets["workflows"].setText(t("diagnostics.ok"))
         except Exception as e:
-            checks["workflows"] = f"FAIL: {e}"
+            checks["workflows"] = t("diagnostics.fail", error=e)
             self.health_widgets["workflows"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["workflows"].setText("FAIL")
+            self.health_widgets["workflows"].setText(t("diagnostics.fail_short"))
 
         import urllib.request
         import json
@@ -308,16 +320,16 @@ class DiagnosticsTab(QWidget):
             with urllib.request.urlopen(req, timeout=3) as resp:
                 data = json.loads(resp.read())
                 models = [m["name"] for m in data.get("models", [])]
-                checks["ollama"] = f"OK ({', '.join(models[:3])})"
+                checks["ollama"] = "OK (" + ", ".join(models[:3]) + ")"
                 self.health_widgets["ollama"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 600; background: transparent;")
-                self.health_widgets["ollama"].setText("OK")
+                self.health_widgets["ollama"].setText(t("diagnostics.ok"))
         except Exception as e:
-            checks["ollama"] = f"FAIL: {e}"
+            checks["ollama"] = t("diagnostics.fail", error=e)
             self.health_widgets["ollama"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 600; background: transparent;")
-            self.health_widgets["ollama"].setText("FAIL")
+            self.health_widgets["ollama"].setText(t("diagnostics.fail_short"))
 
         for svc in ["voice", "vad", "tts"]:
-            checks[svc] = "Not checked (requires audio hardware)"
+            checks[svc] = t("diagnostics.not_checked")
             self.health_widgets[svc].setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 22px; font-weight: 600; background: transparent;")
             self.health_widgets[svc].setText("-")
 

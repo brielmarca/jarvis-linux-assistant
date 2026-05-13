@@ -3,6 +3,17 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QPainter, QColor, QPen, QBrush, QPainterPath
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
+
+
+DESCRIPTIONS = {
+    "system": "skills.system",
+    "apps": "skills.apps",
+    "browser": "skills.browser",
+    "media": "skills.media",
+    "dev": "skills.dev",
+    "opencode": "skills.opencode",
+}
 
 
 class ToggleSwitch(QWidget):
@@ -63,7 +74,11 @@ class SkillCard(QWidget):
         self._enabled = enabled
         self.permission_level = permission_level
         self._description = description
+        self._name_label = None
+        self._desc_label = None
+        self._badge = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         self.setStyleSheet(f"""
@@ -83,37 +98,27 @@ class SkillCard(QWidget):
         layout.setContentsMargins(16, 12, 16, 12)
         layout.setSpacing(12)
 
-        icon_label = QLabel(self._get_icon())
-        icon_label.setStyleSheet(f"""
-            font-size: 16px;
-            color: {Theme.TEXT_SECONDARY};
-            background: transparent;
-            border: none;
-        """)
-        icon_label.setFixedWidth(30)
-        icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(icon_label)
-
         text_area = QWidget()
         text_area.setStyleSheet("background: transparent; border: none;")
         t_layout = QVBoxLayout(text_area)
         t_layout.setContentsMargins(0, 0, 0, 0)
         t_layout.setSpacing(2)
 
-        name_label = QLabel(self.skill_name.capitalize())
-        name_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent; border: none;")
-        t_layout.addWidget(name_label)
+        self._name_label = QLabel(self.skill_name.capitalize())
+        self._name_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent; border: none;")
+        t_layout.addWidget(self._name_label)
 
-        desc = self._description or self._default_description()
-        desc_label = QLabel(desc)
-        desc_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 11px; background: transparent; border: none;")
-        t_layout.addWidget(desc_label)
+        desc = self._description or self._default_description_key()
+        self._desc_label = QLabel(t(desc) if desc.startswith("skills.") else desc)
+        self._desc_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 11px; background: transparent; border: none;")
+        t_layout.addWidget(self._desc_label)
 
         layout.addWidget(text_area, 1)
 
         badge_color = Theme.ACCENT_SECONDARY if self.permission_level == "normal" else Theme.ACCENT_WARNING
-        badge = QLabel(self.permission_level)
-        badge.setStyleSheet(f"""
+        perm_key = "skills.normal" if self.permission_level == "normal" else "skills.elevated"
+        self._badge = QLabel(t(perm_key))
+        self._badge.setStyleSheet(f"""
             color: {badge_color};
             font-size: 10px;
             font-weight: 500;
@@ -122,26 +127,21 @@ class SkillCard(QWidget):
             border-radius: 4px;
             padding: 2px 8px;
         """)
-        badge.setFixedHeight(20)
-        layout.addWidget(badge)
+        self._badge.setFixedHeight(20)
+        layout.addWidget(self._badge)
 
         self.toggle = ToggleSwitch(self._enabled)
         self.toggle.toggled.connect(self._on_toggle)
         layout.addWidget(self.toggle)
 
-    def _get_icon(self):
-        return ""
+    def retranslate_ui(self):
+        desc_key = self._description or self._default_description_key()
+        self._desc_label.setText(t(desc_key) if desc_key.startswith("skills.") else desc_key)
+        perm_key = "skills.normal" if self.permission_level == "normal" else "skills.elevated"
+        self._badge.setText(t(perm_key))
 
-    def _default_description(self):
-        descs = {
-            "system": "System info, time, date, shutdown",
-            "apps": "Launch apps, open projects, Docker",
-            "browser": "Web search, open URLs",
-            "media": "Volume and media playback control",
-            "dev": "Dev mode, open projects, git",
-            "opencode": "AI-assisted code changes",
-        }
-        return descs.get(self.skill_name, f"Handles {self.skill_name} commands")
+    def _default_description_key(self):
+        return DESCRIPTIONS.get(self.skill_name, None)
 
     def _on_toggle(self, checked):
         self._enabled = checked

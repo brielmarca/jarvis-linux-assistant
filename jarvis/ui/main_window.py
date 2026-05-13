@@ -15,6 +15,7 @@ from PyQt6.QtGui import QIcon, QAction, QKeySequence, QShortcut, QPixmap
 from jarvis.core.assistant import Assistant, events, EventType, log as jarvis_log
 from jarvis.automation import linux as linux_auto
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 from jarvis.ui.components.status_indicator import StatusIndicator
 from jarvis.ui.components.command_input import CommandInput
 from jarvis.ui.components.timeline_card import TimelineCard
@@ -91,7 +92,15 @@ class DashboardTab(QWidget):
     def __init__(self, main_window, parent=None):
         super().__init__(parent)
         self.main = main_window
+        self._title_label = None
+        self._version_label = None
+        self._status_label = None
+        self._mic_status = None
+        self._ai_status = None
+        self._quick_action_btns = []
+        self._response_label = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
@@ -112,28 +121,52 @@ class DashboardTab(QWidget):
         self._build_stats_row(layout)
         self._build_timeline(layout)
 
+    def retranslate_ui(self):
+        self._title_label.setText(t("dashboard.title"))
+        self._version_label.setText(t("app.version"))
+        self._status_label.setText(t("app.status_idle"))
+        self._mic_status.setText(t("app.mic_off"))
+        ai_live = t("app.ai_live") if self.main.assistant.ollama.is_available() else t("app.ai_off")
+        self._ai_status.setText(f"AI: {ai_live}")
+        actions = [
+            (t("dashboard.terminal"), "open terminal"),
+            (t("dashboard.firefox"), "open firefox"),
+            (t("dashboard.volume_up"), "increase volume"),
+            (t("dashboard.volume_down"), "decrease volume"),
+            (t("dashboard.system"), "system info"),
+            (t("dashboard.code"), "programming mode"),
+        ]
+        for i, (btn, (label_text, _)) in enumerate(zip(self._quick_action_btns, actions)):
+            btn.setText(label_text)
+        for key in ["CPU", "Mem", "Disk"]:
+            if key in self.stats_labels:
+                pass
+        self.command_input.set_placeholder(t("dashboard.placeholder"))
+        self.command_input.send_btn.setText(t("dashboard.send"))
+        self.response_label.setText("")
+
     def _build_header(self, layout):
         header = QWidget()
         header.setStyleSheet("background: transparent;")
         h = QHBoxLayout(header)
         h.setContentsMargins(0, 0, 0, 0)
 
-        name = QLabel("Jarvis")
-        name.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 26px; font-weight: 700; background: transparent;")
-        h.addWidget(name)
+        self._title_label = QLabel(t("dashboard.title"))
+        self._title_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 26px; font-weight: 700; background: transparent;")
+        h.addWidget(self._title_label)
 
-        ver = QLabel("v1.0")
-        ver.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent; margin-top: 6px;")
-        h.addWidget(ver)
+        self._version_label = QLabel(t("app.version"))
+        self._version_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent; margin-top: 6px;")
+        h.addWidget(self._version_label)
 
         h.addStretch()
 
         self.status_indicator = StatusIndicator()
         h.addWidget(self.status_indicator)
 
-        self.status_label = QLabel("Idle")
-        self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; font-weight: 400; background: transparent;")
-        h.addWidget(self.status_label)
+        self._status_label = QLabel(t("app.status_idle"))
+        self._status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; font-weight: 400; background: transparent;")
+        h.addWidget(self._status_label)
 
         layout.addWidget(header)
 
@@ -155,12 +188,12 @@ class DashboardTab(QWidget):
         a_layout.setSpacing(8)
 
         actions = [
-            ("Terminal", "open terminal"),
-            ("Firefox", "open firefox"),
-            ("Volume +", "increase volume"),
-            ("Volume -", "decrease volume"),
-            ("System", "system info"),
-            ("Code", "programming mode"),
+            (t("dashboard.terminal"), "open terminal"),
+            (t("dashboard.firefox"), "open firefox"),
+            (t("dashboard.volume_up"), "increase volume"),
+            (t("dashboard.volume_down"), "decrease volume"),
+            (t("dashboard.system"), "system info"),
+            (t("dashboard.code"), "programming mode"),
         ]
 
         for label, cmd in actions:
@@ -182,22 +215,23 @@ class DashboardTab(QWidget):
                 }}
             """)
             btn.clicked.connect(lambda checked, c=cmd: self.main.process_command(c))
+            self._quick_action_btns.append(btn)
             a_layout.addWidget(btn)
 
         a_layout.addStretch()
 
-        self.mic_status = QLabel("Mic: Off")
-        self.mic_status.setStyleSheet(f"""
+        self._mic_status = QLabel(t("app.mic_off"))
+        self._mic_status.setStyleSheet(f"""
             color: {Theme.TEXT_TERTIARY}; font-size: 11px;
             background: transparent; padding-right: 8px;
         """)
-        a_layout.addWidget(self.mic_status)
+        a_layout.addWidget(self._mic_status)
 
-        self.ai_status = QLabel("AI: " + ("Live" if self.main.assistant.ollama.is_available() else "Off"))
+        ai_live = t("app.ai_live") if self.main.assistant.ollama.is_available() else t("app.ai_off")
+        self._ai_status = QLabel(f"AI: {ai_live}")
         ai_color = Theme.ACCENT_SUCCESS if self.main.assistant.ollama.is_available() else Theme.ACCENT_ERROR
-        self.ai_status.setStyleSheet(f"color: {ai_color}; font-size: 11px; background: transparent;")
-
-        a_layout.addWidget(self.ai_status)
+        self._ai_status.setStyleSheet(f"color: {ai_color}; font-size: 11px; background: transparent;")
+        a_layout.addWidget(self._ai_status)
 
         layout.addWidget(actions_widget)
 
@@ -264,12 +298,12 @@ class DashboardTab(QWidget):
         layout.addWidget(self.timeline, 1)
 
     def update_stats(self, info):
-        cpu = info.get("cpu", "N/A")
+        cpu = info.get("cpu", t("app.na"))
         if len(cpu) > 12:
             cpu = cpu.split("@")[0].strip() if "@" in cpu else cpu[:12]
         self.stats_labels["CPU"].setText(cpu)
-        self.stats_labels["Mem"].setText(info.get("memory", "N/A"))
-        self.stats_labels["Disk"].setText(info.get("disk", "N/A"))
+        self.stats_labels["Mem"].setText(info.get("memory", t("app.na")))
+        self.stats_labels["Disk"].setText(info.get("disk", t("app.na")))
 
     def add_timeline_entry(self, entry):
         self.timeline.add_entry(entry)
@@ -279,20 +313,23 @@ class DashboardTab(QWidget):
 class SkillsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._title = None
+        self._desc = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        title = QLabel("Skills")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        layout.addWidget(title)
+        self._title = QLabel(t("skills.title"))
+        self._title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        layout.addWidget(self._title)
 
-        desc = QLabel("Enable or disable assistant skills")
-        desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
-        layout.addWidget(desc)
+        self._desc = QLabel(t("skills.description"))
+        self._desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
+        layout.addWidget(self._desc)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
@@ -326,6 +363,10 @@ class SkillsTab(QWidget):
         scroll.setWidget(container)
         layout.addWidget(scroll, 1)
 
+    def retranslate_ui(self):
+        self._title.setText(t("skills.title"))
+        self._desc.setText(t("skills.description"))
+
 
 class SettingsTab(QWidget):
     def __init__(self, main_window, parent=None):
@@ -334,21 +375,27 @@ class SettingsTab(QWidget):
         self.config = dict(CONFIG_CACHE)
         self._dirty_keys = set()
         self._rebuild_required = False
+        self._title = None
+        self._desc = None
+        self._save_btn = None
+        self._reset_btn = None
+        self._restart_banner_label = None
         self.setup_ui()
         self._load_settings()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        title = QLabel("Settings")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        layout.addWidget(title)
+        self._title = QLabel(t("settings.title"))
+        self._title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        layout.addWidget(self._title)
 
-        desc = QLabel("Configure Jarvis to your preference")
-        desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
-        layout.addWidget(desc)
+        self._desc = QLabel(t("settings.description"))
+        self._desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
+        layout.addWidget(self._desc)
 
         self.restart_banner = QWidget()
         self.restart_banner.setStyleSheet(f"""
@@ -359,9 +406,9 @@ class SettingsTab(QWidget):
         self.restart_banner.setVisible(False)
         rb_layout = QHBoxLayout(self.restart_banner)
         rb_layout.setContentsMargins(14, 8, 14, 8)
-        rb_label = QLabel("* Restart required for some changes to take effect")
-        rb_label.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 12px; background: transparent;")
-        rb_layout.addWidget(rb_label)
+        self._restart_banner_label = QLabel(t("settings.restart_banner"))
+        self._restart_banner_label.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 12px; background: transparent;")
+        rb_layout.addWidget(self._restart_banner_label)
         layout.addWidget(self.restart_banner)
 
         sep = QFrame()
@@ -379,51 +426,51 @@ class SettingsTab(QWidget):
         self.cl = QVBoxLayout(container)
         self.cl.setSpacing(12)
 
-        self.cl.addWidget(self._make_group("AI & Language", [
-            ("Ollama Model", QComboBox(), "ollama_model", ["llama3:latest", "llama3.1:8b", "mistral", "phi3:mini", "llama3.2:3b"]),
-            ("Language", QComboBox(), "language", ["pt-PT", "en-US", "es-ES", "fr-FR", "de-DE"]),
-            ("Context Length", QComboBox(), "ollama_context_length", ["2048", "4096", "8192", "16384"]),
+        self.cl.addWidget(self._make_group("settings.group_ai", [
+            ("settings.ollama_model", QComboBox(), "ollama_model", ["llama3:latest", "llama3.1:8b", "mistral", "phi3:mini", "llama3.2:3b"]),
+            ("settings.language", QComboBox(), "language", ["pt-PT", "en-US", "es-ES", "fr-FR", "de-DE"]),
+            ("settings.context_length", QComboBox(), "ollama_context_length", ["2048", "4096", "8192", "16384"]),
         ]))
 
-        self.cl.addWidget(self._make_group("Speech & Voice", [
-            ("Whisper Model", QComboBox(), "whisper_model", ["base", "small", "medium", "large"]),
-            ("Enable Voice", QCheckBox(), "enable_voice", None),
-            ("Enable Wake Word", QCheckBox(), "enable_wake_word", None),
-            ("Enable TTS", QCheckBox(), "enable_tts", None),
-            ("VAD Threshold", QComboBox(), "voice_vad_threshold", ["0.1", "0.3", "0.5", "0.7", "0.9"]),
-            ("Wake Word Cooldown", QComboBox(), "voice_wake_word_cooldown", ["1.0", "2.0", "3.0", "5.0"]),
-            ("Follow-up Timeout", QComboBox(), "voice_follow_up_timeout", ["4.0", "8.0", "12.0", "20.0"]),
+        self.cl.addWidget(self._make_group("settings.group_voice", [
+            ("settings.whisper_model", QComboBox(), "whisper_model", ["base", "small", "medium", "large"]),
+            ("settings.enable_voice", QCheckBox(), "enable_voice", None),
+            ("settings.enable_wake_word", QCheckBox(), "enable_wake_word", None),
+            ("settings.enable_tts", QCheckBox(), "enable_tts", None),
+            ("settings.vad_threshold", QComboBox(), "voice_vad_threshold", ["0.1", "0.3", "0.5", "0.7", "0.9"]),
+            ("settings.wake_word_cooldown", QComboBox(), "voice_wake_word_cooldown", ["1.0", "2.0", "3.0", "5.0"]),
+            ("settings.follow_up_timeout", QComboBox(), "voice_follow_up_timeout", ["4.0", "8.0", "12.0", "20.0"]),
         ]))
 
-        self.cl.addWidget(self._make_group("Memory", [
-            ("Semantic Search", QCheckBox(), "memory_semantic_search", None),
-            ("Semantic Enabled", QCheckBox(), "memory_semantic_enabled", None),
-            ("Max Short-term", QComboBox(), "memory_max_short_term", ["50", "100", "200", "500"]),
+        self.cl.addWidget(self._make_group("settings.group_memory", [
+            ("settings.semantic_search", QCheckBox(), "memory_semantic_search", None),
+            ("settings.semantic_enabled", QCheckBox(), "memory_semantic_enabled", None),
+            ("settings.max_short_term", QComboBox(), "memory_max_short_term", ["50", "100", "200", "500"]),
         ]))
 
-        self.cl.addWidget(self._make_group("Context", [
-            ("Max Tokens", QComboBox(), "context_max_tokens", ["2048", "4096", "8192"]),
-            ("Include Desktop State", QCheckBox(), "context_include_desktop_state", None),
-            ("Include Recent Activity", QCheckBox(), "context_include_recent_activity", None),
+        self.cl.addWidget(self._make_group("settings.group_context", [
+            ("settings.max_tokens", QComboBox(), "context_max_tokens", ["2048", "4096", "8192"]),
+            ("settings.include_desktop_state", QCheckBox(), "context_include_desktop_state", None),
+            ("settings.include_recent_activity", QCheckBox(), "context_include_recent_activity", None),
         ]))
 
-        self.cl.addWidget(self._make_group("Features", [
-            ("Workflows Enabled", QCheckBox(), "workflows_enabled", None),
-            ("Metrics Enabled", QCheckBox(), "metrics_enabled", None),
+        self.cl.addWidget(self._make_group("settings.group_features", [
+            ("settings.workflows_enabled", QCheckBox(), "workflows_enabled", None),
+            ("settings.metrics_enabled", QCheckBox(), "metrics_enabled", None),
         ]))
 
-        self.cl.addWidget(self._make_group("Permissions", [
-            ("Confirm Dangerous Commands", QCheckBox(), "require_confirmation_for_dangerous_commands", None),
+        self.cl.addWidget(self._make_group("settings.group_permissions", [
+            ("settings.confirm_dangerous", QCheckBox(), "require_confirmation_for_dangerous_commands", None),
         ]))
 
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
 
-        save_btn = QPushButton("Save Settings")
-        save_btn.setObjectName("accent")
-        save_btn.setFixedHeight(44)
-        save_btn.clicked.connect(self._save_settings)
-        save_btn.setStyleSheet(f"""
+        self._save_btn = QPushButton(t("settings.save"))
+        self._save_btn.setObjectName("accent")
+        self._save_btn.setFixedHeight(44)
+        self._save_btn.clicked.connect(self._save_settings)
+        self._save_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {Theme.ACCENT_PRIMARY};
                 border: none;
@@ -435,16 +482,16 @@ class SettingsTab(QWidget):
             }}
             QPushButton:hover {{ background-color: #0066CC; }}
         """)
-        btn_row.addWidget(save_btn)
+        btn_row.addWidget(self._save_btn)
 
-        reset_btn = QPushButton("Reset Defaults")
-        reset_btn.setStyleSheet(f"""
+        self._reset_btn = QPushButton(t("settings.reset"))
+        self._reset_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(255,69,58,0.08); border: 0.5px solid {Theme.ACCENT_ERROR}44;
             border-radius: 20px; padding: 12px 24px; font-size: 14px; font-weight: 400; color: {Theme.ACCENT_ERROR}; }}
             QPushButton:hover {{ background-color: rgba(255,69,58,0.15); }}
         """)
-        reset_btn.clicked.connect(self._reset_defaults)
-        btn_row.addWidget(reset_btn)
+        self._reset_btn.clicked.connect(self._reset_defaults)
+        btn_row.addWidget(self._reset_btn)
 
         btn_row.addStretch()
 
@@ -459,6 +506,21 @@ class SettingsTab(QWidget):
         scroll.setWidget(container)
         layout.addWidget(scroll, 1)
 
+    def retranslate_ui(self):
+        self._title.setText(t("settings.title"))
+        self._desc.setText(t("settings.description"))
+        self._restart_banner_label.setText(t("settings.restart_banner"))
+        self._save_btn.setText(t("settings.save"))
+        self._reset_btn.setText(t("settings.reset"))
+        for group_widget, group_key in self._group_keys:
+            title = group_widget.findChild(QLabel)
+            if title:
+                title.setText(t(group_key))
+        for row_key, widget, config_key, _ in self._field_rows:
+            label = widget.parent().findChildren(QLabel)
+            if label:
+                label[0].setText(t(row_key))
+
     def _make_group(self, title_text, fields):
         group = QWidget()
         group.setStyleSheet(f"""
@@ -472,9 +534,14 @@ class SettingsTab(QWidget):
         layout.setContentsMargins(18, 14, 18, 14)
         layout.setSpacing(10)
 
-        title = QLabel(title_text)
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 700; background: transparent;")
+        title = QLabel(t(title_text))
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent;")
         layout.addWidget(title)
+
+        if not hasattr(self, '_group_keys'):
+            self._group_keys = []
+            self._field_rows = []
+        self._group_keys.append((group, title_text))
 
         self._field_widgets = getattr(self, '_field_widgets', {})
 
@@ -489,14 +556,14 @@ class SettingsTab(QWidget):
             rl = QHBoxLayout(row)
             rl.setContentsMargins(0, 0, 0, 0)
 
-            label = QLabel(name)
+            label = QLabel(t(name))
             label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
             rl.addWidget(label)
             rl.addStretch()
 
             if config_key in _RESTART_KEYS:
                 restart_icon = QLabel("*")
-                restart_icon.setToolTip("Restart required")
+                restart_icon.setToolTip(t("settings.restart_tooltip"))
                 restart_icon.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 11px; background: transparent;")
                 rl.addWidget(restart_icon)
 
@@ -506,7 +573,7 @@ class SettingsTab(QWidget):
                     QComboBox {{
                         background-color: rgba(12, 12, 22, 0.6);
                         color: {Theme.TEXT_PRIMARY};
-                        border: 1px solid {Theme.BORDER};
+                        border: 0.5px solid {Theme.BORDER};
                         border-radius: 6px;
                         padding: 6px 12px;
                         font-size: 12px;
@@ -518,7 +585,7 @@ class SettingsTab(QWidget):
                         background-color: {Theme.BG_CARD_SOLID};
                         color: {Theme.TEXT_PRIMARY};
                         selection-background-color: {Theme.ACCENT_PRIMARY};
-                        border: 1px solid {Theme.BORDER};
+                        border: 0.5px solid {Theme.BORDER};
                         border-radius: 6px;
                     }}
                 """)
@@ -528,8 +595,8 @@ class SettingsTab(QWidget):
                     QCheckBox {{ color: {Theme.TEXT_SECONDARY}; spacing: 8px; font-size: 13px; }}
                     QCheckBox::indicator {{
                         width: 18px; height: 18px; border-radius: 4px;
-                        border: 1px solid {Theme.BORDER};
-                        background-color: rgba(20, 20, 35, 0.6);
+                        border: 0.5px solid {Theme.BORDER};
+                        background-color: rgba(44, 44, 46, 0.6);
                     }}
                     QCheckBox::indicator:checked {{
                         background-color: {Theme.ACCENT_PRIMARY};
@@ -540,6 +607,7 @@ class SettingsTab(QWidget):
                 widget.stateChanged.connect(lambda state, k=config_key: self._mark_dirty(k))
 
             self._field_widgets[config_key] = widget
+            self._field_rows.append((name, widget, config_key, options))
             rl.addWidget(widget)
             layout.addWidget(row)
 
@@ -581,18 +649,24 @@ class SettingsTab(QWidget):
         CONFIG_CACHE.update(self.config)
         self._dirty_keys.clear()
 
+        if "language" in changed:
+            lang = self.config.get("language", "en-US")
+            lang_map = {"en-US": "en", "pt-PT": "pt_BR", "es-ES": "es", "fr-FR": "fr", "de-DE": "de"}
+            tr.set_language(lang_map.get(lang, "en"))
+
         status = self.findChild(QLabel, "settings_status")
         if status:
             if changed:
-                status.setText(f"Saved ({len(changed)} change{'s' if len(changed)!=1 else ''})")
+                count = len(changed)
+                status.setText(t("settings.saved_plural" if count != 1 else "settings.saved", count=count))
             else:
-                status.setText("No changes")
+                status.setText(t("settings.no_changes"))
         self.restart_banner.setVisible(bool(self._dirty_keys & _RESTART_KEYS))
 
     def _reset_defaults(self):
         from PyQt6.QtWidgets import QMessageBox
-        reply = QMessageBox.question(self, "Reset Settings",
-            "Reset all settings to defaults? This cannot be undone.",
+        reply = QMessageBox.question(self, t("settings.reset_title"),
+            t("settings.reset_confirm"),
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if reply != QMessageBox.StandardButton.Yes:
             return
@@ -612,7 +686,10 @@ class LogsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._max_lines = 500
+        self._title = None
+        self._clear_btn = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
@@ -624,14 +701,14 @@ class LogsTab(QWidget):
         h_layout = QHBoxLayout(header)
         h_layout.setContentsMargins(0, 0, 0, 0)
 
-        title = QLabel("Logs")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        h_layout.addWidget(title)
+        self._title = QLabel(t("logs.title"))
+        self._title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        h_layout.addWidget(self._title)
 
         h_layout.addStretch()
 
-        clear_btn = QPushButton("Clear")
-        clear_btn.setStyleSheet(f"""
+        self._clear_btn = QPushButton(t("logs.clear"))
+        self._clear_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: rgba(255, 69, 58, 0.08);
                 color: {Theme.ACCENT_ERROR};
@@ -645,8 +722,8 @@ class LogsTab(QWidget):
                 background-color: rgba(255, 69, 58, 0.18);
             }}
         """)
-        clear_btn.clicked.connect(self._clear_logs)
-        h_layout.addWidget(clear_btn)
+        self._clear_btn.clicked.connect(self._clear_logs)
+        h_layout.addWidget(self._clear_btn)
 
         layout.addWidget(header)
 
@@ -670,15 +747,11 @@ class LogsTab(QWidget):
         """)
         layout.addWidget(self.log_view, 1)
 
+    def retranslate_ui(self):
+        self._title.setText(t("logs.title"))
+        self._clear_btn.setText(t("logs.clear"))
+
     def append_log(self, level, message):
-        colors = {
-            "info": Theme.TEXT_SECONDARY,
-            "debug": Theme.TEXT_MUTED,
-            "warning": Theme.ACCENT_WARNING,
-            "error": Theme.ACCENT_ERROR,
-            "critical": Theme.ACCENT_ERROR,
-        }
-        color = colors.get(level, Theme.TEXT_PRIMARY)
         timestamp = datetime.now().strftime("%H:%M:%S")
         self.log_view.appendPlainText(f"[{timestamp}] [{level.upper()}] {message}")
 
@@ -698,16 +771,18 @@ class LogsTab(QWidget):
 class MonitorTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._title = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        title = QLabel("System Monitor")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        layout.addWidget(title)
+        self._title = QLabel(t("monitor.title"))
+        self._title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        layout.addWidget(self._title)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
@@ -716,6 +791,9 @@ class MonitorTab(QWidget):
 
         self.monitor = SystemMonitorCard()
         layout.addWidget(self.monitor, 1)
+
+    def retranslate_ui(self):
+        self._title.setText(t("monitor.title"))
 
 
 class MainWindow(QMainWindow):
@@ -727,9 +805,14 @@ class MainWindow(QMainWindow):
         self.setup_tray()
         self.setup_events()
         self.start_refresh_timer()
+        tr.languageChanged.connect(self._on_language_changed)
+
+    def _on_language_changed(self, lang):
+        self.setWindowTitle(t("app.title"))
+        self.tray_icon.setToolTip(t("app.title"))
 
     def setup_ui(self):
-        self.setWindowTitle("Jarvis")
+        self.setWindowTitle(t("app.title"))
         self.setMinimumSize(1024, 720)
         self.resize(1200, 800)
         self.setStyleSheet(Theme.get_stylesheet())
@@ -820,18 +903,22 @@ class MainWindow(QMainWindow):
             self.tray_icon = QSystemTrayIcon(QIcon(str(icon_path)), self)
         else:
             self.tray_icon = QSystemTrayIcon(self)
-        self.tray_icon.setToolTip("Jarvis Linux Assistant")
+        self.tray_icon.setToolTip(t("app.title"))
 
         tray_menu = QMenu()
-        show_action = tray_menu.addAction("Show Window")
-        show_action.triggered.connect(self.show_and_focus)
+        self._tray_show_action = tray_menu.addAction(t("tray.show"))
+        self._tray_show_action.triggered.connect(self.show_and_focus)
         tray_menu.addSeparator()
-        quit_action = tray_menu.addAction("Quit")
-        quit_action.triggered.connect(self.close)
+        self._tray_quit_action = tray_menu.addAction(t("tray.quit"))
+        self._tray_quit_action.triggered.connect(self.close)
 
         self.tray_icon.setContextMenu(tray_menu)
         self.tray_icon.activated.connect(self._tray_activated)
         self.tray_icon.show()
+
+    def retranslate_tray(self):
+        self._tray_show_action.setText(t("tray.show"))
+        self._tray_quit_action.setText(t("tray.quit"))
 
     def _tray_activated(self, reason):
         if reason == QSystemTrayIcon.ActivationReason.DoubleClick:
@@ -862,8 +949,8 @@ class MainWindow(QMainWindow):
     def _minimize_to_tray(self):
         self.hide()
         self.tray_icon.showMessage(
-            "Jarvis",
-            "Running in the background",
+            t("app.name"),
+            t("app.running_background"),
             QSystemTrayIcon.MessageIcon.Information,
             2000,
         )
@@ -885,8 +972,8 @@ class MainWindow(QMainWindow):
     def _on_state_changed(self, data):
         state = data.get("state", "idle")
         self.dashboard.status_indicator.set_state(state)
-        text = state.replace("_", " ").title()
-        self.dashboard.status_label.setText(text)
+        state_key = f"app.status_{state}"
+        self.dashboard._status_label.setText(t(state_key))
 
         if state == "listening":
             self.dashboard.waveform.set_active(True)
@@ -914,7 +1001,7 @@ class MainWindow(QMainWindow):
 
     def _on_command_failed(self, data):
         self.dashboard.add_timeline_entry(data)
-        response = data.get("response", "Command failed")
+        response = data.get("response", t("app.command_failed"))
         self.notifications.notify(response[:100], "error", 5000)
 
     def _on_log(self, level, message):

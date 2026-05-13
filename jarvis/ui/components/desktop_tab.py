@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QTimer
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 
 
 class StatCard(QWidget):
@@ -12,6 +13,8 @@ class StatCard(QWidget):
         super().__init__()
         self._value = value
         self._color = color
+        self._label_widget = None
+        self.value_label = None
         self.setStyleSheet(f"""
             StatCard {{
                 background-color: {Theme.BG_CARD_SOLID};
@@ -27,9 +30,9 @@ class StatCard(QWidget):
         header.setStyleSheet("background: transparent;")
         hl = QHBoxLayout(header)
         hl.setContentsMargins(0, 0, 0, 0)
-        lbl = QLabel(label)
-        lbl.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 500; background: transparent;")
-        hl.addWidget(lbl)
+        self._label_widget = QLabel(label)
+        self._label_widget.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 500; background: transparent;")
+        hl.addWidget(self._label_widget)
         hl.addStretch()
         layout.addWidget(header)
         self.value_label = QLabel(value)
@@ -39,28 +42,37 @@ class StatCard(QWidget):
     def set_value(self, val: str):
         self.value_label.setText(val)
 
+    def set_label(self, text: str):
+        self._label_widget.setText(text)
+
 
 class DesktopTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._header = None
+        self._desc = None
+        self._refresh_btn = None
+        self.cards: dict[str, StatCard] = {}
+        self._card_defs = []
         self.setup_ui()
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._refresh)
         self._timer.start(2000)
         self._refresh()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        header = QLabel("Desktop Awareness")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        layout.addWidget(header)
+        self._header = QLabel(t("desktop.title"))
+        self._header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        layout.addWidget(self._header)
 
-        desc = QLabel("Real-time desktop state, active apps, system resources, and peripherals")
-        desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
-        layout.addWidget(desc)
+        self._desc = QLabel(t("desktop.description"))
+        self._desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
+        layout.addWidget(self._desc)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
@@ -78,34 +90,41 @@ class DesktopTab(QWidget):
         grid.setContentsMargins(0, 4, 0, 0)
         grid.setSpacing(10)
 
-        self.cards = {}
-        card_defs = [
-            ("active_app", "Active App", Theme.ACCENT_INFO),
-            ("active_window", "Active Window", Theme.ACCENT_SECONDARY),
-            ("workspace", "Workspace", Theme.ACCENT_PRIMARY),
-            ("battery", "Battery", Theme.ACCENT_SUCCESS),
-            ("network", "Network", Theme.ACCENT_INFO),
-            ("media", "Media", Theme.ACCENT_WARNING),
-            ("monitors", "Monitors", Theme.ACCENT_PRIMARY),
-            ("cpu_top", "Top CPU", Theme.ACCENT_ERROR),
+        self._card_defs = [
+            ("active_app", "desktop.active_app", Theme.ACCENT_INFO),
+            ("active_window", "desktop.active_window", Theme.ACCENT_SECONDARY),
+            ("workspace", "desktop.workspace", Theme.ACCENT_PRIMARY),
+            ("battery", "desktop.battery", Theme.ACCENT_SUCCESS),
+            ("network", "desktop.network", Theme.ACCENT_INFO),
+            ("media", "desktop.media", Theme.ACCENT_WARNING),
+            ("monitors", "desktop.monitors", Theme.ACCENT_PRIMARY),
+            ("cpu_top", "desktop.cpu_top", Theme.ACCENT_ERROR),
         ]
-        for i, (key, label, color) in enumerate(card_defs):
-            card = StatCard(label, "...", "", color)
+        for i, (key, label_key, color) in enumerate(self._card_defs):
+            card = StatCard(t(label_key), "...", "", color)
             self.cards[key] = card
             grid.addWidget(card, i // 2, i % 2)
 
-        grid.setRowStretch(len(card_defs) // 2 + 1, 1)
+        grid.setRowStretch(len(self._card_defs) // 2 + 1, 1)
         scroll.setWidget(container)
         layout.addWidget(scroll, 1)
 
-        refresh_btn = QPushButton("Refresh Now")
-        refresh_btn.setStyleSheet(f"""
+        self._refresh_btn = QPushButton(t("desktop.refresh"))
+        self._refresh_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(0,122,255,0.08); border: 0.5px solid {Theme.ACCENT_PRIMARY}44;
             border-radius: 14px; padding: 6px 18px; font-size: 12px; font-weight: 400; color: {Theme.ACCENT_PRIMARY}; }}
             QPushButton:hover {{ background-color: rgba(0,122,255,0.15); }}
         """)
-        refresh_btn.clicked.connect(self._refresh)
-        layout.addWidget(refresh_btn, 0, Qt.AlignmentFlag.AlignLeft)
+        self._refresh_btn.clicked.connect(self._refresh)
+        layout.addWidget(self._refresh_btn, 0, Qt.AlignmentFlag.AlignLeft)
+
+    def retranslate_ui(self):
+        self._header.setText(t("desktop.title"))
+        self._desc.setText(t("desktop.description"))
+        self._refresh_btn.setText(t("desktop.refresh"))
+        for key, label_key, _ in self._card_defs:
+            if key in self.cards:
+                self.cards[key].set_label(t(label_key))
 
     def _refresh(self):
         try:

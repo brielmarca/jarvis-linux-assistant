@@ -3,27 +3,28 @@ from PyQt6.QtCore import Qt, pyqtSignal, QTimer
 from PyQt6.QtGui import QKeyEvent
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 
 
 QUICK_COMMANDS = [
-    ("open terminal", "Launch terminal emulator"),
-    ("open firefox", "Open web browser"),
-    ("system info", "Show system information"),
-    ("increase volume", "Volume up by 5%"),
-    ("decrease volume", "Volume down by 5%"),
-    ("mute", "Toggle mute"),
-    ("play/pause", "Toggle media playback"),
-    ("next track", "Skip to next track"),
-    ("search for ", "Search the web (add query)"),
-    ("open project ", "Open a project (add name)"),
-    ("git status", "Check git status"),
-    ("programming mode", "Launch VS Code + terminal"),
-    ("docker status", "Check Docker status"),
-    ("shutdown", "Shutdown the system"),
-    ("reboot", "Reboot the system"),
-    ("reload skills", "Reload all skills"),
-    ("remember ", "Save a memory (add text)"),
-    ("recall ", "Search memories (add query)"),
+    ("open terminal", "palette.open_terminal"),
+    ("open firefox", "palette.open_firefox"),
+    ("system info", "palette.system_info"),
+    ("increase volume", "palette.volume_up"),
+    ("decrease volume", "palette.volume_down"),
+    ("mute", "palette.mute"),
+    ("play/pause", "palette.play_pause"),
+    ("next track", "palette.next_track"),
+    ("search for ", "palette.search"),
+    ("open project ", "palette.open_project"),
+    ("git status", "palette.git_status"),
+    ("programming mode", "palette.programming_mode"),
+    ("docker status", "palette.docker_status"),
+    ("shutdown", "palette.shutdown"),
+    ("reboot", "palette.reboot"),
+    ("reload skills", "palette.reload_skills"),
+    ("remember ", "palette.remember"),
+    ("recall ", "palette.recall"),
 ]
 
 
@@ -33,7 +34,10 @@ class CommandPalette(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._search_input = None
+        self._descriptions: dict[str, str] = {}
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         self.setWindowFlags(
@@ -56,9 +60,9 @@ class CommandPalette(QWidget):
         layout.setContentsMargins(8, 8, 8, 8)
         layout.setSpacing(4)
 
-        self.search_input = QLineEdit()
-        self.search_input.setPlaceholderText("Type a command...")
-        self.search_input.setStyleSheet(f"""
+        self._search_input = QLineEdit()
+        self._search_input.setPlaceholderText(t("palette.placeholder"))
+        self._search_input.setStyleSheet(f"""
             QLineEdit {{
                 background-color: {Theme.BG_SECONDARY};
                 color: {Theme.TEXT_PRIMARY};
@@ -71,8 +75,8 @@ class CommandPalette(QWidget):
                 border-color: {Theme.ACCENT_PRIMARY};
             }}
         """)
-        self.search_input.textChanged.connect(self._filter)
-        layout.addWidget(self.search_input)
+        self._search_input.textChanged.connect(self._filter)
+        layout.addWidget(self._search_input)
 
         self.list_widget = QListWidget()
         self.list_widget.setStyleSheet(f"""
@@ -103,14 +107,19 @@ class CommandPalette(QWidget):
         main_layout.addWidget(outer)
 
         self._populate()
-        self.search_input.returnPressed.connect(self._execute_selected)
+        self._search_input.returnPressed.connect(self._execute_selected)
         self.list_widget.itemClicked.connect(lambda item: self._execute(item))
         self.list_widget.itemSelectionChanged.connect(self._on_selection_changed)
+
+    def retranslate_ui(self):
+        self._search_input.setPlaceholderText(t("palette.placeholder"))
+        self._populate(self._search_input.text())
 
     def _populate(self, filter_text: str = ""):
         self.list_widget.clear()
         ft = filter_text.lower()
-        for cmd, desc in QUICK_COMMANDS:
+        for cmd, desc_key in QUICK_COMMANDS:
+            desc = t(desc_key)
             if ft in cmd.lower() or ft in desc.lower():
                 item = QListWidgetItem(f"  {cmd}")
                 item.setData(Qt.ItemDataRole.UserRole, cmd)
@@ -136,8 +145,8 @@ class CommandPalette(QWidget):
 
     def show_palette(self):
         self._populate()
-        self.search_input.clear()
-        self.search_input.setFocus()
+        self._search_input.clear()
+        self._search_input.setFocus()
         parent = self.parent()
         if parent:
             center = parent.geometry().center()

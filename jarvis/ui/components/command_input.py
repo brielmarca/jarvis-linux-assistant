@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QKeyEvent
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 
 
 class CommandInput(QWidget):
@@ -12,7 +13,11 @@ class CommandInput(QWidget):
         super().__init__(parent)
         self._history = []
         self._history_index = -1
+        self.mic_btn = None
+        self.input_field = None
+        self.send_btn = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         self.setStyleSheet("background: transparent;")
@@ -23,7 +28,7 @@ class CommandInput(QWidget):
 
         self.mic_btn = QPushButton()
         self.mic_btn.setFixedSize(44, 44)
-        self.mic_btn.setToolTip("Voice input (not available)")
+        self.mic_btn.setToolTip(t("dashboard.voice_tooltip"))
         self.mic_btn.setEnabled(False)
         self.mic_btn.setStyleSheet(f"""
             QPushButton {{
@@ -40,7 +45,7 @@ class CommandInput(QWidget):
         layout.addWidget(self.mic_btn)
 
         self.input_field = QLineEdit()
-        self.input_field.setPlaceholderText("Ask me anything...")
+        self.input_field.setPlaceholderText(t("dashboard.placeholder"))
         self.input_field.setStyleSheet(f"""
             QLineEdit {{
                 background-color: {Theme.BG_CARD};
@@ -59,12 +64,17 @@ class CommandInput(QWidget):
         self.input_field.returnPressed.connect(self._submit)
         layout.addWidget(self.input_field, 1)
 
-        self.send_btn = QPushButton("Send")
+        self.send_btn = QPushButton(t("dashboard.send"))
         self.send_btn.setObjectName("accent")
         self.send_btn.setFixedWidth(90)
         self.send_btn.setFixedHeight(44)
         self.send_btn.clicked.connect(self._submit)
         layout.addWidget(self.send_btn)
+
+    def retranslate_ui(self):
+        self.input_field.setPlaceholderText(t("dashboard.placeholder"))
+        self.send_btn.setText(t("dashboard.send"))
+        self.mic_btn.setToolTip(t("dashboard.voice_tooltip"))
 
     def _submit(self):
         text = self.input_field.text().strip()

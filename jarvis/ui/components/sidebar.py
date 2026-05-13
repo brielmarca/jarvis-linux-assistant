@@ -2,38 +2,42 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QPushButton
 from PyQt6.QtCore import Qt, pyqtSignal
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 
 
 NAV_ITEMS = [
-    ("Dashboard", 0),
-    ("Skills", 1),
-    ("Settings", 2),
-    ("Logs", 3),
-    ("Monitor", 4),
-    ("Dev Mode", 5),
-    ("Voice", 6),
-    ("Memory", 7),
-    ("Desktop", 8),
-    ("Workflows", 9),
-    ("Diagnostics", 10),
-    ("Health", 11),
+    ("sidebar.dashboard", 0),
+    ("sidebar.skills", 1),
+    ("sidebar.settings", 2),
+    ("sidebar.logs", 3),
+    ("sidebar.monitor", 4),
+    ("sidebar.dev_mode", 5),
+    ("sidebar.voice", 6),
+    ("sidebar.memory", 7),
+    ("sidebar.desktop", 8),
+    ("sidebar.workflows", 9),
+    ("sidebar.diagnostics", 10),
+    ("sidebar.health", 11),
 ]
 
 
 class SidebarButton(QPushButton):
-    def __init__(self, label: str, active: bool = False, parent=None):
+    def __init__(self, label_key: str, active: bool = False, parent=None):
         super().__init__(parent)
+        self._label_key = label_key
         self._active = active
-        self._label = label
         self.setup_ui()
 
     def setup_ui(self):
-        self.setText(self._label)
+        self.setText(t(self._label_key))
         self.setFixedHeight(30)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setCheckable(True)
         self.setChecked(self._active)
         self.update_style()
+
+    def update_label(self):
+        self.setText(t(self._label_key))
 
     def update_style(self):
         if self._active:
@@ -79,7 +83,10 @@ class Sidebar(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._buttons: list[SidebarButton] = []
+        self._logo = None
+        self._version = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         self.setFixedWidth(Theme.SIDEBAR_WIDTH)
@@ -94,28 +101,34 @@ class Sidebar(QWidget):
         layout.setContentsMargins(10, 14, 10, 14)
         layout.setSpacing(1)
 
-        logo = QLabel("Jarvis")
-        logo.setStyleSheet(f"""
+        self._logo = QLabel(t("sidebar.logo"))
+        self._logo.setStyleSheet(f"""
             color: {Theme.TEXT_PRIMARY}; font-size: 16px; font-weight: 600;
             background: transparent; padding: 8px 12px 18px 12px;
         """)
-        layout.addWidget(logo)
+        layout.addWidget(self._logo)
 
-        for label, idx in NAV_ITEMS:
-            btn = SidebarButton(label, active=(idx == 0))
+        for label_key, idx in NAV_ITEMS:
+            btn = SidebarButton(label_key, active=(idx == 0))
             btn.clicked.connect(lambda checked, i=idx: self._navigate(i))
             self._buttons.append(btn)
             layout.addWidget(btn)
 
         layout.addStretch()
 
-        version = QLabel("v1.0")
-        version.setStyleSheet(f"""
+        self._version = QLabel(t("app.version"))
+        self._version.setStyleSheet(f"""
             color: {Theme.TEXT_TERTIARY}; font-size: 10px;
             background: transparent; padding: 8px 12px;
         """)
-        version.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(version)
+        self._version.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self._version)
+
+    def retranslate_ui(self):
+        self._logo.setText(t("sidebar.logo"))
+        self._version.setText(t("app.version"))
+        for btn in self._buttons:
+            btn.update_label()
 
     def _navigate(self, index: int):
         for i, btn in enumerate(self._buttons):

@@ -9,6 +9,7 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QColor
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 from jarvis.dev.command_sandbox import CommandSandbox
 from jarvis.dev.opencode_runner import OpenCodeRunner
 from jarvis.ui.components.terminal_widget import TerminalWidget
@@ -45,8 +46,24 @@ class DevModeTab(QWidget):
         self._sandbox = sandbox
         self._opencode = opencode
         self._tasks: list[dict] = []
+        self._title = None
+        self._status_badge = None
+        self._oc_header = None
+        self._oc_placeholder = None
+        self._dry_run_cb = None
+        self._project_label = None
+        self._run_task_btn = None
+        self._cancel_btn = None
+        self._recent_tasks_label = None
+        self._execution_logs_header = None
+        self._clear_log_btn = None
+        self._quick_actions_label = None
+        self._terminal_header = None
+        self.oc_input = None
+        self.project_selector = None
         self.setup_ui()
         self._load_dirs()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
@@ -58,15 +75,15 @@ class DevModeTab(QWidget):
         h_layout = QHBoxLayout(header)
         h_layout.setContentsMargins(0, 0, 0, 0)
 
-        title = QLabel("Developer Mode")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        h_layout.addWidget(title)
+        self._title = QLabel(t("dev_mode.title"))
+        self._title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        h_layout.addWidget(self._title)
 
         h_layout.addStretch()
 
-        self.status_badge = QLabel("Idle")
-        self.status_badge.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-weight: 400; background: transparent; padding: 4px 10px; border: 0.5px solid {Theme.BORDER}; border-radius: 10px;")
-        h_layout.addWidget(self.status_badge)
+        self._status_badge = QLabel(t("dev_mode.idle"))
+        self._status_badge.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-weight: 400; background: transparent; padding: 4px 10px; border: 0.5px solid {Theme.BORDER}; border-radius: 10px;")
+        h_layout.addWidget(self._status_badge)
 
         layout.addWidget(header)
 
@@ -95,6 +112,21 @@ class DevModeTab(QWidget):
         self._refresh_timer.timeout.connect(self._refresh_ui)
         self._refresh_timer.start(2000)
 
+    def retranslate_ui(self):
+        self._title.setText(t("dev_mode.title"))
+        self._status_badge.setText(t("dev_mode.idle"))
+        self._oc_header.setText(t("dev_mode.opencode_title"))
+        self.oc_input.setPlaceholderText(t("dev_mode.opencode_placeholder"))
+        self._dry_run_cb.setText(t("dev_mode.dry_run"))
+        self._project_label.setText(t("dev_mode.project"))
+        self._run_task_btn.setText(t("dev_mode.run_task"))
+        self._cancel_btn.setText(t("dev_mode.cancel"))
+        self._recent_tasks_label.setText(t("dev_mode.recent_tasks"))
+        self._execution_logs_header.setText(t("dev_mode.execution_logs"))
+        self._clear_log_btn.setText(t("dev_mode.clear"))
+        self._quick_actions_label.setText(t("dev_mode.quick_actions"))
+        self._terminal_header.setText(t("dev_mode.terminal"))
+
     #  OpenCode Panel 
 
     def _build_opencode_panel(self):
@@ -104,13 +136,13 @@ class DevModeTab(QWidget):
         layout.setContentsMargins(14, 10, 14, 10)
         layout.setSpacing(8)
 
-        header = QLabel("OpenCode Task Launcher")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
-        layout.addWidget(header)
+        self._oc_header = QLabel(t("dev_mode.opencode_title"))
+        self._oc_header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
+        layout.addWidget(self._oc_header)
 
         input_row = QHBoxLayout()
         self.oc_input = QLineEdit()
-        self.oc_input.setPlaceholderText("Describe the code change...")
+        self.oc_input.setPlaceholderText(t("dev_mode.opencode_placeholder"))
         self.oc_input.setStyleSheet(f"""
             QLineEdit {{ background-color: rgba(44,44,46,0.6); color: {Theme.TEXT_PRIMARY};
             border: 0.5px solid {Theme.BORDER}; border-radius: 6px; padding: 8px 12px; font-size: 12px; }}
@@ -120,9 +152,9 @@ class DevModeTab(QWidget):
         layout.addLayout(input_row)
 
         options_row = QHBoxLayout()
-        self.dry_run_cb = QCheckBox("Dry Run")
-        self.dry_run_cb.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 11px; spacing: 4px;")
-        options_row.addWidget(self.dry_run_cb)
+        self._dry_run_cb = QCheckBox(t("dev_mode.dry_run"))
+        self._dry_run_cb.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 11px; spacing: 4px;")
+        options_row.addWidget(self._dry_run_cb)
 
         self.project_selector = QComboBox()
         self.project_selector.setStyleSheet(f"""
@@ -132,20 +164,21 @@ class DevModeTab(QWidget):
             QComboBox QAbstractItemView {{ background-color: {Theme.BG_CARD_SOLID}; color: {Theme.TEXT_PRIMARY};
             selection-background-color: {Theme.ACCENT_PRIMARY}; border: 0.5px solid {Theme.BORDER}; border-radius: 4px; }}
         """)
-        options_row.addWidget(QLabel("Project:"))
+        self._project_label = QLabel(t("dev_mode.project"))
+        options_row.addWidget(self._project_label)
         options_row.addWidget(self.project_selector, 1)
         layout.addLayout(options_row)
 
         btn_row = QHBoxLayout()
-        run_oc_btn = QPushButton("Run Task")
-        run_oc_btn.setStyleSheet(_STYLE_ACCENT_BTN)
-        run_oc_btn.clicked.connect(self._run_opencode)
-        btn_row.addWidget(run_oc_btn)
+        self._run_task_btn = QPushButton(t("dev_mode.run_task"))
+        self._run_task_btn.setStyleSheet(_STYLE_ACCENT_BTN)
+        self._run_task_btn.clicked.connect(self._run_opencode)
+        btn_row.addWidget(self._run_task_btn)
 
-        cancel_oc_btn = QPushButton("Cancel")
-        cancel_oc_btn.setStyleSheet(_STYLE_DANGER_BTN)
-        cancel_oc_btn.clicked.connect(self._cancel_opencode)
-        btn_row.addWidget(cancel_oc_btn)
+        self._cancel_btn = QPushButton(t("dev_mode.cancel"))
+        self._cancel_btn.setStyleSheet(_STYLE_DANGER_BTN)
+        self._cancel_btn.clicked.connect(self._cancel_opencode)
+        btn_row.addWidget(self._cancel_btn)
 
         btn_row.addStretch()
         layout.addLayout(btn_row)
@@ -160,9 +193,9 @@ class DevModeTab(QWidget):
         """)
         layout.addWidget(self.oc_output)
 
-        recent_label = QLabel("Recent Tasks")
-        recent_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 500; background: transparent;")
-        layout.addWidget(recent_label)
+        self._recent_tasks_label = QLabel(t("dev_mode.recent_tasks"))
+        self._recent_tasks_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 500; background: transparent;")
+        layout.addWidget(self._recent_tasks_label)
 
         self.task_list = QListWidget()
         self.task_list.setMaximumHeight(80)
@@ -185,15 +218,15 @@ class DevModeTab(QWidget):
         layout.setSpacing(8)
 
         header_row = QHBoxLayout()
-        header = QLabel("Execution Logs")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
-        header_row.addWidget(header)
+        self._execution_logs_header = QLabel(t("dev_mode.execution_logs"))
+        self._execution_logs_header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
+        header_row.addWidget(self._execution_logs_header)
         header_row.addStretch()
 
-        clear_log_btn = QPushButton("Clear")
-        clear_log_btn.setStyleSheet(_STYLE_DANGER_BTN)
-        clear_log_btn.clicked.connect(self._clear_logs)
-        header_row.addWidget(clear_log_btn)
+        self._clear_log_btn = QPushButton(t("dev_mode.clear"))
+        self._clear_log_btn.setStyleSheet(_STYLE_DANGER_BTN)
+        self._clear_log_btn.clicked.connect(self._clear_logs)
+        header_row.addWidget(self._clear_log_btn)
         layout.addLayout(header_row)
 
         self.log_list = QListWidget()
@@ -204,9 +237,9 @@ class DevModeTab(QWidget):
         """)
         layout.addWidget(self.log_list, 1)
 
-        quick_actions_label = QLabel("Quick Actions")
-        quick_actions_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 500; background: transparent;")
-        layout.addWidget(quick_actions_label)
+        self._quick_actions_label = QLabel(t("dev_mode.quick_actions"))
+        self._quick_actions_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 500; background: transparent;")
+        layout.addWidget(self._quick_actions_label)
 
         qa_grid = QWidget()
         qa_grid.setStyleSheet("background: transparent;")
@@ -240,9 +273,9 @@ class DevModeTab(QWidget):
         layout = QVBoxLayout(container)
         layout.setContentsMargins(14, 10, 14, 10)
 
-        header = QLabel("Terminal")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
-        layout.addWidget(header)
+        self._terminal_header = QLabel(t("dev_mode.terminal"))
+        self._terminal_header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
+        layout.addWidget(self._terminal_header)
 
         self.terminal = TerminalWidget()
         self.terminal.command_executed.connect(self._on_terminal_command)
@@ -260,10 +293,10 @@ class DevModeTab(QWidget):
 
         project = self.project_selector.currentData() or str(Path.home() / "Documents")
         self.oc_output.setText(f"Running: {request[:80]}...")
-        self.status_badge.setText("Running")
-        self.status_badge.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 0.5px solid {Theme.ACCENT_SUCCESS}44; border-radius: 10px;")
+        self._status_badge.setText(t("dev_mode.running"))
+        self._status_badge.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 0.5px solid {Theme.ACCENT_SUCCESS}44; border-radius: 10px;")
 
-        task = self._opencode.run(request, project_path=project, dry_run=self.dry_run_cb.isChecked())
+        task = self._opencode.run(request, project_path=project, dry_run=self._dry_run_cb.isChecked())
         out = task.output or task.error or "Completed"
         self.oc_output.setText(f"[{task.status}] {out[:500]}")
 
@@ -272,8 +305,9 @@ class DevModeTab(QWidget):
 
         colors = {"completed": Theme.ACCENT_SUCCESS, "failed": Theme.ACCENT_ERROR, "cancelled": Theme.ACCENT_WARNING}
         color = colors.get(task.status, Theme.TEXT_TERTIARY)
-        self.status_badge.setText(task.status.title())
-        self.status_badge.setStyleSheet(f"color: {color}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 0.5px solid {color}44; border-radius: 10px;")
+        status_key = f"dev_mode.{task.status}" if task.status in ("completed", "failed", "cancelled") else task.status
+        self._status_badge.setText(t(status_key) if task.status in ("completed", "failed", "cancelled") else task.status.title())
+        self._status_badge.setStyleSheet(f"color: {color}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 0.5px solid {color}44; border-radius: 10px;")
 
     def _cancel_opencode(self):
         if self._tasks:
@@ -290,12 +324,12 @@ class DevModeTab(QWidget):
         self._refresh_log_list()
 
     def _on_terminal_status(self, status: str):
-        labels = {"running": "Running", "idle": "Idle", "error": "Error", "cancelled": "Cancelled"}
+        status_keys = {"running": "dev_mode.running", "idle": "dev_mode.idle", "error": "dev_mode.failed", "cancelled": "dev_mode.cancelled"}
         colors = {"running": Theme.ACCENT_SUCCESS, "idle": Theme.TEXT_MUTED, "error": Theme.ACCENT_ERROR, "cancelled": Theme.ACCENT_WARNING}
         color = colors.get(status, Theme.TEXT_MUTED)
-        label = labels.get(status, status.title())
-        self.status_badge.setText(label)
-        self.status_badge.setStyleSheet(f"color: {color}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 0.5px solid {color}44; border-radius: 10px;")
+        label = t(status_keys.get(status, status.title()))
+        self._status_badge.setText(label)
+        self._status_badge.setStyleSheet(f"color: {color}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 0.5px solid {color}44; border-radius: 10px;")
 
     def _clear_logs(self):
         self._sandbox.clear_log()

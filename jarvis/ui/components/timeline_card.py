@@ -5,6 +5,7 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QPainter, QColor, QPen
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 
 
 STATUS_COLORS = {
@@ -92,7 +93,11 @@ class TimelineCard(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._count = 0
+        self._title = None
+        self._count_label = None
+        self._empty_label = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         self.setStyleSheet(f"""
@@ -112,17 +117,17 @@ class TimelineCard(QWidget):
         h_layout = QHBoxLayout(header)
         h_layout.setContentsMargins(0, 0, 0, 0)
 
-        title = QLabel("Timeline")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 15px; font-weight: 600; background: transparent;")
-        h_layout.addWidget(title)
+        self._title = QLabel(t("dashboard.timeline"))
+        self._title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 15px; font-weight: 600; background: transparent;")
+        h_layout.addWidget(self._title)
 
         h_layout.addStretch()
 
-        self.count_label = QLabel("0 commands")
-        self.count_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;")
-        self.count_label.setFixedWidth(80)
-        self.count_label.setAlignment(Qt.AlignmentFlag.AlignRight)
-        h_layout.addWidget(self.count_label)
+        self._count_label = QLabel(t("dashboard.command_count_singular", count=0))
+        self._count_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;")
+        self._count_label.setFixedWidth(80)
+        self._count_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+        h_layout.addWidget(self._count_label)
 
         layout.addWidget(header)
 
@@ -131,10 +136,10 @@ class TimelineCard(QWidget):
         separator.setStyleSheet(f"background-color: {Theme.BORDER}; border: none;")
         layout.addWidget(separator)
 
-        self.empty_label = QLabel("  No commands yet.\n  Type a command or click a quick action to get started.")
-        self.empty_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 12px; background: transparent; padding: 24px 0;")
-        self.empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.empty_label)
+        self._empty_label = QLabel(t("dashboard.no_commands"))
+        self._empty_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 12px; background: transparent; padding: 24px 0;")
+        self._empty_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self._empty_label)
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -157,13 +162,24 @@ class TimelineCard(QWidget):
         scroll.setWidget(self.container)
         layout.addWidget(scroll, 1)
 
+    def retranslate_ui(self):
+        self._title.setText(t("dashboard.timeline"))
+        self._empty_label.setText(t("dashboard.no_commands"))
+        self._update_count_label()
+
+    def _update_count_label(self):
+        if self._count == 1:
+            self._count_label.setText(t("dashboard.command_count_singular", count=1))
+        else:
+            self._count_label.setText(t("dashboard.command_count", count=self._count))
+
     def add_entry(self, entry: dict):
-        self.empty_label.hide()
+        self._empty_label.hide()
         widget = TimelineEntry(entry)
         self.container_layout.insertWidget(self.container_layout.count() - 1, widget)
 
         self._count += 1
-        self.count_label.setText(f"{self._count} command{'s' if self._count != 1 else ''}")
+        self._update_count_label()
 
         max_visible = 50
         while self.container_layout.count() - 1 > max_visible:
@@ -177,4 +193,4 @@ class TimelineCard(QWidget):
             if item and item.widget():
                 item.widget().deleteLater()
         self._count = 0
-        self.count_label.setText("0 commands")
+        self._update_count_label()

@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont, QColor, QPainter
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 
 
 class SplashScreen(QSplashScreen):
@@ -26,30 +27,30 @@ class SplashScreen(QSplashScreen):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(8)
 
-        title = QLabel("Jarvis")
-        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setStyleSheet(f"""
+        self._title = QLabel(t("splash.title"))
+        self._title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._title.setStyleSheet(f"""
             color: {Theme.TEXT_PRIMARY}; font-size: 36px; font-weight: 700;
             background: transparent;
         """)
-        layout.addWidget(title)
+        layout.addWidget(self._title)
 
-        subtitle = QLabel("Linux Assistant")
-        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        subtitle.setStyleSheet(f"""
+        self._subtitle = QLabel(t("splash.subtitle"))
+        self._subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._subtitle.setStyleSheet(f"""
             color: {Theme.ACCENT_PRIMARY}; font-size: 14px; font-weight: 400;
             letter-spacing: 4px; background: transparent;
         """)
-        layout.addWidget(subtitle)
+        layout.addWidget(self._subtitle)
 
         layout.addSpacing(12)
 
-        self.status_label = QLabel("Initializing...")
-        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.status_label.setStyleSheet(f"""
+        self._status_label = QLabel(t("splash.initializing"))
+        self._status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._status_label.setStyleSheet(f"""
             color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;
         """)
-        layout.addWidget(self.status_label)
+        layout.addWidget(self._status_label)
 
         self.progress = QProgressBar()
         self.progress.setRange(0, 0)
@@ -60,14 +61,21 @@ class SplashScreen(QSplashScreen):
         """)
         layout.addWidget(self.progress)
 
-        version = QLabel("v1.0")
+        version = QLabel(t("app.version"))
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 9px; background: transparent;")
         layout.addWidget(version)
 
+        tr.languageChanged.connect(self.retranslate_ui)
+
+    def retranslate_ui(self):
+        self._title.setText(t("splash.title"))
+        self._subtitle.setText(t("splash.subtitle"))
+        self._status_label.setText(t("splash.initializing"))
+
     def set_status(self, text: str):
-        self.status_label.setText(text)
-        self.status_label.repaint()
+        self._status_label.setText(text)
+        self._status_label.repaint()
 
     def finish_with(self, window):
         self.finish(window)

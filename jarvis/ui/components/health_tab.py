@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 from jarvis.core.health import HealthChecker
 from jarvis.core.config_validator import validate_config
 
@@ -15,43 +16,46 @@ STATUS_COLORS = {
     "warning": Theme.ACCENT_WARNING,
     "error": Theme.ACCENT_ERROR,
 }
-STATUS_ICONS = {
-    "ok": "OK",
-    "warning": "WARN",
-    "error": "ERR",
-}
 
 
 class HealthTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._header = None
+        self._desc = None
+        self._summary_label = None
+        self.table = None
+        self._health_btn = None
+        self._config_btn = None
         self.setup_ui()
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(12)
 
-        header = QLabel("Health and Diagnostics")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        layout.addWidget(header)
+        self._header = QLabel(t("health.title"))
+        self._header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        layout.addWidget(self._header)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
-        desc = QLabel("System health, dependency checks, configuration validation")
-        desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; background: transparent;")
-        layout.addWidget(desc)
+        self._desc = QLabel(t("health.description"))
+        self._desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; background: transparent;")
+        layout.addWidget(self._desc)
 
-        self.summary_label = QLabel("Run a health check to see results")
-        self.summary_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 13px; background: transparent;")
-        layout.addWidget(self.summary_label)
+        self._summary_label = QLabel(t("health.run_hint"))
+        self._summary_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 13px; background: transparent;")
+        layout.addWidget(self._summary_label)
 
         self.table = QTableWidget()
         self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["Component", "Status", "Message"])
+        headers = [t("health.col_component"), t("health.col_status"), t("health.col_message")]
+        self.table.setHorizontalHeaderLabels(headers)
         self.table.setStyleSheet(f"""
             QTableWidget {{ background-color: rgba(28,28,30,0.5); border: 0.5px solid {Theme.BORDER};
             border-radius: 8px; color: {Theme.TEXT_SECONDARY}; font-size: 12px;
@@ -69,26 +73,35 @@ class HealthTab(QWidget):
 
         btn_row = QHBoxLayout()
 
-        health_btn = QPushButton("Run Health Check")
-        health_btn.setStyleSheet(f"""
+        self._health_btn = QPushButton(t("health.run_check"))
+        self._health_btn.setStyleSheet(f"""
             QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
             border-radius: 18px; padding: 10px 24px; font-size: 13px; font-weight: 500; color: white; }}
             QPushButton:hover {{ background-color: #0066CC; }}
         """)
-        health_btn.clicked.connect(self._run_health_check)
-        btn_row.addWidget(health_btn)
+        self._health_btn.clicked.connect(self._run_health_check)
+        btn_row.addWidget(self._health_btn)
 
-        config_btn = QPushButton("Validate Config")
-        config_btn.setStyleSheet(f"""
+        self._config_btn = QPushButton(t("health.validate_config"))
+        self._config_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(48,209,88,0.08); border: 0.5px solid {Theme.ACCENT_SECONDARY}44;
             border-radius: 18px; padding: 10px 24px; font-size: 13px; font-weight: 400; color: {Theme.ACCENT_SECONDARY}; }}
             QPushButton:hover {{ background-color: rgba(48,209,88,0.15); }}
         """)
-        config_btn.clicked.connect(self._validate_config)
-        btn_row.addWidget(config_btn)
+        self._config_btn.clicked.connect(self._validate_config)
+        btn_row.addWidget(self._config_btn)
 
         btn_row.addStretch()
         layout.addLayout(btn_row)
+
+    def retranslate_ui(self):
+        self._header.setText(t("health.title"))
+        self._desc.setText(t("health.description"))
+        self._summary_label.setText(t("health.run_hint"))
+        self._health_btn.setText(t("health.run_check"))
+        self._config_btn.setText(t("health.validate_config"))
+        headers = [t("health.col_component"), t("health.col_status"), t("health.col_message")]
+        self.table.setHorizontalHeaderLabels(headers)
 
     def _run_health_check(self):
         hc = HealthChecker()
@@ -99,13 +112,13 @@ class HealthTab(QWidget):
 
         for i, r in enumerate(results):
             color = STATUS_COLORS.get(r.status, Theme.TEXT_MUTED)
-            icon = STATUS_ICONS.get(r.status, "?")
-
             comp_item = QTableWidgetItem(f"  {r.component}")
             comp_item.setForeground(QColor(Theme.TEXT_PRIMARY))
             self.table.setItem(i, 0, comp_item)
 
-            status_item = QTableWidgetItem(f"  {icon}  {r.status.upper()}")
+            status_key = f"health.status_{r.status}" if r.status in ("ok", "warning", "error") else r.status
+            status_text = t(status_key) if r.status in ("ok", "warning", "error") else r.status.upper()
+            status_item = QTableWidgetItem(f"  {status_text}  {r.status.upper()}")
             status_item.setForeground(QColor(color))
             self.table.setItem(i, 1, status_item)
 
@@ -121,14 +134,13 @@ class HealthTab(QWidget):
                 err_count += 1
 
         total = len(results)
-        parts = []
-        parts.append(f"OK {ok_count}/{total}")
+        parts = [f"OK {ok_count}/{total}"]
         if warn_count:
             parts.append(f"WARN {warn_count}")
         if err_count:
             parts.append(f"ERR {err_count}")
-        self.summary_label.setText(" | ".join(parts))
-        self.summary_label.setStyleSheet(
+        self._summary_label.setText(" | ".join(parts))
+        self._summary_label.setStyleSheet(
             f"color: {Theme.ACCENT_ERROR if err_count else Theme.ACCENT_SUCCESS}; font-size: 13px; font-weight: 500; background: transparent;"
         )
 
@@ -148,19 +160,21 @@ class HealthTab(QWidget):
             for f in result.fixed:
                 items.append(("config", "ok", f))
         if not items:
-            items.append(("config", "ok", "Configuration is valid"))
+            items.append(("config", "ok", t("health.config_valid")))
 
         self.table.setRowCount(len(items))
         for i, (comp, status, msg) in enumerate(items):
             color = STATUS_COLORS.get(status, Theme.TEXT_MUTED)
             self.table.setItem(i, 0, QTableWidgetItem(f"  {comp}"))
             self.table.setItem(i, 0).setForeground(QColor(Theme.TEXT_PRIMARY))
-            self.table.setItem(i, 1, QTableWidgetItem(f"  {STATUS_ICONS.get(status, '?')}  {status.upper()}"))
+            status_key = f"health.status_{status}" if status in ("ok", "warning", "error") else status
+            status_text = t(status_key) if status in ("ok", "warning", "error") else status.upper()
+            self.table.setItem(i, 1, QTableWidgetItem(f"  {status_text}  {status.upper()}"))
             self.table.setItem(i, 1).setForeground(QColor(color))
             self.table.setItem(i, 2, QTableWidgetItem(msg))
             self.table.setItem(i, 2).setForeground(QColor(Theme.TEXT_SECONDARY))
 
-        self.summary_label.setText(result.summary()[:100])
-        self.summary_label.setStyleSheet(
+        self._summary_label.setText(result.summary()[:100])
+        self._summary_label.setStyleSheet(
             f"color: {Theme.ACCENT_ERROR if result.has_errors() else Theme.ACCENT_SUCCESS}; font-size: 13px; font-weight: 500; background: transparent;"
         )

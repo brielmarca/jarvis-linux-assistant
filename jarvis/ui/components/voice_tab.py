@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QTimer
 
 from jarvis.ui.theme import Theme
+from jarvis.ui.i18n import t, tr
 from jarvis.core.events import EventBus, EventType
 from jarvis.core.memory_manager import MemoryManager
 from jarvis.voice.audio_pipeline import AudioPipeline, PipelineState
@@ -22,89 +23,104 @@ class VoiceTab(QWidget):
         super().__init__(parent)
         self.main = main_window
         self._listening = False
+        self._header = None
+        self._listen_btn = None
+        self._status_label = None
+        self._voice_enabled_cb = None
+        self._st_header = None
+        self._pipeline_status = None
+        self._mic_status = None
+        self._asr_status = None
+        self._tts_status = None
+        self.device_combo = None
+        self.mode_combo = None
+        self.threshold_slider = None
+        self.threshold_label = None
         self.setup_ui()
         self._load_settings()
         events.on(EventType.MICROPHONE_STATE_CHANGED, self._on_mic_state)
+        tr.languageChanged.connect(self.retranslate_ui)
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(14)
 
-        header = QLabel("Voice Settings")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
-        layout.addWidget(header)
+        self._header = QLabel(t("voice.title"))
+        self._header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
+        layout.addWidget(self._header)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
-        #  Microphone section 
-        mic_box = self._make_group("Microphone", [
-            ("Device", self._make_device_selector()),
-            ("Mode", self._make_mode_selector()),
-            ("Threshold", self._make_threshold_slider()),
+        mic_box = self._make_group("voice.microphone", [
+            ("voice.device", self._make_device_selector()),
+            ("voice.mode", self._make_mode_selector()),
+            ("voice.threshold", self._make_threshold_slider()),
         ])
         layout.addWidget(mic_box)
 
-        #  Controls 
         ctrl_box = QWidget()
         ctrl_box.setStyleSheet(f"background-color: rgba(28,28,30,0.5); border: 0.5px solid {Theme.BORDER}; border-radius: 10px;")
         ctrl_layout = QHBoxLayout(ctrl_box)
         ctrl_layout.setContentsMargins(16, 12, 16, 12)
         ctrl_layout.setSpacing(12)
 
-        self.listen_btn = QPushButton("Start Listening")
-        self.listen_btn.setStyleSheet(f"""
+        self._listen_btn = QPushButton(t("voice.start_listening"))
+        self._listen_btn.setStyleSheet(f"""
             QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
             border-radius: 18px; padding: 12px 28px; font-size: 14px; font-weight: 500; color: white; }}
             QPushButton:hover {{ background-color: #0066CC; }}
             QPushButton:disabled {{ background-color: rgba(0,122,255,0.3); }}
         """)
-        self.listen_btn.clicked.connect(self._toggle_listening)
-        ctrl_layout.addWidget(self.listen_btn)
+        self._listen_btn.clicked.connect(self._toggle_listening)
+        ctrl_layout.addWidget(self._listen_btn)
 
-        self.status_label = QLabel("Idle")
-        self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
-        ctrl_layout.addWidget(self.status_label, 1)
+        self._status_label = QLabel(t("voice.idle"))
+        self._status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
+        ctrl_layout.addWidget(self._status_label, 1)
 
         ctrl_layout.addStretch()
 
-        self.voice_enabled_cb = QCheckBox("Enable Voice")
-        self.voice_enabled_cb.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; spacing: 6px;")
-        ctrl_layout.addWidget(self.voice_enabled_cb)
+        self._voice_enabled_cb = QCheckBox(t("voice.enable_voice"))
+        self._voice_enabled_cb.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; spacing: 6px;")
+        ctrl_layout.addWidget(self._voice_enabled_cb)
 
         layout.addWidget(ctrl_box)
 
-        #  Status 
         status_box = QWidget()
         status_box.setStyleSheet(f"background-color: rgba(28,28,30,0.5); border: 0.5px solid {Theme.BORDER}; border-radius: 10px;")
         st_layout = QVBoxLayout(status_box)
         st_layout.setContentsMargins(16, 12, 16, 12)
         st_layout.setSpacing(6)
 
-        st_header = QLabel("Audio Pipeline Status")
-        st_header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 500; background: transparent;")
-        st_layout.addWidget(st_header)
+        self._st_header = QLabel(t("voice.pipeline_status"))
+        self._st_header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 500; background: transparent;")
+        st_layout.addWidget(self._st_header)
 
-        self.pipeline_status = QLabel("Pipeline: idle")
-        self.pipeline_status.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-family: {Theme.FONT_MONO}; background: transparent;")
-        st_layout.addWidget(self.pipeline_status)
+        self._pipeline_status = QLabel(t("voice.pipeline_idle"))
+        self._pipeline_status.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-family: {Theme.FONT_MONO}; background: transparent;")
+        st_layout.addWidget(self._pipeline_status)
 
-        self.mic_status = QLabel("Microphone: not active")
-        self.mic_status.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;")
-        st_layout.addWidget(self.mic_status)
+        self._mic_status = QLabel(t("voice.mic_not_active"))
+        self._mic_status.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;")
+        st_layout.addWidget(self._mic_status)
 
-        self.asr_status = QLabel("ASR: " + ("available" if audio._transcriber and audio._transcriber.is_available() else "not loaded"))
-        asr_color = Theme.ACCENT_SUCCESS if audio._transcriber and audio._transcriber.is_available() else Theme.TEXT_MUTED
-        self.asr_status.setStyleSheet(f"color: {asr_color}; font-size: 11px; background: transparent;")
-        st_layout.addWidget(self.asr_status)
+        asr_available = audio._transcriber and audio._transcriber.is_available()
+        asr_status_text = t("voice.asr_available") if asr_available else t("voice.asr_not_loaded")
+        self._asr_status = QLabel(t("voice.asr_label", status=asr_status_text))
+        asr_color = Theme.ACCENT_SUCCESS if asr_available else Theme.TEXT_MUTED
+        self._asr_status.setStyleSheet(f"color: {asr_color}; font-size: 11px; background: transparent;")
+        st_layout.addWidget(self._asr_status)
 
-        self.tts_status = QLabel("TTS: " + ("available" if audio._tts and audio._tts.available else "offline"))
-        tts_color = Theme.ACCENT_SUCCESS if audio._tts and audio._tts.available else Theme.TEXT_MUTED
-        self.tts_status.setStyleSheet(f"color: {tts_color}; font-size: 11px; background: transparent;")
-        st_layout.addWidget(self.tts_status)
+        tts_available = audio._tts and audio._tts.available
+        tts_status_text = t("voice.tts_available") if tts_available else t("voice.tts_offline")
+        self._tts_status = QLabel(t("voice.tts_label", status=tts_status_text))
+        tts_color = Theme.ACCENT_SUCCESS if tts_available else Theme.TEXT_MUTED
+        self._tts_status.setStyleSheet(f"color: {tts_color}; font-size: 11px; background: transparent;")
+        st_layout.addWidget(self._tts_status)
 
         layout.addWidget(status_box)
         layout.addStretch()
@@ -112,6 +128,12 @@ class VoiceTab(QWidget):
         self._refresh_timer = QTimer(self)
         self._refresh_timer.timeout.connect(self._refresh_status)
         self._refresh_timer.start(2000)
+
+    def retranslate_ui(self):
+        self._header.setText(t("voice.title"))
+        self._listen_btn.setText(t("voice.start_listening") if not self._listening else t("voice.stop_listening"))
+        self._voice_enabled_cb.setText(t("voice.enable_voice"))
+        self._st_header.setText(t("voice.pipeline_status"))
 
     def _make_device_selector(self):
         self.device_combo = QComboBox()
@@ -130,7 +152,7 @@ class VoiceTab(QWidget):
 
     def _make_mode_selector(self):
         self.mode_combo = QComboBox()
-        self.mode_combo.addItems(["Push to Talk", "Continuous Listening", "Wake Word"])
+        self.mode_combo.addItems([t("voice.push_to_talk"), t("voice.continuous"), t("voice.wake_word")])
         self.mode_combo.setStyleSheet(self.device_combo.styleSheet())
         self.mode_combo.currentTextChanged.connect(self._on_mode_change)
         return self.mode_combo
@@ -166,7 +188,7 @@ class VoiceTab(QWidget):
         layout = QVBoxLayout(group)
         layout.setContentsMargins(16, 12, 16, 12)
         layout.setSpacing(10)
-        title = QLabel(title_text)
+        title = QLabel(t(title_text))
         title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent;")
         layout.addWidget(title)
         for name, widget in widgets:
@@ -174,7 +196,7 @@ class VoiceTab(QWidget):
             row.setStyleSheet("background: transparent;")
             rl = QHBoxLayout(row)
             rl.setContentsMargins(0, 0, 0, 0)
-            label = QLabel(name)
+            label = QLabel(t(name))
             label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; background: transparent;")
             rl.addWidget(label)
             rl.addStretch()
@@ -189,7 +211,7 @@ class VoiceTab(QWidget):
         threshold = mem.get_preference("silence_threshold", 300)
         self.threshold_slider.setValue(threshold)
         voice_enabled = mem.get_preference("enable_voice", False)
-        self.voice_enabled_cb.setChecked(voice_enabled)
+        self._voice_enabled_cb.setChecked(voice_enabled)
 
     def _on_device_change(self, idx):
         dev_idx = self.device_combo.currentData()
@@ -198,8 +220,9 @@ class VoiceTab(QWidget):
             audio.set_device(dev_idx)
 
     def _on_mode_change(self, text):
-        mode_map = {"Push to Talk": "push_to_talk", "Continuous Listening": "continuous", "Wake Word": "wake_word"}
-        mode = mode_map.get(text, "push_to_talk")
+        mode_map = {"push_to_talk": 0, "continuous": 1, "wake_word": 2}
+        mode_map_rev = {t("voice.push_to_talk"): "push_to_talk", t("voice.continuous"): "continuous", t("voice.wake_word"): "wake_word"}
+        mode = mode_map_rev.get(text, "push_to_talk")
         audio.mode = mode
         mem.set_preference("voice_mode", mode)
 
@@ -210,19 +233,19 @@ class VoiceTab(QWidget):
 
     def _on_mic_state(self, data):
         state = data.get("state", "idle")
-        self.status_label.setText(state.title())
+        self._status_label.setText(state.title())
 
     def _toggle_listening(self):
         if self._listening:
             audio.stop_listening()
             self._listening = False
-            self.listen_btn.setText("Start Listening")
-            self.listen_btn.setObjectName("accent")
+            self._listen_btn.setText(t("voice.start_listening"))
+            self._listen_btn.setObjectName("accent")
         else:
             audio.start_listening()
             self._listening = True
-            self.listen_btn.setText("Stop Listening")
-            self.listen_btn.setStyleSheet(f"""
+            self._listen_btn.setText(t("voice.stop_listening"))
+            self._listen_btn.setStyleSheet(f"""
                 QPushButton {{ background-color: rgba(255,69,58,0.12); border: 0.5px solid {Theme.ACCENT_ERROR}44;
                 border-radius: 18px; padding: 12px 28px; font-size: 14px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
                 QPushButton:hover {{ background-color: rgba(255,69,58,0.2); }}
@@ -230,5 +253,5 @@ class VoiceTab(QWidget):
 
     def _refresh_status(self):
         state_name = audio.state.name.lower() if audio.state else "idle"
-        self.pipeline_status.setText(f"Pipeline: {state_name}")
-        self.mic_status.setText(f"Microphone: {'active' if audio.is_listening else 'idle'}")
+        self._pipeline_status.setText(f"Pipeline: {state_name}")
+        self._mic_status.setText(t("voice.mic_active") if audio.is_listening else t("voice.mic_not_active"))
