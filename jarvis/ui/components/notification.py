@@ -6,10 +6,10 @@ from jarvis.ui.theme import Theme
 
 
 NOTIFICATION_TYPES = {
-    "info": (Theme.ACCENT_INFO, "○"),
-    "success": (Theme.ACCENT_SUCCESS, "✓"),
-    "warning": (Theme.ACCENT_WARNING, "⚠"),
-    "error": (Theme.ACCENT_ERROR, "✗"),
+    "info": (Theme.ACCENT_INFO, "i"),
+    "success": (Theme.ACCENT_SUCCESS, "+"),
+    "warning": (Theme.ACCENT_WARNING, "!"),
+    "error": (Theme.ACCENT_ERROR, "x"),
 }
 
 
@@ -41,8 +41,8 @@ class NotificationWidget(QWidget):
         layout.setSpacing(10)
 
         icon_label = QLabel(icon)
-        icon_label.setStyleSheet(f"color: {color}; font-size: 16px; font-weight: 700; background: transparent;")
-        icon_label.setFixedWidth(20)
+        icon_label.setStyleSheet(f"color: {color}; font-size: 13px; font-weight: 700; background: transparent;")
+        icon_label.setFixedWidth(18)
         layout.addWidget(icon_label)
 
         msg_label = QLabel(self._message)

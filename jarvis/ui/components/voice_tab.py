@@ -40,7 +40,7 @@ class VoiceTab(QWidget):
         sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
         layout.addWidget(sep)
 
-        # ── Microphone section ──
+        #  Microphone section 
         mic_box = self._make_group("Microphone", [
             ("Device", self._make_device_selector()),
             ("Mode", self._make_mode_selector()),
@@ -48,14 +48,14 @@ class VoiceTab(QWidget):
         ])
         layout.addWidget(mic_box)
 
-        # ── Controls ──
+        #  Controls 
         ctrl_box = QWidget()
         ctrl_box.setStyleSheet(f"background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER}; border-radius: 10px;")
         ctrl_layout = QHBoxLayout(ctrl_box)
         ctrl_layout.setContentsMargins(16, 12, 16, 12)
         ctrl_layout.setSpacing(12)
 
-        self.listen_btn = QPushButton("🎤  Start Listening")
+        self.listen_btn = QPushButton("Start Listening")
         self.listen_btn.setStyleSheet(f"""
             QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
             border-radius: 10px; padding: 12px 28px; font-size: 14px; font-weight: 600; color: white; }}
@@ -77,7 +77,7 @@ class VoiceTab(QWidget):
 
         layout.addWidget(ctrl_box)
 
-        # ── Status ──
+        #  Status 
         status_box = QWidget()
         status_box.setStyleSheet(f"background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER}; border-radius: 10px;")
         st_layout = QVBoxLayout(status_box)
@@ -216,14 +216,12 @@ class VoiceTab(QWidget):
         if self._listening:
             audio.stop_listening()
             self._listening = False
-            self.listen_btn.setText("🎤  Start Listening")
-            self.listen_btn.setStyleSheet(self.listen_btn.styleSheet().replace(
-                "background-color: rgba(255,64,112,0.15)", "background-color: " + Theme.ACCENT_PRIMARY
-            ))
+            self.listen_btn.setText("Start Listening")
+            self.listen_btn.setObjectName("accent")
         else:
             audio.start_listening()
             self._listening = True
-            self.listen_btn.setText("⏹  Stop Listening")
+            self.listen_btn.setText("Stop Listening")
             self.listen_btn.setStyleSheet(f"""
                 QPushButton {{ background-color: rgba(255,64,112,0.15); border: 1px solid {Theme.ACCENT_ERROR}44;
                 border-radius: 10px; padding: 12px 28px; font-size: 14px; font-weight: 600; color: {Theme.ACCENT_ERROR}; }}

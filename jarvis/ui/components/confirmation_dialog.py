@@ -41,9 +41,9 @@ class ConfirmationDialog(QDialog):
         header = QHBoxLayout()
         header.setSpacing(10)
 
-        icon = QLabel("⚠")
-        icon.setStyleSheet(f"font-size: 24px; color: {Theme.ACCENT_WARNING}; background: transparent;")
-        icon.setFixedWidth(32)
+        icon = QLabel("!")
+        icon.setStyleSheet(f"font-size: 20px; color: {Theme.ACCENT_WARNING}; background: transparent; font-weight: 700;")
+        icon.setFixedWidth(28)
         header.addWidget(icon)
 
         title = QLabel("Confirm Command")

@@ -130,14 +130,14 @@ class SkillCard(QWidget):
 
     def _get_icon(self):
         icons = {
-            "system": "⚙",
-            "apps": "■",
-            "browser": "◎",
+            "system": "#",
+            "apps": "▸",
+            "browser": "○",
             "media": "♪",
             "dev": "<>",
-            "opencode": "◆",
+            "opencode": "◇",
         }
-        return icons.get(self.skill_name, "○")
+        return icons.get(self.skill_name, "")
 
     def _default_description(self):
         descs = {

@@ -104,11 +104,11 @@ class WelcomePage(QWizardPage):
         layout.addSpacing(12)
 
         features = [
-            "◉  Contextual AI with semantic memory",
-            "◉  Voice control with wake word",
-            "◉  Desktop awareness & automation",
-            "◉  Workflow orchestration",
-            "◉  Code & terminal integration",
+            "Contextual AI with semantic memory",
+            "Voice control with wake word",
+            "Desktop awareness & automation",
+            "Workflow orchestration",
+            "Code & terminal integration",
         ]
         for f in features:
             lbl = QLabel(f)

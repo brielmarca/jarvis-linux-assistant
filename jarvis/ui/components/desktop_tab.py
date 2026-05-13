@@ -84,14 +84,14 @@ class DesktopTab(QWidget):
 
         self.cards = {}
         card_defs = [
-            ("active_app", "Active App", "⚡", Theme.ACCENT_INFO),
-            ("active_window", "Active Window", "⊞", Theme.ACCENT_SECONDARY),
-            ("workspace", "Workspace", "◻", Theme.ACCENT_PRIMARY),
-            ("battery", "Battery", "🔋", Theme.ACCENT_SUCCESS),
-            ("network", "Network", "🌐", Theme.ACCENT_INFO),
+            ("active_app", "Active App", "*", Theme.ACCENT_INFO),
+            ("active_window", "Active Window", "", Theme.ACCENT_SECONDARY),
+            ("workspace", "Workspace", "", Theme.ACCENT_PRIMARY),
+            ("battery", "Battery", "*", Theme.ACCENT_SUCCESS),
+            ("network", "Network", "○", Theme.ACCENT_INFO),
             ("media", "Media", "♪", Theme.ACCENT_WARNING),
-            ("monitors", "Monitors", "🖥", Theme.ACCENT_PRIMARY),
-            ("cpu_top", "Top CPU", "⚙", Theme.ACCENT_ERROR),
+            ("monitors", "Monitors", "⊞", Theme.ACCENT_PRIMARY),
+            ("cpu_top", "Top CPU", "#", Theme.ACCENT_ERROR),
         ]
         for i, (key, label, icon, color) in enumerate(card_defs):
             card = StatCard(label, "...", icon, color)

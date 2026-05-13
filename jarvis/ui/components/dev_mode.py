@@ -64,7 +64,7 @@ class DevModeTab(QWidget):
 
         h_layout.addStretch()
 
-        self.status_badge = QLabel("○ Idle")
+        self.status_badge = QLabel(" Idle")
         self.status_badge.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 1px solid {Theme.BORDER}; border-radius: 10px;")
         h_layout.addWidget(self.status_badge)
 
@@ -95,7 +95,7 @@ class DevModeTab(QWidget):
         self._refresh_timer.timeout.connect(self._refresh_ui)
         self._refresh_timer.start(2000)
 
-    # ── OpenCode Panel ─────────────────────────────────────────────
+    #  OpenCode Panel 
 
     def _build_opencode_panel(self):
         panel = QWidget()
@@ -175,7 +175,7 @@ class DevModeTab(QWidget):
 
         return panel
 
-    # ── Execution Logs Panel ───────────────────────────────────────
+    #  Execution Logs Panel 
 
     def _build_execution_panel(self):
         panel = QWidget()
@@ -232,7 +232,7 @@ class DevModeTab(QWidget):
 
         return panel
 
-    # ── Terminal Section ───────────────────────────────────────────
+    #  Terminal Section 
 
     def _build_terminal_section(self):
         container = QWidget()
@@ -251,7 +251,7 @@ class DevModeTab(QWidget):
 
         return container
 
-    # ── Actions ────────────────────────────────────────────────────
+    #  Actions 
 
     def _run_opencode(self):
         request = self.oc_input.text().strip()
@@ -260,7 +260,7 @@ class DevModeTab(QWidget):
 
         project = self.project_selector.currentData() or str(Path.home() / "Documents")
         self.oc_output.setText(f"Running: {request[:80]}...")
-        self.status_badge.setText("● Running")
+        self.status_badge.setText(" Running")
         self.status_badge.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 600; background: transparent; padding: 4px 10px; border: 1px solid {Theme.ACCENT_SUCCESS}44; border-radius: 10px;")
 
         task = self._opencode.run(request, project_path=project, dry_run=self.dry_run_cb.isChecked())
@@ -271,8 +271,8 @@ class DevModeTab(QWidget):
         self._refresh_task_list()
 
         colors = {"completed": Theme.ACCENT_SUCCESS, "failed": Theme.ACCENT_ERROR, "cancelled": Theme.ACCENT_WARNING}
-        color = colors.get(task.status, Theme.TEXT_MUTED)
-        self.status_badge.setText(f"{'✓' if task.status == 'completed' else '✗'} {task.status.title()}")
+        color = colors.get(task.status, Theme.TEXT_TERTIARY)
+        self.status_badge.setText(task.status.title())
         self.status_badge.setStyleSheet(f"color: {color}; font-size: 11px; font-weight: 600; background: transparent; padding: 4px 10px; border: 1px solid {color}44; border-radius: 10px;")
 
     def _cancel_opencode(self):
@@ -291,7 +291,7 @@ class DevModeTab(QWidget):
 
     def _on_terminal_status(self, status: str):
         icons = {"running": Theme.ACCENT_SUCCESS, "idle": Theme.TEXT_MUTED, "error": Theme.ACCENT_ERROR, "cancelled": Theme.ACCENT_WARNING}
-        labels = {"running": "● Running", "idle": "○ Idle", "error": "● Error", "cancelled": "● Cancelled"}
+        labels = {"running": " Running", "idle": " Idle", "error": " Error", "cancelled": " Cancelled"}
         color = icons.get(status, Theme.TEXT_MUTED)
         label = labels.get(status, status.title())
         self.status_badge.setText(label)
@@ -314,7 +314,7 @@ class DevModeTab(QWidget):
         log = self._sandbox.get_execution_log(20)
         self.log_list.clear()
         for entry in reversed(log):
-            icon = "✓" if entry.get("success") else "✗"
+            icon = "+" if entry.get("success") else "x"
             cmd = entry.get("command", "")[:60]
             item = QListWidgetItem(f"  {icon}  {cmd}")
             item.setForeground(QColor(Theme.ACCENT_SUCCESS if entry.get("success") else Theme.ACCENT_ERROR))
@@ -323,7 +323,7 @@ class DevModeTab(QWidget):
     def _refresh_task_list(self):
         self.task_list.clear()
         for task in reversed(self._tasks[-10:]):
-            icon_map = {"completed": "✓", "failed": "✗", "cancelled": "⊘", "running": "●"}
+            icon_map = {"completed": "+", "failed": "x", "cancelled": "-", "running": ""}
             icon = icon_map.get(task.get("status", ""), "?")
             req = task.get("request", "")[:50]
             item = QListWidgetItem(f"  {icon}  {req}")

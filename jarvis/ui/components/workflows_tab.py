@@ -45,12 +45,12 @@ class WorkflowCard(QWidget):
 
         btns = QHBoxLayout()
         btns.setSpacing(6)
-        for text, color, cb in [("▶ Run", Theme.ACCENT_SUCCESS, on_run),
-                                 ("✎", Theme.ACCENT_INFO, on_edit),
-                                 ("✕", Theme.ACCENT_ERROR, on_delete)]:
+        for text, color, cb in [("Run", Theme.ACCENT_SUCCESS, on_run),
+                                 ("Edit", Theme.ACCENT_INFO, on_edit),
+                                 ("Del", Theme.ACCENT_ERROR, on_delete)]:
             if cb:
                 btn = QPushButton(text)
-                btn.setFixedSize(48 if len(text) == 1 else 72, 30)
+                btn.setFixedSize(64 if text in ("Run", "Edit", "Del") else 72, 30)
                 btn.setStyleSheet(f"""
                     QPushButton {{ background-color: {_hex_to_rgba(color, 0.08)};
                     border: 1px solid {color}44; border-radius: 6px; font-size: 11px; font-weight: 500; color: {color}; }}
@@ -252,14 +252,14 @@ class WorkflowsTab(QWidget):
         mgr.create_workflow(name, steps_data, description=desc)
         self._refresh_list()
         self.create_panel.setVisible(False)
-        self.status_label.setText(f"✓ Created '{name}'")
+        self.status_label.setText(f"Created '{name}'")
         QTimer.singleShot(3000, lambda: self.status_label.setText(""))
 
     def _load_templates(self):
         from jarvis.automation.workflows import load_default_templates
         load_default_templates()
         self._refresh_list()
-        self.status_label.setText("✓ Templates loaded")
+        self.status_label.setText("Templates loaded")
         QTimer.singleShot(3000, lambda: self.status_label.setText(""))
 
     def _refresh_list(self):
@@ -309,8 +309,8 @@ class WorkflowsTab(QWidget):
             if wf:
                 executor = WorkflowExecutor(wf)
                 executor.run()
-                self.status_label.setText(f"▶ Running '{name}'")
+                self.status_label.setText(f"Running '{name}'")
                 QTimer.singleShot(3000, lambda: self.status_label.setText(""))
         except Exception as e:
-            self.status_label.setText(f"✕ Error: {e}")
+            self.status_label.setText(f"Error: {e}")
             QTimer.singleShot(5000, lambda: self.status_label.setText(""))

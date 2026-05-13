@@ -16,9 +16,9 @@ STATUS_COLORS = {
     "error": Theme.ACCENT_ERROR,
 }
 STATUS_ICONS = {
-    "ok": "✓",
-    "warning": "⚠",
-    "error": "✗",
+    "ok": "+",
+    "warning": "!",
+    "error": "x",
 }
 
 
@@ -122,11 +122,11 @@ class HealthTab(QWidget):
 
         total = len(results)
         parts = []
-        parts.append(f"✓ {ok_count}/{total} passed")
+        parts.append(f"OK {ok_count}/{total}")
         if warn_count:
-            parts.append(f"⚠ {warn_count} warnings")
+            parts.append(f"WARN {warn_count}")
         if err_count:
-            parts.append(f"✗ {err_count} errors")
+            parts.append(f"ERR {err_count}")
         self.summary_label.setText(" | ".join(parts))
         self.summary_label.setStyleSheet(
             f"color: {Theme.ACCENT_ERROR if err_count else Theme.ACCENT_SUCCESS}; font-size: 13px; font-weight: 600; background: transparent;"

@@ -15,10 +15,10 @@ STATUS_COLORS = {
 }
 
 STATUS_ICONS = {
-    "ok": "✓",
-    "error": "✗",
-    "blocked": "⚠",
-    "ai": "◆",
+    "ok": "+",
+    "error": "x",
+    "blocked": "!",
+    "ai": "~",
 }
 
 
@@ -49,7 +49,7 @@ class TimelineEntry(QWidget):
         status = self.entry.get("status", "ok")
         skill = self.entry.get("skill", "?")
         color = STATUS_COLORS.get(status, Theme.TEXT_MUTED)
-        icon = STATUS_ICONS.get(status, "○")
+        icon = STATUS_ICONS.get(status, "")
 
         header = QWidget()
         header.setStyleSheet("background: transparent; border: none;")

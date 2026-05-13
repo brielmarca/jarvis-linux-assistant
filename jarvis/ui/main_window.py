@@ -155,16 +155,16 @@ class DashboardTab(QWidget):
         a_layout.setSpacing(8)
 
         actions = [
-            ("■", "Terminal", "open terminal"),
-            ("◎", "Firefox", "open firefox"),
-            ("♪", "Volume +", "increase volume"),
-            ("♪", "Volume -", "decrease volume"),
-            ("⚙", "System", "system info"),
-            ("<>", "Code", "programming mode"),
+            ("Terminal", "open terminal"),
+            ("Firefox", "open firefox"),
+            ("Volume +", "increase volume"),
+            ("Volume -", "decrease volume"),
+            ("System", "system info"),
+            ("Code", "programming mode"),
         ]
 
-        for icon, label, cmd in actions:
-            btn = QPushButton(f"{icon}  {label}")
+        for label, cmd in actions:
+            btn = QPushButton(label)
             btn.setStyleSheet(f"""
                 QPushButton {{
                     background-color: rgba(124, 106, 255, 0.08);
@@ -186,8 +186,11 @@ class DashboardTab(QWidget):
 
         a_layout.addStretch()
 
-        self.mic_status = QLabel("🎤  Off")
-        self.mic_status.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent; padding-right: 8px;")
+        self.mic_status = QLabel("Mic: Off")
+        self.mic_status.setStyleSheet(f"""
+            color: {Theme.TEXT_TERTIARY}; font-size: 11px;
+            background: transparent; padding-right: 8px;
+        """)
         a_layout.addWidget(self.mic_status)
 
         self.ai_status = QLabel("AI: " + ("Live" if self.main.assistant.ollama.is_available() else "Off"))
@@ -356,7 +359,7 @@ class SettingsTab(QWidget):
         self.restart_banner.setVisible(False)
         rb_layout = QHBoxLayout(self.restart_banner)
         rb_layout.setContentsMargins(14, 8, 14, 8)
-        rb_label = QLabel("⚡ Restart required for some changes to take effect")
+        rb_label = QLabel("* Restart required for some changes to take effect")
         rb_label.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 12px; background: transparent;")
         rb_layout.addWidget(rb_label)
         layout.addWidget(self.restart_banner)
@@ -492,7 +495,7 @@ class SettingsTab(QWidget):
             rl.addStretch()
 
             if config_key in _RESTART_KEYS:
-                restart_icon = QLabel("⚡")
+                restart_icon = QLabel("*")
                 restart_icon.setToolTip("Restart required")
                 restart_icon.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 11px; background: transparent;")
                 rl.addWidget(restart_icon)
@@ -581,9 +584,9 @@ class SettingsTab(QWidget):
         status = self.findChild(QLabel, "settings_status")
         if status:
             if changed:
-                status.setText(f"✓ Saved ({len(changed)} change{'s' if len(changed)!=1 else ''})")
+                status.setText(f"Saved ({len(changed)} change{'s' if len(changed)!=1 else ''})")
             else:
-                status.setText("✓ No changes")
+                status.setText("No changes")
         self.restart_banner.setVisible(bool(self._dirty_keys & _RESTART_KEYS))
 
     def _reset_defaults(self):

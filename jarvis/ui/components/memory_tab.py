@@ -234,7 +234,7 @@ class MemoryTab(QWidget):
             score_item = QTableWidgetItem(score)
             score_item.setForeground(QColor(Theme.ACCENT_PRIMARY if r.get('score', 0) > 0.5 else Theme.TEXT_MUTED))
             self.semantic_table.setItem(i, 2, score_item)
-            pinned = "✓" if r.get("pinned") else ""
+            pinned = "+" if r.get("pinned") else ""
             self.semantic_table.setItem(i, 3, QTableWidgetItem(pinned))
             self._add_pin_btn(self.semantic_table, i, r.get("id", ""))
         # Also show semantic results in the main memory table view
@@ -286,7 +286,7 @@ class MemoryTab(QWidget):
             self.mem_table.setItem(i, 2, imp_item)
             created = m.get("created", "")[:19] if m.get("created") else ""
             self.mem_table.setItem(i, 3, QTableWidgetItem(created))
-            del_btn = QPushButton("✕")
+            del_btn = QPushButton("x")
             del_btn.setStyleSheet(f"""
                 QPushButton {{ background-color: rgba(255,64,112,0.08); border: 1px solid {Theme.ACCENT_ERROR}44;
                 border-radius: 4px; padding: 2px 8px; font-size: 10px; color: {Theme.ACCENT_ERROR}; }}
@@ -329,7 +329,7 @@ class MemoryTab(QWidget):
             score_item = QTableWidgetItem(score)
             score_item.setForeground(QColor(Theme.ACCENT_PRIMARY if r.get('score', 0) > 0.3 else Theme.TEXT_MUTED))
             self.semantic_table.setItem(i, 2, score_item)
-            pinned = "✓" if r.get("pinned") else ""
+            pinned = "+" if r.get("pinned") else ""
             self.semantic_table.setItem(i, 3, QTableWidgetItem(pinned))
             self._add_pin_btn(self.semantic_table, i, r.get("id", ""))
 

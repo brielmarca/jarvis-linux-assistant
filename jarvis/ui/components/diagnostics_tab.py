@@ -260,11 +260,11 @@ class DiagnosticsTab(QWidget):
             stats = semantic_memory.get_stats()
             checks["semantic"] = f"OK ({stats.get('total_entries', 0)} entries)"
             self.health_widgets["semantic"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["semantic"].setText("✓")
+            self.health_widgets["semantic"].setText("+")
         except Exception as e:
             checks["semantic"] = f"FAIL: {e}"
             self.health_widgets["semantic"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["semantic"].setText("✕")
+            self.health_widgets["semantic"].setText("x")
 
         try:
             from jarvis.system.desktop_state import DesktopState
@@ -272,22 +272,22 @@ class DiagnosticsTab(QWidget):
             _ = ds.get_state()
             checks["desktop"] = "OK"
             self.health_widgets["desktop"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["desktop"].setText("✓")
+            self.health_widgets["desktop"].setText("+")
         except Exception as e:
             checks["desktop"] = f"FAIL: {e}"
             self.health_widgets["desktop"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["desktop"].setText("✕")
+            self.health_widgets["desktop"].setText("x")
 
         try:
             from jarvis.core.memory_manager import MemoryManager
             mm = MemoryManager()
             checks["memory"] = f"OK ({len(mm.get_all_memories())} memories)"
             self.health_widgets["memory"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["memory"].setText("✓")
+            self.health_widgets["memory"].setText("+")
         except Exception as e:
             checks["memory"] = f"FAIL: {e}"
             self.health_widgets["memory"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["memory"].setText("✕")
+            self.health_widgets["memory"].setText("x")
 
         try:
             from jarvis.automation.workflows import WorkflowManager
@@ -295,11 +295,11 @@ class DiagnosticsTab(QWidget):
             wf_count = len(wm.list_workflows())
             checks["workflows"] = f"OK ({wf_count} workflows)"
             self.health_widgets["workflows"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["workflows"].setText("✓")
+            self.health_widgets["workflows"].setText("+")
         except Exception as e:
             checks["workflows"] = f"FAIL: {e}"
             self.health_widgets["workflows"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["workflows"].setText("✕")
+            self.health_widgets["workflows"].setText("x")
 
         import urllib.request
         import json
@@ -310,16 +310,16 @@ class DiagnosticsTab(QWidget):
                 models = [m["name"] for m in data.get("models", [])]
                 checks["ollama"] = f"OK ({', '.join(models[:3])})"
                 self.health_widgets["ollama"].setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 22px; font-weight: 700; background: transparent;")
-                self.health_widgets["ollama"].setText("✓")
+                self.health_widgets["ollama"].setText("+")
         except Exception as e:
             checks["ollama"] = f"FAIL: {e}"
             self.health_widgets["ollama"].setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 22px; font-weight: 700; background: transparent;")
-            self.health_widgets["ollama"].setText("✕")
+            self.health_widgets["ollama"].setText("x")
 
         for svc in ["voice", "vad", "tts"]:
             checks[svc] = "Not checked (requires audio hardware)"
             self.health_widgets[svc].setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 22px; font-weight: 700; background: transparent;")
             self.health_widgets[svc].setText("—")
 
-        lines = [f"[{'✓' if 'OK' in v else '✕'}] {k}: {v}" for k, v in checks.items()]
+        lines = [f"[{'OK' if 'OK' in v else 'FAIL'}] {k}: {v}" for k, v in checks.items()]
         self.health_log.setPlainText("\n".join(lines))

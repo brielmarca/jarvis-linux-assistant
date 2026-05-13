@@ -103,7 +103,7 @@ class TerminalWidget(QWidget):
         h_layout = QHBoxLayout(header)
         h_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.status_icon = QLabel("○")
+        self.status_icon = QLabel("")
         self.status_icon.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 14px; background: transparent;")
         h_layout.addWidget(self.status_icon)
 
@@ -132,7 +132,7 @@ class TerminalWidget(QWidget):
         clear_btn.clicked.connect(self.clear_output)
         h_layout.addWidget(clear_btn)
 
-        self.stop_btn = QPushButton("■ Stop")
+        self.stop_btn = QPushButton("▸ Stop")
         self.stop_btn.setFixedHeight(26)
         self.stop_btn.setEnabled(False)
         self.stop_btn.setStyleSheet(f"""
