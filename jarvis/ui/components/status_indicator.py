@@ -11,7 +11,7 @@ class StatusIndicator(QWidget):
         super().__init__(parent)
         self._state = "idle"
         self._phase = 0.0
-        self.setFixedSize(20, 20)
+        self.setFixedSize(18, 18)
 
         self._timer = QTimer(self)
         self._timer.timeout.connect(self._tick)
@@ -51,22 +51,22 @@ class StatusIndicator(QWidget):
         if self._state in ("processing", "ai_thinking", "listening"):
             breath = 0.7 + 0.3 * abs(math.sin(self._phase))
 
-        glow_r = r * 2.8 * breath
+        glow_r = r * 2.5 * breath
         gradient = QRadialGradient(QPointF(cx, cy), glow_r)
         gc = QColor(c)
-        gc.setAlpha(int(80 * breath))
+        gc.setAlpha(int(70 * breath))
         gradient.setColorAt(0, gc)
         gc2 = QColor(c)
-        gc2.setAlpha(20)
+        gc2.setAlpha(15)
         gradient.setColorAt(0.4, gc2)
         gradient.setColorAt(1, QColor(c.red(), c.green(), c.blue(), 0))
         painter.setBrush(gradient)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.drawEllipse(QPointF(cx, cy), glow_r, glow_r)
 
-        dot_r = r - 3
+        dot_r = r - 2
         dot_gradient = QRadialGradient(QPointF(cx - 1, cy - 1), dot_r)
-        dot_gradient.setColorAt(0, QColor(255, 255, 255, 220))
+        dot_gradient.setColorAt(0, QColor(255, 255, 255, 200))
         dot_gradient.setColorAt(0.6, c)
         dot_gradient.setColorAt(1, c.darker(120))
         painter.setBrush(dot_gradient)

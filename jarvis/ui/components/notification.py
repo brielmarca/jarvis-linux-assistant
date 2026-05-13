@@ -1,6 +1,5 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
 from PyQt6.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, pyqtSignal, QRect
-from PyQt6.QtGui import QColor
 
 from jarvis.ui.theme import Theme
 
@@ -29,7 +28,7 @@ class NotificationWidget(QWidget):
         color, icon = NOTIFICATION_TYPES.get(self._type, NOTIFICATION_TYPES["info"])
         self.setStyleSheet(f"""
             NotificationWidget {{
-                background-color: rgba(16, 16, 32, 0.92);
+                background-color: {Theme.BG_CARD_SOLID};
                 border: 1px solid {color}44;
                 border-radius: 10px;
             }}
@@ -41,7 +40,7 @@ class NotificationWidget(QWidget):
         layout.setSpacing(10)
 
         icon_label = QLabel(icon)
-        icon_label.setStyleSheet(f"color: {color}; font-size: 16px; font-weight: 700; background: transparent;")
+        icon_label.setStyleSheet(f"color: {color}; font-size: 14px; font-weight: 600; background: transparent;")
         icon_label.setFixedWidth(20)
         layout.addWidget(icon_label)
 
@@ -58,7 +57,7 @@ class NotificationWidget(QWidget):
 
     def _start_animation(self):
         self._anim = QPropertyAnimation(self, b"windowOpacity")
-        self._anim.setDuration(300)
+        self._anim.setDuration(250)
         self._anim.setStartValue(0.0)
         self._anim.setEndValue(1.0)
         self._anim.setEasingCurve(QEasingCurve.Type.OutCubic)
@@ -66,7 +65,7 @@ class NotificationWidget(QWidget):
 
     def _fade_out(self):
         self._anim_out = QPropertyAnimation(self, b"windowOpacity")
-        self._anim_out.setDuration(300)
+        self._anim_out.setDuration(250)
         self._anim_out.setStartValue(1.0)
         self._anim_out.setEndValue(0.0)
         self._anim_out.setEasingCurve(QEasingCurve.Type.InCubic)

@@ -12,7 +12,7 @@ class ToggleSwitch(QWidget):
         super().__init__(parent)
         self._checked = checked
         self._hover = False
-        self.setFixedSize(40, 22)
+        self.setFixedSize(42, 24)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def paintEvent(self, event):
@@ -22,7 +22,7 @@ class ToggleSwitch(QWidget):
         h = self.height()
         w = self.width()
 
-        track_color = Theme.ACCENT_PRIMARY if self._checked else Theme.BORDER
+        track_color = Theme.ACCENT_PRIMARY if self._checked else "rgba(255,255,255,0.15)"
         track = QColor(track_color)
         painter.setPen(Qt.PenStyle.NoPen)
 
@@ -31,13 +31,13 @@ class ToggleSwitch(QWidget):
         painter.setBrush(track)
         painter.drawPath(path)
 
-        thumb_r = h - 6
-        thumb_x = w - h + 3 if self._checked else 3
-        thumb_y = 3
+        thumb_r = h - 5
+        thumb_x = w - h + 2.5 if self._checked else 2.5
+        thumb_y = 2.5
 
-        thumb_gradient = QColor(255, 255, 255, 230 if self._checked else 180)
-        painter.setBrush(thumb_gradient)
-        painter.setPen(QPen(QColor(255, 255, 255, 50), 0.5))
+        thumb_color = QColor(255, 255, 255, 240 if self._checked else 200)
+        painter.setBrush(thumb_color)
+        painter.setPen(QPen(QColor(255, 255, 255, 40), 0.5))
         painter.drawEllipse(int(thumb_x), int(thumb_y), int(thumb_r), int(thumb_r))
 
         painter.end()
@@ -68,16 +68,16 @@ class SkillCard(QWidget):
     def setup_ui(self):
         self.setStyleSheet(f"""
             SkillCard {{
-                background-color: rgba(20, 20, 38, 0.7);
+                background-color: {Theme.BG_CARD};
                 border: 1px solid {Theme.BORDER};
-                border-radius: 10px;
+                border-radius: {Theme.RADIUS_CARD};
             }}
             SkillCard:hover {{
-                background-color: rgba(30, 30, 55, 0.8);
-                border-color: rgba(124, 106, 255, 0.3);
+                background-color: {Theme.BG_CARD_HOVER};
+                border-color: {Theme.BORDER_HEAVY};
             }}
         """)
-        self.setMinimumHeight(74)
+        self.setMinimumHeight(72)
 
         layout = QHBoxLayout(self)
         layout.setContentsMargins(16, 12, 16, 12)
@@ -85,11 +85,11 @@ class SkillCard(QWidget):
 
         icon_label = QLabel(self._get_icon())
         icon_label.setStyleSheet(f"""
-            font-size: 20px;
+            font-size: 18px;
             background: transparent;
             border: none;
         """)
-        icon_label.setFixedWidth(30)
+        icon_label.setFixedWidth(28)
         icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(icon_label)
 
@@ -100,12 +100,18 @@ class SkillCard(QWidget):
         t_layout.setSpacing(2)
 
         name_label = QLabel(self.skill_name.capitalize())
-        name_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 700; background: transparent; border: none;")
+        name_label.setStyleSheet(f"""
+            color: {Theme.TEXT_PRIMARY}; font-size: 14px;
+            font-weight: 600; background: transparent; border: none;
+        """)
         t_layout.addWidget(name_label)
 
         desc = self._description or self._default_description()
         desc_label = QLabel(desc)
-        desc_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 11px; background: transparent; border: none;")
+        desc_label.setStyleSheet(f"""
+            color: {Theme.TEXT_TERTIARY}; font-size: 11px;
+            background: transparent; border: none;
+        """)
         t_layout.addWidget(desc_label)
 
         layout.addWidget(text_area, 1)
@@ -116,9 +122,9 @@ class SkillCard(QWidget):
             color: {badge_color};
             font-size: 10px;
             font-weight: 600;
-            background-color: {badge_color}1f;
+            background-color: {badge_color}18;
             border: none;
-            border-radius: 4px;
+            border-radius: {Theme.RADIUS_TINY};
             padding: 2px 8px;
         """)
         badge.setFixedHeight(20)

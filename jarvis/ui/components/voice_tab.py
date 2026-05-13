@@ -28,19 +28,18 @@ class VoiceTab(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(24, 20, 24, 20)
+        layout.setContentsMargins(32, 24, 32, 24)
         layout.setSpacing(14)
 
         header = QLabel("Voice Settings")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 24px; font-weight: 700; background: transparent; letter-spacing: -0.4px;")
         layout.addWidget(header)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.SEPARATOR}; border: none; max-height: 1px;")
         layout.addWidget(sep)
 
-        # ── Microphone section ──
         mic_box = self._make_group("Microphone", [
             ("Device", self._make_device_selector()),
             ("Mode", self._make_mode_selector()),
@@ -48,20 +47,15 @@ class VoiceTab(QWidget):
         ])
         layout.addWidget(mic_box)
 
-        # ── Controls ──
         ctrl_box = QWidget()
-        ctrl_box.setStyleSheet(f"background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER}; border-radius: 10px;")
+        ctrl_box.setStyleSheet(f"background-color: {Theme.BG_CARD}; border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_CARD};")
         ctrl_layout = QHBoxLayout(ctrl_box)
         ctrl_layout.setContentsMargins(16, 12, 16, 12)
         ctrl_layout.setSpacing(12)
 
         self.listen_btn = QPushButton("🎤  Start Listening")
-        self.listen_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
-            border-radius: 10px; padding: 12px 28px; font-size: 14px; font-weight: 600; color: white; }}
-            QPushButton:hover {{ background-color: #8a7aff; }}
-            QPushButton:disabled {{ background-color: rgba(124,106,255,0.3); }}
-        """)
+        self.listen_btn.setObjectName("accent")
+        self.listen_btn.setFixedHeight(44)
         self.listen_btn.clicked.connect(self._toggle_listening)
         ctrl_layout.addWidget(self.listen_btn)
 
@@ -77,9 +71,8 @@ class VoiceTab(QWidget):
 
         layout.addWidget(ctrl_box)
 
-        # ── Status ──
         status_box = QWidget()
-        status_box.setStyleSheet(f"background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER}; border-radius: 10px;")
+        status_box.setStyleSheet(f"background-color: {Theme.BG_CARD}; border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_CARD};")
         st_layout = QVBoxLayout(status_box)
         st_layout.setContentsMargins(16, 12, 16, 12)
         st_layout.setSpacing(6)
@@ -89,20 +82,20 @@ class VoiceTab(QWidget):
         st_layout.addWidget(st_header)
 
         self.pipeline_status = QLabel("Pipeline: idle")
-        self.pipeline_status.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-family: {Theme.FONT_MONO}; background: transparent;")
+        self.pipeline_status.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 11px; font-family: {Theme.FONT_MONO}; background: transparent;")
         st_layout.addWidget(self.pipeline_status)
 
         self.mic_status = QLabel("Microphone: not active")
-        self.mic_status.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;")
+        self.mic_status.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 11px; background: transparent;")
         st_layout.addWidget(self.mic_status)
 
         self.asr_status = QLabel("ASR: " + ("available" if audio._transcriber and audio._transcriber.is_available() else "not loaded"))
-        asr_color = Theme.ACCENT_SUCCESS if audio._transcriber and audio._transcriber.is_available() else Theme.TEXT_MUTED
+        asr_color = Theme.ACCENT_SUCCESS if audio._transcriber and audio._transcriber.is_available() else Theme.TEXT_TERTIARY
         self.asr_status.setStyleSheet(f"color: {asr_color}; font-size: 11px; background: transparent;")
         st_layout.addWidget(self.asr_status)
 
         self.tts_status = QLabel("TTS: " + ("available" if audio._tts and audio._tts.available else "offline"))
-        tts_color = Theme.ACCENT_SUCCESS if audio._tts and audio._tts.available else Theme.TEXT_MUTED
+        tts_color = Theme.ACCENT_SUCCESS if audio._tts and audio._tts.available else Theme.TEXT_TERTIARY
         self.tts_status.setStyleSheet(f"color: {tts_color}; font-size: 11px; background: transparent;")
         st_layout.addWidget(self.tts_status)
 
@@ -115,13 +108,6 @@ class VoiceTab(QWidget):
 
     def _make_device_selector(self):
         self.device_combo = QComboBox()
-        self.device_combo.setStyleSheet(f"""
-            QComboBox {{ background-color: rgba(20,20,40,0.6); color: {Theme.TEXT_PRIMARY};
-            border: 1px solid {Theme.BORDER}; border-radius: 6px; padding: 6px 12px; font-size: 12px; min-width: 200px; }}
-            QComboBox:hover {{ border-color: {Theme.ACCENT_PRIMARY}; }}
-            QComboBox QAbstractItemView {{ background-color: {Theme.BG_CARD_SOLID}; color: {Theme.TEXT_PRIMARY};
-            selection-background-color: {Theme.ACCENT_PRIMARY}; border: 1px solid {Theme.BORDER}; border-radius: 6px; }}
-        """)
         for dev in devices.list_devices():
             label = f"{dev.name} (ch:{dev.channels} rate:{dev.sample_rate})"
             self.device_combo.addItem(label, dev.index)
@@ -131,7 +117,6 @@ class VoiceTab(QWidget):
     def _make_mode_selector(self):
         self.mode_combo = QComboBox()
         self.mode_combo.addItems(["Push to Talk", "Continuous Listening", "Wake Word"])
-        self.mode_combo.setStyleSheet(self.device_combo.styleSheet())
         self.mode_combo.currentTextChanged.connect(self._on_mode_change)
         return self.mode_combo
 
@@ -147,8 +132,8 @@ class VoiceTab(QWidget):
         self.threshold_slider.setFixedWidth(200)
         self.threshold_slider.setStyleSheet(f"""
             QSlider::groove:horizontal {{ background: {Theme.BORDER}; height: 4px; border-radius: 2px; }}
-            QSlider::handle:horizontal {{ background: {Theme.ACCENT_PRIMARY}; width: 16px; height: 16px;
-            margin: -6px 0; border-radius: 8px; }}
+            QSlider::handle:horizontal {{ background: {Theme.ACCENT_PRIMARY}; width: 14px; height: 14px;
+            margin: -5px 0; border-radius: 7px; }}
         """)
         self.threshold_slider.valueChanged.connect(self._on_threshold_change)
         rl.addWidget(self.threshold_slider)
@@ -162,12 +147,12 @@ class VoiceTab(QWidget):
 
     def _make_group(self, title_text, widgets):
         group = QWidget()
-        group.setStyleSheet(f"background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER}; border-radius: 10px;")
+        group.setStyleSheet(f"background-color: {Theme.BG_CARD}; border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_CARD};")
         layout = QVBoxLayout(group)
         layout.setContentsMargins(16, 12, 16, 12)
         layout.setSpacing(10)
         title = QLabel(title_text)
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 700; background: transparent;")
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent;")
         layout.addWidget(title)
         for name, widget in widgets:
             row = QWidget()
@@ -217,17 +202,15 @@ class VoiceTab(QWidget):
             audio.stop_listening()
             self._listening = False
             self.listen_btn.setText("🎤  Start Listening")
-            self.listen_btn.setStyleSheet(self.listen_btn.styleSheet().replace(
-                "background-color: rgba(255,64,112,0.15)", "background-color: " + Theme.ACCENT_PRIMARY
-            ))
+            self.listen_btn.setObjectName("accent")
         else:
             audio.start_listening()
             self._listening = True
             self.listen_btn.setText("⏹  Stop Listening")
             self.listen_btn.setStyleSheet(f"""
-                QPushButton {{ background-color: rgba(255,64,112,0.15); border: 1px solid {Theme.ACCENT_ERROR}44;
-                border-radius: 10px; padding: 12px 28px; font-size: 14px; font-weight: 600; color: {Theme.ACCENT_ERROR}; }}
-                QPushButton:hover {{ background-color: rgba(255,64,112,0.25); }}
+                QPushButton {{ background-color: rgba(255,64,112,0.12); border: 1px solid {Theme.ACCENT_ERROR}44;
+                border-radius: {Theme.RADIUS_BUTTON}; padding: 12px 28px; font-size: 14px; font-weight: 600; color: {Theme.ACCENT_ERROR}; }}
+                QPushButton:hover {{ background-color: rgba(255,64,112,0.22); }}
             """)
 
     def _refresh_status(self):

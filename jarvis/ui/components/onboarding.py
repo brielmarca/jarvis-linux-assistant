@@ -14,7 +14,7 @@ class OnboardingWizard(QWizard):
         super().__init__(parent)
         self.setWindowTitle("Welcome to Jarvis")
         self.setWizardStyle(QWizard.WizardStyle.ModernStyle)
-        self.setMinimumSize(520, 440)
+        self.setMinimumSize(520, 420)
         self.setStyleSheet(f"""
             QWizard {{
                 background-color: {Theme.BG_PRIMARY};
@@ -28,22 +28,22 @@ class OnboardingWizard(QWizard):
                 background: transparent;
             }}
             QPushButton {{
-                background-color: rgba(124, 106, 255, 0.1);
+                background-color: rgba(124, 106, 255, 0.08);
                 border: 1px solid {Theme.ACCENT_PRIMARY}44;
-                border-radius: 8px;
+                border-radius: {Theme.RADIUS_BUTTON};
                 padding: 8px 24px;
                 font-size: 13px;
                 font-weight: 500;
                 color: {Theme.TEXT_PRIMARY};
             }}
             QPushButton:hover {{
-                background-color: rgba(124, 106, 255, 0.2);
+                background-color: rgba(124, 106, 255, 0.18);
             }}
             QLineEdit {{
-                background-color: rgba(12, 12, 22, 0.6);
+                background-color: {Theme.BG_CARD};
                 color: {Theme.TEXT_PRIMARY};
                 border: 1px solid {Theme.BORDER};
-                border-radius: 8px;
+                border-radius: {Theme.RADIUS_INPUT};
                 padding: 10px 14px;
                 font-size: 13px;
             }}
@@ -51,10 +51,10 @@ class OnboardingWizard(QWizard):
                 border-color: {Theme.ACCENT_PRIMARY};
             }}
             QComboBox {{
-                background-color: rgba(12, 12, 22, 0.6);
+                background-color: {Theme.BG_CARD};
                 color: {Theme.TEXT_PRIMARY};
                 border: 1px solid {Theme.BORDER};
-                border-radius: 8px;
+                border-radius: {Theme.RADIUS_INPUT};
                 padding: 8px 12px;
                 font-size: 13px;
             }}
@@ -93,12 +93,12 @@ class WelcomePage(QWizardPage):
 
         title = QLabel("Welcome to Jarvis")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setStyleSheet(f"font-size: 28px; font-weight: 800; color: {Theme.TEXT_PRIMARY}; letter-spacing: -0.5px;")
+        title.setStyleSheet(f"font-size: 28px; font-weight: 700; color: {Theme.TEXT_PRIMARY}; letter-spacing: -0.5px;")
         layout.addWidget(title)
 
         subtitle = QLabel("Your AI-powered Linux Desktop Assistant")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        subtitle.setStyleSheet(f"font-size: 14px; color: {Theme.ACCENT_PRIMARY}; font-weight: 500; letter-spacing: 2px;")
+        subtitle.setStyleSheet(f"font-size: 14px; color: {Theme.ACCENT_PRIMARY}; font-weight: 500; letter-spacing: 1.5px;")
         layout.addWidget(subtitle)
 
         layout.addSpacing(12)
@@ -125,7 +125,7 @@ class ConfigPage(QWizardPage):
         layout.setSpacing(12)
 
         info = QLabel("Choose your assistant name, language, and AI model.")
-        info.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 12px;")
+        info.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 12px;")
         info.setWordWrap(True)
         layout.addWidget(info)
 
@@ -170,7 +170,7 @@ class VoicePage(QWizardPage):
         layout.setSpacing(12)
 
         info = QLabel("Configure voice features. You can change these later in Settings.")
-        info.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 12px;")
+        info.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 12px;")
         info.setWordWrap(True)
         layout.addWidget(info)
 
@@ -212,7 +212,7 @@ class ProjectPage(QWizardPage):
         layout.setSpacing(12)
 
         info = QLabel("Choose a default folder for your projects. Jarvis will use this context when helping with code.")
-        info.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 12px;")
+        info.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 12px;")
         info.setWordWrap(True)
         layout.addWidget(info)
 
@@ -257,7 +257,7 @@ class FinishPage(QWizardPage):
 
         health = QLabel("Run a health check to ensure everything is working.")
         health.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        health.setStyleSheet(f"font-size: 11px; color: {Theme.TEXT_MUTED};")
+        health.setStyleSheet(f"font-size: 11px; color: {Theme.TEXT_TERTIARY};")
         layout.addWidget(health)
 
         self.health_check = QCheckBox("Run health check on finish")

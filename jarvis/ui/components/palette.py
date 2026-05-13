@@ -42,12 +42,12 @@ class CommandPalette(QWidget):
             Qt.WindowType.WindowStaysOnTopHint
         )
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-        self.setFixedSize(500, 400)
+        self.setFixedSize(520, 420)
 
         outer = QWidget()
         outer.setStyleSheet(f"""
             QWidget {{
-                background-color: rgba(14, 14, 26, 0.95);
+                background-color: {Theme.BG_CARD_SOLID};
                 border: 1px solid {Theme.BORDER};
                 border-radius: 14px;
             }}
@@ -60,10 +60,10 @@ class CommandPalette(QWidget):
         self.search_input.setPlaceholderText("Type a command...")
         self.search_input.setStyleSheet(f"""
             QLineEdit {{
-                background-color: rgba(20, 20, 40, 0.6);
+                background-color: {Theme.BG_SECONDARY};
                 color: {Theme.TEXT_PRIMARY};
                 border: 1px solid {Theme.ACCENT_PRIMARY}33;
-                border-radius: 8px;
+                border-radius: {Theme.RADIUS_INPUT};
                 padding: 12px 16px;
                 font-size: 14px;
             }}
@@ -84,15 +84,15 @@ class CommandPalette(QWidget):
             QListWidget::item {{
                 color: {Theme.TEXT_SECONDARY};
                 padding: 10px 14px;
-                border-radius: 6px;
+                border-radius: {Theme.RADIUS_TINY};
                 font-size: 13px;
             }}
             QListWidget::item:selected {{
-                background-color: rgba(124, 106, 255, 0.15);
+                background-color: {Theme.BG_SELECTED};
                 color: {Theme.TEXT_PRIMARY};
             }}
             QListWidget::item:hover {{
-                background-color: rgba(124, 106, 255, 0.08);
+                background-color: {Theme.BG_HOVER};
                 color: {Theme.TEXT_PRIMARY};
             }}
         """)

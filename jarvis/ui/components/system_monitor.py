@@ -92,10 +92,10 @@ class StatBar(QWidget):
         self.progress.setRange(0, 100)
         self.progress.setValue(0)
         self.progress.setTextVisible(False)
-        self.progress.setFixedHeight(6)
+        self.progress.setFixedHeight(5)
         self.progress.setStyleSheet(f"""
             QProgressBar {{
-                background-color: rgba(30, 30, 55, 0.5);
+                background-color: rgba(255,255,255,0.06);
                 border: none;
                 border-radius: 3px;
             }}
@@ -107,7 +107,7 @@ class StatBar(QWidget):
         layout.addWidget(self.progress, 1)
 
         self.value_label = QLabel("0%")
-        self.value_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 600; background: transparent;")
+        self.value_label.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 10px; font-weight: 600; background: transparent;")
         self.value_label.setFixedWidth(36)
         self.value_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.value_label)
@@ -129,18 +129,18 @@ class SystemMonitorCard(QWidget):
     def setup_ui(self):
         self.setStyleSheet(f"""
             SystemMonitorCard {{
-                background-color: rgba(12, 12, 22, 0.5);
+                background-color: {Theme.BG_CARD};
                 border: 1px solid {Theme.BORDER};
-                border-radius: {Theme.CARD_RADIUS};
+                border-radius: {Theme.RADIUS_CARD};
             }}
         """)
 
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(16, 12, 16, 12)
-        layout.setSpacing(8)
+        layout.setContentsMargins(20, 16, 20, 16)
+        layout.setSpacing(10)
 
         header = QLabel("System Monitor")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 700; background: transparent;")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent;")
         layout.addWidget(header)
 
         self.cpu_bar = StatBar("CPU", Theme.ACCENT_PRIMARY)

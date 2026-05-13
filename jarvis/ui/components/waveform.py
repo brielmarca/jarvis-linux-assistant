@@ -22,8 +22,8 @@ class WaveformWidget(QWidget):
         self._timer.timeout.connect(self._tick)
         self._timer.start(16)
 
-        self.setMinimumHeight(60)
-        self.setMaximumHeight(120)
+        self.setMinimumHeight(50)
+        self.setMaximumHeight(100)
 
     def set_active(self, active: bool):
         self._active = active
@@ -67,7 +67,7 @@ class WaveformWidget(QWidget):
             breath = 0.3 + 0.7 * abs(math.sin(angle))
 
             raw = (math.sin(angle * 3.0) * 0.5 + 0.5) * breath
-            bar_h = raw * self._amplitude * h * 0.4
+            bar_h = raw * self._amplitude * h * 0.35
             bar_h = max(bar_h, 1.0)
 
             x = i * bar_width + gap / 2

@@ -20,20 +20,20 @@ opencode = OpenCodeRunner()
 
 _STYLE_ACCENT_BTN = f"""
     QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
-    border-radius: 6px; padding: 8px 20px; font-size: 12px; font-weight: 600; color: white; }}
-    QPushButton:hover {{ background-color: #8a7aff; }}
+    border-radius: {Theme.RADIUS_SMALL}; padding: 8px 20px; font-size: 12px; font-weight: 600; color: white; }}
+    QPushButton:hover {{ background-color: {Theme.ACCENT_PRIMARY_HOVER}; }}
     QPushButton:disabled {{ background-color: rgba(124,106,255,0.3); }}
 """
 
 _STYLE_SECONDARY_BTN = f"""
     QPushButton {{ background-color: rgba(124,106,255,0.1); border: 1px solid {Theme.ACCENT_PRIMARY}44;
-    border-radius: 6px; padding: 6px 16px; font-size: 11px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
+    border-radius: {Theme.RADIUS_SMALL}; padding: 6px 16px; font-size: 11px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
     QPushButton:hover {{ background-color: rgba(124,106,255,0.2); }}
 """
 
 _STYLE_DANGER_BTN = f"""
     QPushButton {{ background-color: rgba(255,64,112,0.08); border: 1px solid rgba(255,64,112,0.2);
-    border-radius: 6px; padding: 6px 16px; font-size: 11px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
+    border-radius: {Theme.RADIUS_SMALL}; padding: 6px 16px; font-size: 11px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
     QPushButton:hover {{ background-color: rgba(255,64,112,0.18); }}
 """
 
@@ -50,8 +50,8 @@ class DevModeTab(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(24, 20, 24, 20)
-        layout.setSpacing(12)
+        layout.setContentsMargins(32, 24, 32, 24)
+        layout.setSpacing(14)
 
         header = QWidget()
         header.setStyleSheet("background: transparent;")
@@ -59,27 +59,27 @@ class DevModeTab(QWidget):
         h_layout.setContentsMargins(0, 0, 0, 0)
 
         title = QLabel("Developer Mode")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; letter-spacing: -0.3px; background: transparent;")
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 24px; font-weight: 700; letter-spacing: -0.4px; background: transparent;")
         h_layout.addWidget(title)
 
         h_layout.addStretch()
 
         self.status_badge = QLabel("○ Idle")
-        self.status_badge.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 1px solid {Theme.BORDER}; border-radius: 10px;")
+        self.status_badge.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 11px; font-weight: 500; background: transparent; padding: 4px 10px; border: 1px solid {Theme.BORDER}; border-radius: 10px;")
         h_layout.addWidget(self.status_badge)
 
         layout.addWidget(header)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.SEPARATOR}; border: none; max-height: 1px;")
         layout.addWidget(sep)
 
         vertical_splitter = QSplitter(Qt.Orientation.Vertical)
-        vertical_splitter.setStyleSheet("QSplitter::handle { background-color: rgba(50,50,80,0.3); height: 2px; }")
+        vertical_splitter.setStyleSheet("QSplitter::handle { background-color: rgba(50,50,80,0.2); height: 1px; }")
 
         top_splitter = QSplitter(Qt.Orientation.Horizontal)
-        top_splitter.setStyleSheet("QSplitter::handle { background-color: rgba(50,50,80,0.3); width: 2px; }")
+        top_splitter.setStyleSheet("QSplitter::handle { background-color: rgba(50,50,80,0.2); width: 1px; }")
 
         top_splitter.addWidget(self._build_opencode_panel())
         top_splitter.addWidget(self._build_execution_panel())
@@ -95,25 +95,23 @@ class DevModeTab(QWidget):
         self._refresh_timer.timeout.connect(self._refresh_ui)
         self._refresh_timer.start(2000)
 
-    # ── OpenCode Panel ─────────────────────────────────────────────
-
     def _build_opencode_panel(self):
         panel = QWidget()
-        panel.setStyleSheet(f"background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER}; border-radius: 10px;")
+        panel.setStyleSheet(f"background-color: {Theme.BG_CARD}; border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_CARD};")
         layout = QVBoxLayout(panel)
-        layout.setContentsMargins(14, 10, 14, 10)
+        layout.setContentsMargins(14, 12, 14, 12)
         layout.setSpacing(8)
 
         header = QLabel("OpenCode Task Launcher")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 700; background: transparent;")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
         layout.addWidget(header)
 
         input_row = QHBoxLayout()
         self.oc_input = QLineEdit()
         self.oc_input.setPlaceholderText("Describe the code change...")
         self.oc_input.setStyleSheet(f"""
-            QLineEdit {{ background-color: rgba(20,20,40,0.6); color: {Theme.TEXT_PRIMARY};
-            border: 1px solid {Theme.BORDER}; border-radius: 6px; padding: 8px 12px; font-size: 12px; }}
+            QLineEdit {{ background-color: {Theme.BG_CARD}; color: {Theme.TEXT_PRIMARY};
+            border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_SMALL}; padding: 8px 12px; font-size: 12px; }}
             QLineEdit:focus {{ border-color: {Theme.ACCENT_PRIMARY}; }}
         """)
         input_row.addWidget(self.oc_input, 1)
@@ -125,13 +123,6 @@ class DevModeTab(QWidget):
         options_row.addWidget(self.dry_run_cb)
 
         self.project_selector = QComboBox()
-        self.project_selector.setStyleSheet(f"""
-            QComboBox {{ background-color: rgba(20,20,40,0.6); color: {Theme.TEXT_PRIMARY};
-            border: 1px solid {Theme.BORDER}; border-radius: 4px; padding: 4px 10px; font-size: 11px; min-width: 180px; }}
-            QComboBox:hover {{ border-color: {Theme.ACCENT_PRIMARY}; }}
-            QComboBox QAbstractItemView {{ background-color: {Theme.BG_CARD_SOLID}; color: {Theme.TEXT_PRIMARY};
-            selection-background-color: {Theme.ACCENT_PRIMARY}; border: 1px solid {Theme.BORDER}; border-radius: 4px; }}
-        """)
         options_row.addWidget(QLabel("Project:"))
         options_row.addWidget(self.project_selector, 1)
         layout.addLayout(options_row)
@@ -154,39 +145,37 @@ class DevModeTab(QWidget):
         self.oc_output.setReadOnly(True)
         self.oc_output.setMaximumHeight(100)
         self.oc_output.setStyleSheet(f"""
-            QTextEdit {{ background-color: rgba(10,10,18,0.7); color: {Theme.TEXT_SECONDARY};
-            border: 1px solid {Theme.BORDER}; border-radius: 4px; padding: 8px;
+            QTextEdit {{ background-color: {Theme.BG_CARD}; color: {Theme.TEXT_SECONDARY};
+            border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_TINY}; padding: 8px;
             font-family: {Theme.FONT_MONO}; font-size: 10px; }}
         """)
         layout.addWidget(self.oc_output)
 
         recent_label = QLabel("Recent Tasks")
-        recent_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 600; background: transparent;")
+        recent_label.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 10px; font-weight: 600; background: transparent;")
         layout.addWidget(recent_label)
 
         self.task_list = QListWidget()
         self.task_list.setMaximumHeight(80)
         self.task_list.setStyleSheet(f"""
-            QListWidget {{ background-color: rgba(10,10,18,0.5); border: 1px solid {Theme.BORDER};
-            border-radius: 4px; color: {Theme.TEXT_SECONDARY}; font-size: 10px; }}
+            QListWidget {{ background-color: rgba(0,0,0,0.2); border: 1px solid {Theme.BORDER};
+            border-radius: {Theme.RADIUS_TINY}; color: {Theme.TEXT_SECONDARY}; font-size: 10px; }}
             QListWidget::item {{ padding: 3px 6px; }}
         """)
         layout.addWidget(self.task_list)
 
         return panel
 
-    # ── Execution Logs Panel ───────────────────────────────────────
-
     def _build_execution_panel(self):
         panel = QWidget()
-        panel.setStyleSheet(f"background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER}; border-radius: 10px;")
+        panel.setStyleSheet(f"background-color: {Theme.BG_CARD}; border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_CARD};")
         layout = QVBoxLayout(panel)
-        layout.setContentsMargins(14, 10, 14, 10)
+        layout.setContentsMargins(14, 12, 14, 12)
         layout.setSpacing(8)
 
         header_row = QHBoxLayout()
         header = QLabel("Execution Logs")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 700; background: transparent;")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
         header_row.addWidget(header)
         header_row.addStretch()
 
@@ -198,14 +187,14 @@ class DevModeTab(QWidget):
 
         self.log_list = QListWidget()
         self.log_list.setStyleSheet(f"""
-            QListWidget {{ background-color: rgba(10,10,18,0.5); border: 1px solid {Theme.BORDER};
-            border-radius: 4px; color: {Theme.TEXT_SECONDARY}; font-size: 10px; }}
-            QListWidget::item {{ padding: 4px 8px; border-bottom: 1px solid rgba(50,50,80,0.15); }}
+            QListWidget {{ background-color: rgba(0,0,0,0.2); border: 1px solid {Theme.BORDER};
+            border-radius: {Theme.RADIUS_TINY}; color: {Theme.TEXT_SECONDARY}; font-size: 10px; }}
+            QListWidget::item {{ padding: 4px 8px; border-bottom: 1px solid {Theme.SEPARATOR}; }}
         """)
         layout.addWidget(self.log_list, 1)
 
         quick_actions_label = QLabel("Quick Actions")
-        quick_actions_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 600; background: transparent;")
+        quick_actions_label.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 10px; font-weight: 600; background: transparent;")
         layout.addWidget(quick_actions_label)
 
         qa_grid = QWidget()
@@ -232,16 +221,14 @@ class DevModeTab(QWidget):
 
         return panel
 
-    # ── Terminal Section ───────────────────────────────────────────
-
     def _build_terminal_section(self):
         container = QWidget()
-        container.setStyleSheet(f"background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER}; border-radius: 10px;")
+        container.setStyleSheet(f"background-color: {Theme.BG_CARD}; border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_CARD};")
         layout = QVBoxLayout(container)
-        layout.setContentsMargins(14, 10, 14, 10)
+        layout.setContentsMargins(14, 12, 14, 12)
 
         header = QLabel("Terminal")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 700; background: transparent;")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
         layout.addWidget(header)
 
         self.terminal = TerminalWidget()
@@ -250,8 +237,6 @@ class DevModeTab(QWidget):
         layout.addWidget(self.terminal, 1)
 
         return container
-
-    # ── Actions ────────────────────────────────────────────────────
 
     def _run_opencode(self):
         request = self.oc_input.text().strip()
@@ -271,7 +256,7 @@ class DevModeTab(QWidget):
         self._refresh_task_list()
 
         colors = {"completed": Theme.ACCENT_SUCCESS, "failed": Theme.ACCENT_ERROR, "cancelled": Theme.ACCENT_WARNING}
-        color = colors.get(task.status, Theme.TEXT_MUTED)
+        color = colors.get(task.status, Theme.TEXT_TERTIARY)
         self.status_badge.setText(f"{'✓' if task.status == 'completed' else '✗'} {task.status.title()}")
         self.status_badge.setStyleSheet(f"color: {color}; font-size: 11px; font-weight: 600; background: transparent; padding: 4px 10px; border: 1px solid {color}44; border-radius: 10px;")
 
@@ -290,9 +275,9 @@ class DevModeTab(QWidget):
         self._refresh_log_list()
 
     def _on_terminal_status(self, status: str):
-        icons = {"running": Theme.ACCENT_SUCCESS, "idle": Theme.TEXT_MUTED, "error": Theme.ACCENT_ERROR, "cancelled": Theme.ACCENT_WARNING}
+        icons = {"running": Theme.ACCENT_SUCCESS, "idle": Theme.TEXT_TERTIARY, "error": Theme.ACCENT_ERROR, "cancelled": Theme.ACCENT_WARNING}
         labels = {"running": "● Running", "idle": "○ Idle", "error": "● Error", "cancelled": "● Cancelled"}
-        color = icons.get(status, Theme.TEXT_MUTED)
+        color = icons.get(status, Theme.TEXT_TERTIARY)
         label = labels.get(status, status.title())
         self.status_badge.setText(label)
         self.status_badge.setStyleSheet(f"color: {color}; font-size: 11px; font-weight: 600; background: transparent; padding: 4px 10px; border: 1px solid {color}44; border-radius: 10px;")
@@ -328,6 +313,6 @@ class DevModeTab(QWidget):
             req = task.get("request", "")[:50]
             item = QListWidgetItem(f"  {icon}  {req}")
             color_map = {"completed": Theme.ACCENT_SUCCESS, "failed": Theme.ACCENT_ERROR, "cancelled": Theme.ACCENT_WARNING, "running": Theme.ACCENT_PRIMARY}
-            color = color_map.get(task.get("status", ""), Theme.TEXT_MUTED)
+            color = color_map.get(task.get("status", ""), Theme.TEXT_TERTIARY)
             item.setForeground(QColor(color))
             self.task_list.addItem(item)

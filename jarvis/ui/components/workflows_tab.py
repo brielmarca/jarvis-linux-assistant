@@ -20,26 +20,26 @@ class WorkflowCard(QWidget):
         super().__init__()
         self.setStyleSheet(f"""
             WorkflowCard {{
-                background-color: rgba(20, 20, 38, 0.5);
+                background-color: {Theme.BG_CARD};
                 border: 1px solid {Theme.BORDER};
-                border-radius: {Theme.CARD_RADIUS};
+                border-radius: {Theme.RADIUS_CARD};
             }}
         """)
-        self.setMinimumHeight(72)
+        self.setMinimumHeight(68)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(16, 12, 16, 12)
 
         info = QVBoxLayout()
         info.setSpacing(2)
         name_lbl = QLabel(name)
-        name_lbl.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 15px; font-weight: 600; background: transparent;")
+        name_lbl.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent;")
         info.addWidget(name_lbl)
         desc_lbl = QLabel(desc[:80])
-        desc_lbl.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;")
+        desc_lbl.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 11px; background: transparent;")
         info.addWidget(desc_lbl)
         if steps:
             step_lbl = QLabel(f"{steps} step{'s' if steps != 1 else ''}")
-            step_lbl.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; background: transparent;")
+            step_lbl.setStyleSheet(f"color: {Theme.TEXT_TERTIARY}; font-size: 10px; background: transparent;")
             info.addWidget(step_lbl)
         layout.addLayout(info, 1)
 
@@ -53,7 +53,7 @@ class WorkflowCard(QWidget):
                 btn.setFixedSize(48 if len(text) == 1 else 72, 30)
                 btn.setStyleSheet(f"""
                     QPushButton {{ background-color: {_hex_to_rgba(color, 0.08)};
-                    border: 1px solid {color}44; border-radius: 6px; font-size: 11px; font-weight: 500; color: {color}; }}
+                    border: 1px solid {color}44; border-radius: {Theme.RADIUS_SMALL}; font-size: 11px; font-weight: 500; color: {color}; }}
                     QPushButton:hover {{ background-color: {_hex_to_rgba(color, 0.18)}; }}
                 """)
                 btn.clicked.connect(cb)
@@ -76,15 +76,15 @@ class WorkflowsTab(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(28, 24, 28, 24)
-        layout.setSpacing(12)
+        layout.setContentsMargins(32, 24, 32, 24)
+        layout.setSpacing(14)
 
         header = QWidget()
         header.setStyleSheet("background: transparent;")
         hl = QHBoxLayout(header)
         hl.setContentsMargins(0, 0, 0, 0)
         title = QLabel("Workflows")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 24px; font-weight: 700; background: transparent; letter-spacing: -0.4px;")
         hl.addWidget(title)
         hl.addStretch()
 
@@ -95,7 +95,7 @@ class WorkflowsTab(QWidget):
         create_btn = QPushButton("+ New Workflow")
         create_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(124,106,255,0.1); border: 1px solid {Theme.ACCENT_PRIMARY}44;
-            border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
+            border-radius: {Theme.RADIUS_SMALL}; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
             QPushButton:hover {{ background-color: rgba(124,106,255,0.2); }}
         """)
         create_btn.clicked.connect(self._show_create)
@@ -105,7 +105,7 @@ class WorkflowsTab(QWidget):
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.SEPARATOR}; border: none; max-height: 1px;")
         layout.addWidget(sep)
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -119,7 +119,7 @@ class WorkflowsTab(QWidget):
         templates_btn = QPushButton("Load Templates")
         templates_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(92,224,208,0.08); border: 1px solid {Theme.ACCENT_SECONDARY}44;
-            border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_SECONDARY}; }}
+            border-radius: {Theme.RADIUS_SMALL}; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_SECONDARY}; }}
             QPushButton:hover {{ background-color: rgba(92,224,208,0.18); }}
         """)
         templates_btn.clicked.connect(self._load_templates)
@@ -127,11 +127,11 @@ class WorkflowsTab(QWidget):
 
         self.workflow_list = QListWidget()
         self.workflow_list.setStyleSheet(f"""
-            QListWidget {{ background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER};
-            border-radius: 8px; color: {Theme.TEXT_SECONDARY}; font-size: 12px; padding: 6px; outline: none; }}
-            QListWidget::item {{ padding: 8px 12px; border-radius: 4px; }}
-            QListWidget::item:selected {{ background-color: rgba(124,106,255,0.15); color: {Theme.TEXT_PRIMARY}; }}
-            QListWidget::item:hover {{ background-color: rgba(124,106,255,0.06); }}
+            QListWidget {{ background-color: {Theme.BG_CARD}; border: 1px solid {Theme.BORDER};
+            border-radius: {Theme.RADIUS_SMALL}; color: {Theme.TEXT_SECONDARY}; font-size: 12px; padding: 6px; outline: none; }}
+            QListWidget::item {{ padding: 8px 12px; border-radius: {Theme.RADIUS_TINY}; }}
+            QListWidget::item:selected {{ background-color: {Theme.BG_SELECTED}; color: {Theme.TEXT_PRIMARY}; }}
+            QListWidget::item:hover {{ background-color: {Theme.BG_HOVER}; }}
         """)
         self.workflow_list.currentRowChanged.connect(self._on_select)
         left_layout.addWidget(self.workflow_list, 1)
@@ -156,8 +156,8 @@ class WorkflowsTab(QWidget):
         self.detail_steps = QTextEdit()
         self.detail_steps.setReadOnly(True)
         self.detail_steps.setStyleSheet(f"""
-            QTextEdit {{ background-color: rgba(12,12,22,0.5); color: {Theme.TEXT_SECONDARY};
-            border: 1px solid {Theme.BORDER}; border-radius: 8px; padding: 12px;
+            QTextEdit {{ background-color: {Theme.BG_CARD}; color: {Theme.TEXT_SECONDARY};
+            border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_SMALL}; padding: 12px;
             font-family: {Theme.FONT_MONO}; font-size: 11px; }}
         """)
         right_layout.addWidget(self.detail_steps, 1)
@@ -166,12 +166,11 @@ class WorkflowsTab(QWidget):
         splitter.setSizes([300, 500])
         layout.addWidget(splitter, 1)
 
-        # Inline create form (hidden by default)
         self.create_panel = QWidget()
         self.create_panel.setStyleSheet(f"""
-            background-color: rgba(20, 20, 38, 0.6);
+            background-color: {Theme.BG_CARD};
             border: 1px solid {Theme.BORDER};
-            border-radius: {Theme.CARD_RADIUS};
+            border-radius: {Theme.RADIUS_CARD};
         """)
         self.create_panel.setVisible(False)
         form = QVBoxLayout(self.create_panel)
@@ -205,18 +204,16 @@ class WorkflowsTab(QWidget):
 
         btn_row = QHBoxLayout()
         save_btn = QPushButton("Save")
-        save_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none; border-radius: 6px;
-            padding: 8px 24px; font-size: 12px; font-weight: 600; color: white; }}
-            QPushButton:hover {{ background-color: #8a7aff; }}
-        """)
+        save_btn.setObjectName("accent")
+        save_btn.setFixedHeight(36)
         save_btn.clicked.connect(self._save_workflow)
         btn_row.addWidget(save_btn)
 
         cancel_btn = QPushButton("Cancel")
+        cancel_btn.setFixedHeight(36)
         cancel_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(255,64,112,0.08); border: 1px solid {Theme.ACCENT_ERROR}44;
-            border-radius: 6px; padding: 8px 24px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
+            border-radius: {Theme.RADIUS_SMALL}; padding: 8px 24px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
             QPushButton:hover {{ background-color: rgba(255,64,112,0.18); }}
         """)
         cancel_btn.clicked.connect(lambda: self.create_panel.setVisible(False))

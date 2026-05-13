@@ -2,7 +2,6 @@ from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame
 )
 from PyQt6.QtCore import Qt, pyqtSignal
-from PyQt6.QtGui import QFont
 
 from jarvis.ui.theme import Theme
 
@@ -24,7 +23,7 @@ class ConfirmationDialog(QDialog):
             QDialog {{
                 background-color: {Theme.BG_CARD_SOLID};
                 border: 1px solid {Theme.BORDER};
-                border-radius: 16px;
+                border-radius: 14px;
             }}
         """)
         self.setWindowFlags(
@@ -42,12 +41,12 @@ class ConfirmationDialog(QDialog):
         header.setSpacing(10)
 
         icon = QLabel("⚠")
-        icon.setStyleSheet(f"font-size: 24px; color: {Theme.ACCENT_WARNING}; background: transparent;")
+        icon.setStyleSheet(f"font-size: 22px; color: {Theme.ACCENT_WARNING}; background: transparent;")
         icon.setFixedWidth(32)
         header.addWidget(icon)
 
         title = QLabel("Confirm Command")
-        title.setStyleSheet(f"font-size: 17px; font-weight: 700; color: {Theme.TEXT_PRIMARY}; background: transparent;")
+        title.setStyleSheet(f"font-size: 16px; font-weight: 600; color: {Theme.TEXT_PRIMARY}; background: transparent;")
         header.addWidget(title, 1)
 
         layout.addLayout(header)
@@ -55,9 +54,9 @@ class ConfirmationDialog(QDialog):
         cmd_box = QFrame()
         cmd_box.setStyleSheet(f"""
             QFrame {{
-                background-color: rgba(255, 64, 112, 0.08);
-                border: 1px solid rgba(255, 64, 112, 0.2);
-                border-radius: 8px;
+                background-color: rgba(255, 64, 112, 0.06);
+                border: 1px solid rgba(255, 64, 112, 0.18);
+                border-radius: {Theme.RADIUS_SMALL};
                 padding: 10px 14px;
             }}
         """)
@@ -72,7 +71,7 @@ class ConfirmationDialog(QDialog):
         cmd_text = QLabel(self.command)
         cmd_text.setStyleSheet(f"""
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 600;
             color: {Theme.ACCENT_ERROR};
             font-family: {Theme.FONT_MONO};
             background: transparent;
@@ -82,7 +81,7 @@ class ConfirmationDialog(QDialog):
 
         if self.reason:
             reason_label = QLabel(self.reason)
-            reason_label.setStyleSheet(f"font-size: 11px; color: {Theme.TEXT_MUTED}; background: transparent;")
+            reason_label.setStyleSheet(f"font-size: 11px; color: {Theme.TEXT_TERTIARY}; background: transparent;")
             cmd_layout.addWidget(reason_label)
 
         layout.addWidget(cmd_box)
@@ -95,16 +94,16 @@ class ConfirmationDialog(QDialog):
         cancel_btn = QPushButton("Cancel")
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: rgba(255, 64, 112, 0.1);
-                border: 1px solid rgba(255, 64, 112, 0.3);
-                border-radius: 8px;
+                background-color: rgba(255, 64, 112, 0.08);
+                border: 1px solid rgba(255, 64, 112, 0.25);
+                border-radius: {Theme.RADIUS_BUTTON};
                 padding: 10px 24px;
                 font-size: 13px;
-                font-weight: 600;
+                font-weight: 500;
                 color: {Theme.ACCENT_ERROR};
             }}
             QPushButton:hover {{
-                background-color: rgba(255, 64, 112, 0.2);
+                background-color: rgba(255, 64, 112, 0.16);
             }}
         """)
         cancel_btn.clicked.connect(self._cancel)
@@ -114,20 +113,6 @@ class ConfirmationDialog(QDialog):
 
         confirm_btn = QPushButton("Confirm & Execute")
         confirm_btn.setObjectName("accent")
-        confirm_btn.setStyleSheet(f"""
-            QPushButton {{
-                background-color: {Theme.ACCENT_PRIMARY};
-                border: none;
-                border-radius: 8px;
-                padding: 10px 24px;
-                font-size: 13px;
-                font-weight: 600;
-                color: white;
-            }}
-            QPushButton:hover {{
-                background-color: #8a7aff;
-            }}
-        """)
         confirm_btn.clicked.connect(self._confirm)
         confirm_btn.setDefault(True)
         buttons.addWidget(confirm_btn)

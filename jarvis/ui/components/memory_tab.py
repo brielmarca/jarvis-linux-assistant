@@ -27,29 +27,28 @@ class MemoryTab(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(24, 20, 24, 20)
-        layout.setSpacing(12)
+        layout.setContentsMargins(32, 24, 32, 24)
+        layout.setSpacing(14)
 
         header = QLabel("Memory")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 24px; font-weight: 700; background: transparent; letter-spacing: -0.4px;")
         layout.addWidget(header)
 
         desc = QLabel("Short-term context, long-term memories, semantic search, preferences, and project data")
-        desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; background: transparent;")
+        desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
         layout.addWidget(desc)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.SEPARATOR}; border: none; max-height: 1px;")
         layout.addWidget(sep)
 
-        # Semantic search bar
         search_row = QHBoxLayout()
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText("Search memories semantically...")
         self.search_input.setStyleSheet(f"""
-            QLineEdit {{ background-color: rgba(12,12,22,0.6); color: {Theme.TEXT_PRIMARY};
-            border: 1px solid {Theme.BORDER}; border-radius: 8px; padding: 10px 14px;
+            QLineEdit {{ background-color: {Theme.BG_CARD}; color: {Theme.TEXT_PRIMARY};
+            border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_INPUT}; padding: 10px 14px;
             font-size: 13px; }}
             QLineEdit:focus {{ border-color: {Theme.ACCENT_PRIMARY}; }}
         """)
@@ -59,7 +58,7 @@ class MemoryTab(QWidget):
         search_btn = QPushButton("Search")
         search_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(124,106,255,0.1); border: 1px solid {Theme.ACCENT_PRIMARY}44;
-            border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
+            border-radius: {Theme.RADIUS_SMALL}; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
             QPushButton:hover {{ background-color: rgba(124,106,255,0.2); }}
         """)
         search_btn.clicked.connect(self._semantic_search)
@@ -68,7 +67,7 @@ class MemoryTab(QWidget):
         clear_search_btn = QPushButton("Clear")
         clear_search_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(255,64,112,0.08); border: 1px solid {Theme.ACCENT_ERROR}44;
-            border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
+            border-radius: {Theme.RADIUS_SMALL}; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
             QPushButton:hover {{ background-color: rgba(255,64,112,0.18); }}
         """)
         clear_search_btn.clicked.connect(lambda: [self.search_input.clear(), self._refresh()])
@@ -78,7 +77,7 @@ class MemoryTab(QWidget):
         tabs = QTabWidget()
         tabs.setStyleSheet(f"""
             QTabWidget::pane {{ border: none; background: transparent; }}
-            QTabBar::tab {{ background: transparent; color: {Theme.TEXT_MUTED}; padding: 8px 20px;
+            QTabBar::tab {{ background: transparent; color: {Theme.TEXT_TERTIARY}; padding: 8px 20px;
             border: none; border-bottom: 2px solid transparent; font-size: 12px; font-weight: 500; }}
             QTabBar::tab:selected {{ color: {Theme.ACCENT_PRIMARY}; border-bottom: 2px solid {Theme.ACCENT_PRIMARY}; }}
             QTabBar::tab:hover {{ color: {Theme.TEXT_SECONDARY}; }}
@@ -106,11 +105,11 @@ class MemoryTab(QWidget):
         table.setColumnCount(cols)
         table.setHorizontalHeaderLabels(headers)
         table.setStyleSheet(f"""
-            QTableWidget {{ background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER};
-            border-radius: 8px; color: {Theme.TEXT_SECONDARY}; font-size: 11px;
-            gridline-color: rgba(50,50,80,0.2); }}
+            QTableWidget {{ background-color: {Theme.BG_CARD}; border: 1px solid {Theme.BORDER};
+            border-radius: {Theme.RADIUS_SMALL}; color: {Theme.TEXT_SECONDARY}; font-size: 11px;
+            gridline-color: {Theme.SEPARATOR}; }}
             QTableWidget::item {{ padding: 6px 10px; }}
-            QHeaderView::section {{ background-color: rgba(20,20,40,0.7); color: {Theme.TEXT_PRIMARY};
+            QHeaderView::section {{ background-color: {Theme.BG_SIDEBAR}; color: {Theme.TEXT_SECONDARY};
             border: none; border-bottom: 1px solid {Theme.BORDER}; padding: 8px; font-weight: 600; font-size: 11px; }}
         """)
         table.horizontalHeader().setStretchLastSection(True)
@@ -177,14 +176,14 @@ class MemoryTab(QWidget):
         add_input = QLineEdit()
         add_input.setPlaceholderText("Add semantic memory entry...")
         add_input.setStyleSheet(f"""
-            QLineEdit {{ background-color: rgba(12,12,22,0.6); color: {Theme.TEXT_PRIMARY};
-            border: 1px solid {Theme.BORDER}; border-radius: 6px; padding: 8px 12px; font-size: 12px; }}
+            QLineEdit {{ background-color: {Theme.BG_CARD}; color: {Theme.TEXT_PRIMARY};
+            border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_SMALL}; padding: 8px 12px; font-size: 12px; }}
         """)
         row.addWidget(add_input, 1)
         add_btn = QPushButton("Add")
         add_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(124,106,255,0.1); border: 1px solid {Theme.ACCENT_PRIMARY}44;
-            border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
+            border-radius: {Theme.RADIUS_SMALL}; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
             QPushButton:hover {{ background-color: rgba(124,106,255,0.2); }}
         """)
         add_btn.clicked.connect(lambda: self._add_semantic(add_input))
@@ -205,8 +204,8 @@ class MemoryTab(QWidget):
         self.stats_text = QTextEdit()
         self.stats_text.setReadOnly(True)
         self.stats_text.setStyleSheet(f"""
-            QTextEdit {{ background-color: rgba(12,12,22,0.5); color: {Theme.TEXT_SECONDARY};
-            border: 1px solid {Theme.BORDER}; border-radius: 8px; padding: 14px;
+            QTextEdit {{ background-color: {Theme.BG_CARD}; color: {Theme.TEXT_SECONDARY};
+            border: 1px solid {Theme.BORDER}; border-radius: {Theme.RADIUS_SMALL}; padding: 14px;
             font-family: {Theme.FONT_MONO}; font-size: 12px; }}
         """)
         layout.addWidget(self.stats_text)
@@ -232,12 +231,11 @@ class MemoryTab(QWidget):
             self.semantic_table.setItem(i, 1, QTableWidgetItem(tags[:50]))
             score = f"{r.get('score', 0):.3f}"
             score_item = QTableWidgetItem(score)
-            score_item.setForeground(QColor(Theme.ACCENT_PRIMARY if r.get('score', 0) > 0.5 else Theme.TEXT_MUTED))
+            score_item.setForeground(QColor(Theme.ACCENT_PRIMARY if r.get('score', 0) > 0.5 else Theme.TEXT_TERTIARY))
             self.semantic_table.setItem(i, 2, score_item)
             pinned = "✓" if r.get("pinned") else ""
             self.semantic_table.setItem(i, 3, QTableWidgetItem(pinned))
             self._add_pin_btn(self.semantic_table, i, r.get("id", ""))
-        # Also show semantic results in the main memory table view
         self.mem_table.setRowCount(len(results))
         for i, r in enumerate(results):
             self.mem_table.setItem(i, 0, QTableWidgetItem(r.get("text", "")[:100]))
@@ -245,7 +243,7 @@ class MemoryTab(QWidget):
             self.mem_table.setItem(i, 1, QTableWidgetItem(tags[:50]))
             imp = str(r.get("score", 0))
             imp_item = QTableWidgetItem(imp)
-            imp_item.setForeground(QColor(Theme.ACCENT_PRIMARY if r.get('score', 0) > 0.3 else Theme.TEXT_MUTED))
+            imp_item.setForeground(QColor(Theme.ACCENT_PRIMARY if r.get('score', 0) > 0.3 else Theme.TEXT_TERTIARY))
             self.mem_table.setItem(i, 2, imp_item)
             self.mem_table.setItem(i, 3, QTableWidgetItem(""))
 
@@ -255,7 +253,7 @@ class MemoryTab(QWidget):
         btn = QPushButton("Pin" if not semantic_memory.is_pinned(entry_id) else "Unpin")
         btn.setStyleSheet(f"""
             QPushButton {{ background-color: {_hex_to_rgba(Theme.ACCENT_PRIMARY, 0.08)};
-            border: 1px solid {Theme.ACCENT_PRIMARY}44; border-radius: 4px; padding: 2px 8px;
+            border: 1px solid {Theme.ACCENT_PRIMARY}44; border-radius: {Theme.RADIUS_TINY}; padding: 2px 8px;
             font-size: 10px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
             QPushButton:hover {{ background-color: {_hex_to_rgba(Theme.ACCENT_PRIMARY, 0.18)}; }}
         """)
@@ -282,14 +280,14 @@ class MemoryTab(QWidget):
             self.mem_table.setItem(i, 1, QTableWidgetItem(tags[:50]))
             imp = str(m.get("importance", 0))
             imp_item = QTableWidgetItem(imp)
-            imp_item.setForeground(QColor(Theme.ACCENT_PRIMARY if float(imp) > 0.5 else Theme.TEXT_MUTED))
+            imp_item.setForeground(QColor(Theme.ACCENT_PRIMARY if float(imp) > 0.5 else Theme.TEXT_TERTIARY))
             self.mem_table.setItem(i, 2, imp_item)
             created = m.get("created", "")[:19] if m.get("created") else ""
             self.mem_table.setItem(i, 3, QTableWidgetItem(created))
             del_btn = QPushButton("✕")
             del_btn.setStyleSheet(f"""
                 QPushButton {{ background-color: rgba(255,64,112,0.08); border: 1px solid {Theme.ACCENT_ERROR}44;
-                border-radius: 4px; padding: 2px 8px; font-size: 10px; color: {Theme.ACCENT_ERROR}; }}
+                border-radius: {Theme.RADIUS_TINY}; padding: 2px 8px; font-size: 10px; color: {Theme.ACCENT_ERROR}; }}
                 QPushButton:hover {{ background-color: rgba(255,64,112,0.18); }}
             """)
             cmd_text = m.get("text", "")
@@ -309,12 +307,10 @@ class MemoryTab(QWidget):
             self.proj_table.setItem(i, 1, QTableWidgetItem(proj.get("path", "")))
             self.proj_table.setItem(i, 2, QTableWidgetItem(proj.get("last_opened", "")[:19] or ""))
 
-        # Semantic memories
         try:
             sem_all = semantic_memory.search("", top_k=200)
         except Exception:
             sem_all = []
-        # Also get pinned
         try:
             pinned_list = [m for m in sem_all if m.get("pinned")]
         except Exception:
@@ -327,7 +323,7 @@ class MemoryTab(QWidget):
             self.semantic_table.setItem(i, 1, QTableWidgetItem(tags[:50]))
             score = f"{r.get('score', 0):.3f}"
             score_item = QTableWidgetItem(score)
-            score_item.setForeground(QColor(Theme.ACCENT_PRIMARY if r.get('score', 0) > 0.3 else Theme.TEXT_MUTED))
+            score_item.setForeground(QColor(Theme.ACCENT_PRIMARY if r.get('score', 0) > 0.3 else Theme.TEXT_TERTIARY))
             self.semantic_table.setItem(i, 2, score_item)
             pinned = "✓" if r.get("pinned") else ""
             self.semantic_table.setItem(i, 3, QTableWidgetItem(pinned))
@@ -343,14 +339,13 @@ class MemoryTab(QWidget):
             unpin_btn = QPushButton("Unpin")
             unpin_btn.setStyleSheet(f"""
                 QPushButton {{ background-color: rgba(124,106,255,0.08); border: 1px solid {Theme.ACCENT_PRIMARY}44;
-                border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
+                border-radius: {Theme.RADIUS_TINY}; padding: 2px 8px; font-size: 10px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
                 QPushButton:hover {{ background-color: rgba(124,106,255,0.18); }}
             """)
             eid = r.get("id", "")
             unpin_btn.clicked.connect(lambda checked, eid=eid: [semantic_memory.unpin(eid), self._refresh()])
             self.pinned_table.setCellWidget(i, 3, unpin_btn)
 
-        # Short-term memories from MemoryManager
         try:
             short = mem.get_short_term_memories() if hasattr(mem, 'get_short_term_memories') else []
         except Exception:

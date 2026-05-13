@@ -18,7 +18,7 @@ class ThinkingAnimation(QWidget):
         self._timer.timeout.connect(self._tick)
         self._timer.start(40)
 
-        self.setFixedSize(80, 30)
+        self.setFixedSize(70, 24)
 
     def start(self):
         self._visible = True
@@ -43,10 +43,10 @@ class ThinkingAnimation(QWidget):
         w = self.width()
         h = self.height()
         cy = h / 2
-        spacing = 14
+        spacing = 12
         total_w = self._dot_count * spacing
         start_x = (w - total_w) / 2 + spacing / 2
-        dot_r = 4
+        dot_r = 3.5
 
         for i in range(self._dot_count):
             delay = i * 0.8
@@ -55,7 +55,7 @@ class ThinkingAnimation(QWidget):
             r = dot_r * scale
 
             x = start_x + i * spacing
-            y = cy - (bounce * 6)
+            y = cy - (bounce * 5)
 
             alpha = int(100 + 155 * bounce)
             color = QColor(Theme.ACCENT_PRIMARY)
