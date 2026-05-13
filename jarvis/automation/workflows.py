@@ -84,8 +84,9 @@ class Workflow:
 
 
 class WorkflowExecutor:
-    def __init__(self):
+    def __init__(self, manager=None):
         self._action_handlers: dict[str, Callable] = {}
+        self._manager = manager
         self._register_defaults()
 
     def register_action(self, name: str, handler: Callable):
@@ -104,7 +105,15 @@ class WorkflowExecutor:
         self.register_action("docker_stop", lambda p: _try_import("jarvis.automation.docker_tools", "docker_compose_down", p.get("path", ".")))
         self.register_action("wait", lambda p: time.sleep(float(p.get("seconds", 1))))
         self.register_action("notify", lambda p: _notify(p.get("message", "")))
-        self.register_action("run_workflow", lambda p: None)
+        self.register_action("run_workflow", lambda p: self._execute_nested(p.get("name", "")))
+
+    def _execute_nested(self, name: str):
+        if not self._manager or not name:
+            return
+        wf = self._manager.get(name)
+        if wf:
+            log.info(f"Executing nested workflow: {name}")
+            self.execute(wf)
 
     def execute(self, workflow: Workflow, step_callback: Callable = None) -> list[dict]:
         results = []
@@ -169,7 +178,7 @@ def _notify(message: str):
 class WorkflowManager:
     def __init__(self):
         self._workflows: dict[str, Workflow] = {}
-        self._executor = WorkflowExecutor()
+        self._executor = WorkflowExecutor(manager=self)
         self._lock = Lock()
         self._scheduled: list[dict] = []
         self._scheduler_thread: Thread | None = None
