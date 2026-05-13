@@ -2,46 +2,45 @@ from PyQt6.QtGui import QColor
 
 
 class Theme:
-    BG_PRIMARY = "#0a0a0f"
-    BG_SECONDARY = "#12121a"
-    BG_CARD = "rgba(20, 20, 35, 0.85)"
-    BG_CARD_SOLID = "#141423"
-    BG_HOVER = "rgba(40, 40, 70, 0.6)"
-    BG_GLASS = "rgba(16, 16, 28, 0.75)"
+    BG_PRIMARY = "#1C1C1E"
+    BG_SECONDARY = "#2C2C2E"
+    BG_CARD = "rgba(44, 44, 46, 0.85)"
+    BG_CARD_SOLID = "#2C2C2E"
+    BG_HOVER = "rgba(255, 255, 255, 0.08)"
+    BG_GLASS = "rgba(28, 28, 30, 0.85)"
+    BG_SIDEBAR = "#1C1C1E"
+    BG_SELECTED = "rgba(0, 122, 255, 0.15)"
 
-    TEXT_PRIMARY = "#e8e8f0"
-    TEXT_SECONDARY = "#9090b0"
-    TEXT_MUTED = "#505070"
+    TEXT_PRIMARY = "#FFFFFF"
+    TEXT_SECONDARY = "#AEAEB2"
+    TEXT_MUTED = "#636366"
+    TEXT_TERTIARY = "#636366"
 
-    ACCENT_PRIMARY = "#7c6aff"
-    ACCENT_PRIMARY_GLOW = "rgba(124, 106, 255, 0.25)"
-    ACCENT_SECONDARY = "#5ce0d0"
-    ACCENT_SECONDARY_GLOW = "rgba(92, 224, 208, 0.2)"
-    ACCENT_WARNING = "#f0c040"
-    ACCENT_WARNING_GLOW = "rgba(240, 192, 64, 0.2)"
-    ACCENT_ERROR = "#ff4070"
-    ACCENT_ERROR_GLOW = "rgba(255, 64, 112, 0.2)"
-    ACCENT_SUCCESS = "#20d0a0"
-    ACCENT_SUCCESS_GLOW = "rgba(32, 208, 160, 0.2)"
-    ACCENT_INFO = "#5090f0"
-    ACCENT_INFO_GLOW = "rgba(80, 144, 240, 0.2)"
+    ACCENT_PRIMARY = "#007AFF"
+    ACCENT_SECONDARY = "#30D158"
+    ACCENT_WARNING = "#FF9F0A"
+    ACCENT_ERROR = "#FF453A"
+    ACCENT_SUCCESS = "#30D158"
+    ACCENT_INFO = "#5AC8FA"
 
-    BORDER = "rgba(50, 50, 80, 0.5)"
-    BORDER_FOCUS = "#7c6aff"
+    BORDER = "rgba(255, 255, 255, 0.1)"
+    BORDER_FOCUS = "#007AFF"
+    SEPARATOR = "#38383A"
+    SIDEBAR_WIDTH = 200
 
     FONT_FAMILY = "SF Pro Display, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
     FONT_MONO = "JetBrains Mono, Fira Code, monospace"
 
-    CARD_RADIUS = "12px"
-    BUTTON_RADIUS = "8px"
-    INPUT_RADIUS = "10px"
+    CARD_RADIUS = "10px"
+    BUTTON_RADIUS = "20px"
+    INPUT_RADIUS = "12px"
 
     @classmethod
     def glass_style(cls, bg=None):
         b = bg or cls.BG_GLASS
         return f"""
             background-color: {b};
-            border: 1px solid {cls.BORDER};
+            border: 0.5px solid {cls.BORDER};
             border-radius: {cls.CARD_RADIUS};
         """
 
@@ -49,7 +48,7 @@ class Theme:
     def card_style(cls):
         return f"""
             background-color: {cls.BG_CARD};
-            border: 1px solid {cls.BORDER};
+            border: 0.5px solid {cls.BORDER};
             border-radius: {cls.CARD_RADIUS};
         """
 
@@ -66,21 +65,19 @@ class Theme:
             background: transparent;
         }}
         QPushButton {{
-            background-color: {cls.BG_CARD};
+            background-color: {cls.BG_SECONDARY};
             color: {cls.TEXT_PRIMARY};
-            border: 1px solid {cls.BORDER};
+            border: 0.5px solid {cls.BORDER};
             border-radius: {cls.BUTTON_RADIUS};
-            padding: 8px 18px;
+            padding: 8px 20px;
             font-size: 13px;
             font-weight: 500;
         }}
         QPushButton:hover {{
             background-color: {cls.BG_HOVER};
-            border-color: {cls.ACCENT_PRIMARY};
         }}
         QPushButton:pressed {{
             background-color: {cls.ACCENT_PRIMARY};
-            border-color: {cls.ACCENT_PRIMARY};
         }}
         QPushButton#accent {{
             background-color: {cls.ACCENT_PRIMARY};
@@ -89,32 +86,32 @@ class Theme:
             font-weight: 600;
         }}
         QPushButton#accent:hover {{
-            background-color: #8a7aff;
+            background-color: #0066CC;
         }}
         QPushButton#danger {{
-            background-color: rgba(255, 64, 112, 0.15);
-            border: 1px solid {cls.ACCENT_ERROR};
+            background-color: rgba(255, 69, 58, 0.1);
+            border: 0.5px solid {cls.ACCENT_ERROR};
             color: {cls.ACCENT_ERROR};
         }}
         QPushButton#danger:hover {{
-            background-color: rgba(255, 64, 112, 0.25);
+            background-color: rgba(255, 69, 58, 0.2);
         }}
         QLineEdit {{
             background-color: {cls.BG_SECONDARY};
             color: {cls.TEXT_PRIMARY};
-            border: 1px solid {cls.BORDER};
+            border: 0.5px solid {cls.BORDER};
             border-radius: {cls.INPUT_RADIUS};
             padding: 11px 16px;
             font-size: 14px;
         }}
         QLineEdit:focus {{
             border-color: {cls.ACCENT_PRIMARY};
-            background-color: rgba(124, 106, 255, 0.04);
+            background-color: rgba(0, 122, 255, 0.04);
         }}
         QTextEdit, QPlainTextEdit {{
             background-color: {cls.BG_SECONDARY};
             color: {cls.TEXT_PRIMARY};
-            border: 1px solid {cls.BORDER};
+            border: 0.5px solid {cls.BORDER};
             border-radius: {cls.CARD_RADIUS};
             padding: 12px;
             font-family: {cls.FONT_MONO};
@@ -166,7 +163,6 @@ class Theme:
             border-bottom: 2px solid transparent;
             font-size: 13px;
             font-weight: 500;
-            letter-spacing: 0.3px;
         }}
         QTabBar::tab:selected {{
             color: {cls.ACCENT_PRIMARY};
@@ -178,7 +174,7 @@ class Theme:
         QComboBox {{
             background-color: {cls.BG_CARD};
             color: {cls.TEXT_PRIMARY};
-            border: 1px solid {cls.BORDER};
+            border: 0.5px solid {cls.BORDER};
             border-radius: 6px;
             padding: 7px 12px;
             font-size: 13px;
@@ -196,7 +192,7 @@ class Theme:
             color: {cls.TEXT_PRIMARY};
             selection-background-color: {cls.ACCENT_PRIMARY};
             selection-color: white;
-            border: 1px solid {cls.BORDER};
+            border: 0.5px solid {cls.BORDER};
             border-radius: 6px;
             padding: 4px;
             outline: none;
@@ -214,8 +210,8 @@ class Theme:
             width: 18px;
             height: 18px;
             border-radius: 4px;
-            border: 1px solid {cls.BORDER};
-            background-color: rgba(20, 20, 35, 0.6);
+            border: 0.5px solid {cls.BORDER};
+            background-color: rgba(44, 44, 46, 0.6);
         }}
         QCheckBox::indicator:checked {{
             background-color: {cls.ACCENT_PRIMARY};

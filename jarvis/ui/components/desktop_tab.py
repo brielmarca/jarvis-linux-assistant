@@ -14,8 +14,8 @@ class StatCard(QWidget):
         self._color = color
         self.setStyleSheet(f"""
             StatCard {{
-                background-color: rgba(20, 20, 38, 0.5);
-                border: 1px solid {Theme.BORDER};
+                background-color: {Theme.BG_CARD_SOLID};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: {Theme.CARD_RADIUS};
             }}
         """)
@@ -27,17 +27,13 @@ class StatCard(QWidget):
         header.setStyleSheet("background: transparent;")
         hl = QHBoxLayout(header)
         hl.setContentsMargins(0, 0, 0, 0)
-        if icon:
-            ic = QLabel(icon)
-            ic.setStyleSheet(f"font-size: 18px; background: transparent;")
-            hl.addWidget(ic)
         lbl = QLabel(label)
-        lbl.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; background: transparent;")
+        lbl.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 500; background: transparent;")
         hl.addWidget(lbl)
         hl.addStretch()
         layout.addWidget(header)
         self.value_label = QLabel(value)
-        self.value_label.setStyleSheet(f"color: {color}; font-size: 18px; font-weight: 700; background: transparent;")
+        self.value_label.setStyleSheet(f"color: {color}; font-size: 18px; font-weight: 600; background: transparent;")
         layout.addWidget(self.value_label)
 
     def set_value(self, val: str):
@@ -59,7 +55,7 @@ class DesktopTab(QWidget):
         layout.setSpacing(12)
 
         header = QLabel("Desktop Awareness")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
         layout.addWidget(header)
 
         desc = QLabel("Real-time desktop state, active apps, system resources, and peripherals")
@@ -68,7 +64,7 @@ class DesktopTab(QWidget):
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
         scroll = QScrollArea()
@@ -84,17 +80,17 @@ class DesktopTab(QWidget):
 
         self.cards = {}
         card_defs = [
-            ("active_app", "Active App", "*", Theme.ACCENT_INFO),
-            ("active_window", "Active Window", "", Theme.ACCENT_SECONDARY),
-            ("workspace", "Workspace", "", Theme.ACCENT_PRIMARY),
-            ("battery", "Battery", "*", Theme.ACCENT_SUCCESS),
-            ("network", "Network", "○", Theme.ACCENT_INFO),
-            ("media", "Media", "♪", Theme.ACCENT_WARNING),
-            ("monitors", "Monitors", "⊞", Theme.ACCENT_PRIMARY),
-            ("cpu_top", "Top CPU", "#", Theme.ACCENT_ERROR),
+            ("active_app", "Active App", Theme.ACCENT_INFO),
+            ("active_window", "Active Window", Theme.ACCENT_SECONDARY),
+            ("workspace", "Workspace", Theme.ACCENT_PRIMARY),
+            ("battery", "Battery", Theme.ACCENT_SUCCESS),
+            ("network", "Network", Theme.ACCENT_INFO),
+            ("media", "Media", Theme.ACCENT_WARNING),
+            ("monitors", "Monitors", Theme.ACCENT_PRIMARY),
+            ("cpu_top", "Top CPU", Theme.ACCENT_ERROR),
         ]
-        for i, (key, label, icon, color) in enumerate(card_defs):
-            card = StatCard(label, "...", icon, color)
+        for i, (key, label, color) in enumerate(card_defs):
+            card = StatCard(label, "...", "", color)
             self.cards[key] = card
             grid.addWidget(card, i // 2, i % 2)
 
@@ -104,9 +100,9 @@ class DesktopTab(QWidget):
 
         refresh_btn = QPushButton("Refresh Now")
         refresh_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: rgba(124,106,255,0.1); border: 1px solid {Theme.ACCENT_PRIMARY}44;
-            border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
-            QPushButton:hover {{ background-color: rgba(124,106,255,0.2); }}
+            QPushButton {{ background-color: rgba(0,122,255,0.08); border: 0.5px solid {Theme.ACCENT_PRIMARY}44;
+            border-radius: 14px; padding: 6px 18px; font-size: 12px; font-weight: 400; color: {Theme.ACCENT_PRIMARY}; }}
+            QPushButton:hover {{ background-color: rgba(0,122,255,0.15); }}
         """)
         refresh_btn.clicked.connect(self._refresh)
         layout.addWidget(refresh_btn, 0, Qt.AlignmentFlag.AlignLeft)

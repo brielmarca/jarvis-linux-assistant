@@ -14,13 +14,6 @@ STATUS_COLORS = {
     "ai": Theme.ACCENT_INFO,
 }
 
-STATUS_ICONS = {
-    "ok": "+",
-    "error": "x",
-    "blocked": "!",
-    "ai": "~",
-}
-
 
 class TimelineEntry(QWidget):
     def __init__(self, entry: dict, parent=None):
@@ -31,13 +24,13 @@ class TimelineEntry(QWidget):
     def setup_ui(self):
         self.setStyleSheet(f"""
             QWidget {{
-                background-color: rgba(20, 20, 38, 0.7);
-                border: 1px solid {Theme.BORDER};
+                background-color: {Theme.BG_CARD_SOLID};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 8px;
             }}
             QWidget:hover {{
-                background-color: rgba(30, 30, 50, 0.8);
-                border-color: rgba(124, 106, 255, 0.3);
+                background-color: rgba(255, 255, 255, 0.05);
+                border-color: rgba(0, 122, 255, 0.3);
             }}
         """)
         self.setMinimumHeight(56)
@@ -49,7 +42,6 @@ class TimelineEntry(QWidget):
         status = self.entry.get("status", "ok")
         skill = self.entry.get("skill", "?")
         color = STATUS_COLORS.get(status, Theme.TEXT_MUTED)
-        icon = STATUS_ICONS.get(status, "")
 
         header = QWidget()
         header.setStyleSheet("background: transparent; border: none;")
@@ -57,14 +49,9 @@ class TimelineEntry(QWidget):
         h_layout.setContentsMargins(0, 0, 0, 0)
         h_layout.setSpacing(8)
 
-        status_label = QLabel(icon)
-        status_label.setStyleSheet(f"color: {color}; font-size: 14px; font-weight: 700; background: transparent;")
-        status_label.setFixedWidth(20)
-        h_layout.addWidget(status_label)
-
         cmd = self.entry.get("command", "")
         cmd_label = QLabel(cmd)
-        cmd_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-weight: 600; font-size: 13px; background: transparent;")
+        cmd_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-weight: 500; font-size: 13px; background: transparent;")
         cmd_label.setWordWrap(True)
         h_layout.addWidget(cmd_label, 1)
 
@@ -85,8 +72,7 @@ class TimelineEntry(QWidget):
             border: none;
             border-radius: 4px;
             padding: 2px 8px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
+            font-weight: 500;
         """)
         skill_label.setFixedWidth(60)
         skill_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -111,8 +97,8 @@ class TimelineCard(QWidget):
     def setup_ui(self):
         self.setStyleSheet(f"""
             TimelineCard {{
-                background-color: rgba(12, 12, 22, 0.5);
-                border: 1px solid {Theme.BORDER};
+                background-color: {Theme.BG_CARD_SOLID};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: {Theme.CARD_RADIUS};
             }}
         """)
@@ -127,7 +113,7 @@ class TimelineCard(QWidget):
         h_layout.setContentsMargins(0, 0, 0, 0)
 
         title = QLabel("Timeline")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 15px; font-weight: 700; background: transparent;")
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 15px; font-weight: 600; background: transparent;")
         h_layout.addWidget(title)
 
         h_layout.addStretch()
@@ -141,7 +127,7 @@ class TimelineCard(QWidget):
         layout.addWidget(header)
 
         separator = QWidget()
-        separator.setFixedHeight(1)
+        separator.setFixedHeight(0.5)
         separator.setStyleSheet(f"background-color: {Theme.BORDER}; border: none;")
         layout.addWidget(separator)
 

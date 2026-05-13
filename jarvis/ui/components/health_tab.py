@@ -16,9 +16,9 @@ STATUS_COLORS = {
     "error": Theme.ACCENT_ERROR,
 }
 STATUS_ICONS = {
-    "ok": "+",
-    "warning": "!",
-    "error": "x",
+    "ok": "OK",
+    "warning": "WARN",
+    "error": "ERR",
 }
 
 
@@ -32,13 +32,13 @@ class HealthTab(QWidget):
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(12)
 
-        header = QLabel("Health & Diagnostics")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        header = QLabel("Health and Diagnostics")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
         layout.addWidget(header)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
         desc = QLabel("System health, dependency checks, configuration validation")
@@ -53,12 +53,12 @@ class HealthTab(QWidget):
         self.table.setColumnCount(3)
         self.table.setHorizontalHeaderLabels(["Component", "Status", "Message"])
         self.table.setStyleSheet(f"""
-            QTableWidget {{ background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER};
+            QTableWidget {{ background-color: rgba(28,28,30,0.5); border: 0.5px solid {Theme.BORDER};
             border-radius: 8px; color: {Theme.TEXT_SECONDARY}; font-size: 12px;
-            gridline-color: rgba(50,50,80,0.2); }}
+            gridline-color: rgba(255,255,255,0.05); }}
             QTableWidget::item {{ padding: 8px 12px; }}
-            QHeaderView::section {{ background-color: rgba(20,20,40,0.7); color: {Theme.TEXT_PRIMARY};
-            border: none; border-bottom: 1px solid {Theme.BORDER}; padding: 8px; font-weight: 600; font-size: 11px; }}
+            QHeaderView::section {{ background-color: rgba(44,44,46,0.7); color: {Theme.TEXT_PRIMARY};
+            border: none; border-bottom: 0.5px solid {Theme.BORDER}; padding: 8px; font-weight: 500; font-size: 11px; }}
         """)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
@@ -72,17 +72,17 @@ class HealthTab(QWidget):
         health_btn = QPushButton("Run Health Check")
         health_btn.setStyleSheet(f"""
             QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
-            border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; color: white; }}
-            QPushButton:hover {{ background-color: #8a7aff; }}
+            border-radius: 18px; padding: 10px 24px; font-size: 13px; font-weight: 500; color: white; }}
+            QPushButton:hover {{ background-color: #0066CC; }}
         """)
         health_btn.clicked.connect(self._run_health_check)
         btn_row.addWidget(health_btn)
 
         config_btn = QPushButton("Validate Config")
         config_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: rgba(92,224,208,0.15); border: 1px solid {Theme.ACCENT_SECONDARY}44;
-            border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; color: {Theme.ACCENT_SECONDARY}; }}
-            QPushButton:hover {{ background-color: rgba(92,224,208,0.25); }}
+            QPushButton {{ background-color: rgba(48,209,88,0.08); border: 0.5px solid {Theme.ACCENT_SECONDARY}44;
+            border-radius: 18px; padding: 10px 24px; font-size: 13px; font-weight: 400; color: {Theme.ACCENT_SECONDARY}; }}
+            QPushButton:hover {{ background-color: rgba(48,209,88,0.15); }}
         """)
         config_btn.clicked.connect(self._validate_config)
         btn_row.addWidget(config_btn)
@@ -129,7 +129,7 @@ class HealthTab(QWidget):
             parts.append(f"ERR {err_count}")
         self.summary_label.setText(" | ".join(parts))
         self.summary_label.setStyleSheet(
-            f"color: {Theme.ACCENT_ERROR if err_count else Theme.ACCENT_SUCCESS}; font-size: 13px; font-weight: 600; background: transparent;"
+            f"color: {Theme.ACCENT_ERROR if err_count else Theme.ACCENT_SUCCESS}; font-size: 13px; font-weight: 500; background: transparent;"
         )
 
     def _validate_config(self):
@@ -162,5 +162,5 @@ class HealthTab(QWidget):
 
         self.summary_label.setText(result.summary()[:100])
         self.summary_label.setStyleSheet(
-            f"color: {Theme.ACCENT_ERROR if result.has_errors() else Theme.ACCENT_SUCCESS}; font-size: 13px; font-weight: 600; background: transparent;"
+            f"color: {Theme.ACCENT_ERROR if result.has_errors() else Theme.ACCENT_SUCCESS}; font-size: 13px; font-weight: 500; background: transparent;"
         )

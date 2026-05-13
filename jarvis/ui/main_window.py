@@ -119,7 +119,7 @@ class DashboardTab(QWidget):
         h.setContentsMargins(0, 0, 0, 0)
 
         name = QLabel("Jarvis")
-        name.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 26px; font-weight: 800; background: transparent; letter-spacing: -0.5px;")
+        name.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 26px; font-weight: 700; background: transparent;")
         h.addWidget(name)
 
         ver = QLabel("v1.0")
@@ -132,21 +132,21 @@ class DashboardTab(QWidget):
         h.addWidget(self.status_indicator)
 
         self.status_label = QLabel("Idle")
-        self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; font-weight: 500; background: transparent;")
+        self.status_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; font-weight: 400; background: transparent;")
         h.addWidget(self.status_label)
 
         layout.addWidget(header)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
     def _build_quick_actions(self, layout):
         actions_widget = QWidget()
         actions_widget.setStyleSheet(f"""
-            background-color: rgba(20, 20, 38, 0.5);
-            border: 1px solid {Theme.BORDER};
+            background-color: {Theme.BG_CARD_SOLID};
+            border: 0.5px solid {Theme.BORDER};
             border-radius: {Theme.CARD_RADIUS};
         """)
         actions_widget.setFixedHeight(52)
@@ -167,16 +167,16 @@ class DashboardTab(QWidget):
             btn = QPushButton(label)
             btn.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: rgba(124, 106, 255, 0.08);
-                    border: 1px solid rgba(124, 106, 255, 0.15);
-                    border-radius: 8px;
+                    background-color: rgba(0, 122, 255, 0.08);
+                    border: 0.5px solid rgba(0, 122, 255, 0.15);
+                    border-radius: 18px;
                     padding: 6px 14px;
                     font-size: 12px;
-                    font-weight: 500;
+                    font-weight: 400;
                     color: {Theme.TEXT_SECONDARY};
                 }}
                 QPushButton:hover {{
-                    background-color: rgba(124, 106, 255, 0.18);
+                    background-color: rgba(0, 122, 255, 0.15);
                     border-color: {Theme.ACCENT_PRIMARY};
                     color: {Theme.TEXT_PRIMARY};
                 }}
@@ -221,8 +221,8 @@ class DashboardTab(QWidget):
         card = QWidget()
         card.setStyleSheet(f"""
             QWidget {{
-                background-color: rgba(20, 20, 38, 0.5);
-                border: 1px solid {Theme.BORDER};
+                background-color: {Theme.BG_CARD_SOLID};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: {Theme.CARD_RADIUS};
             }}
         """)
@@ -243,7 +243,7 @@ class DashboardTab(QWidget):
             k.setAlignment(Qt.AlignmentFlag.AlignCenter)
             bl.addWidget(k)
             v = QLabel("...")
-            v.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 11px; font-weight: 600; background: transparent;")
+            v.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 11px; font-weight: 500; background: transparent;")
             v.setAlignment(Qt.AlignmentFlag.AlignCenter)
             bl.addWidget(v)
             self.stats_labels[key] = v
@@ -252,7 +252,7 @@ class DashboardTab(QWidget):
         layout.addStretch()
 
         self.response_label = QLabel("")
-        self.response_label.setStyleSheet(f"color: {Theme.ACCENT_SECONDARY}; font-size: 12px; background: transparent;")
+        self.response_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; background: transparent;")
         self.response_label.setWordWrap(True)
         self.response_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         layout.addWidget(self.response_label, 1)
@@ -287,7 +287,7 @@ class SkillsTab(QWidget):
         layout.setSpacing(12)
 
         title = QLabel("Skills")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
         layout.addWidget(title)
 
         desc = QLabel("Enable or disable assistant skills")
@@ -296,7 +296,7 @@ class SkillsTab(QWidget):
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
         scroll = QScrollArea()
@@ -343,7 +343,7 @@ class SettingsTab(QWidget):
         layout.setSpacing(12)
 
         title = QLabel("Settings")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
         layout.addWidget(title)
 
         desc = QLabel("Configure Jarvis to your preference")
@@ -352,8 +352,8 @@ class SettingsTab(QWidget):
 
         self.restart_banner = QWidget()
         self.restart_banner.setStyleSheet(f"""
-            background-color: rgba(240, 192, 64, 0.12);
-            border: 1px solid {Theme.ACCENT_WARNING}66;
+            background-color: rgba(255, 159, 10, 0.1);
+            border: 0.5px solid {Theme.ACCENT_WARNING}66;
             border-radius: 8px;
         """)
         self.restart_banner.setVisible(False)
@@ -366,7 +366,7 @@ class SettingsTab(QWidget):
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
         scroll = QScrollArea()
@@ -427,21 +427,21 @@ class SettingsTab(QWidget):
             QPushButton {{
                 background-color: {Theme.ACCENT_PRIMARY};
                 border: none;
-                border-radius: 10px;
+                border-radius: 20px;
                 padding: 12px 24px;
                 font-size: 14px;
-                font-weight: 600;
+                font-weight: 500;
                 color: white;
             }}
-            QPushButton:hover {{ background-color: #8a7aff; }}
+            QPushButton:hover {{ background-color: #0066CC; }}
         """)
         btn_row.addWidget(save_btn)
 
         reset_btn = QPushButton("Reset Defaults")
         reset_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: rgba(255,64,112,0.08); border: 1px solid {Theme.ACCENT_ERROR}44;
-            border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
-            QPushButton:hover {{ background-color: rgba(255,64,112,0.18); }}
+            QPushButton {{ background-color: rgba(255,69,58,0.08); border: 0.5px solid {Theme.ACCENT_ERROR}44;
+            border-radius: 20px; padding: 12px 24px; font-size: 14px; font-weight: 400; color: {Theme.ACCENT_ERROR}; }}
+            QPushButton:hover {{ background-color: rgba(255,69,58,0.15); }}
         """)
         reset_btn.clicked.connect(self._reset_defaults)
         btn_row.addWidget(reset_btn)
@@ -463,8 +463,8 @@ class SettingsTab(QWidget):
         group = QWidget()
         group.setStyleSheet(f"""
             QWidget {{
-                background-color: rgba(20, 20, 38, 0.5);
-                border: 1px solid {Theme.BORDER};
+                background-color: {Theme.BG_CARD_SOLID};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: {Theme.CARD_RADIUS};
             }}
         """)
@@ -625,7 +625,7 @@ class LogsTab(QWidget):
         h_layout.setContentsMargins(0, 0, 0, 0)
 
         title = QLabel("Logs")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
         h_layout.addWidget(title)
 
         h_layout.addStretch()
@@ -633,16 +633,16 @@ class LogsTab(QWidget):
         clear_btn = QPushButton("Clear")
         clear_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: rgba(255, 64, 112, 0.08);
+                background-color: rgba(255, 69, 58, 0.08);
                 color: {Theme.ACCENT_ERROR};
-                border: 1px solid rgba(255, 64, 112, 0.2);
-                border-radius: 6px;
+                border: 0.5px solid rgba(255, 69, 58, 0.2);
+                border-radius: 14px;
                 padding: 6px 16px;
                 font-size: 12px;
-                font-weight: 500;
+                font-weight: 400;
             }}
             QPushButton:hover {{
-                background-color: rgba(255, 64, 112, 0.18);
+                background-color: rgba(255, 69, 58, 0.18);
             }}
         """)
         clear_btn.clicked.connect(self._clear_logs)
@@ -652,21 +652,20 @@ class LogsTab(QWidget):
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
         self.log_view = QPlainTextEdit()
         self.log_view.setReadOnly(True)
         self.log_view.setStyleSheet(f"""
             QPlainTextEdit {{
-                background-color: rgba(12, 12, 22, 0.7);
+                background-color: rgba(28, 28, 30, 0.7);
                 color: {Theme.TEXT_PRIMARY};
-                border: 1px solid {Theme.BORDER};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: {Theme.CARD_RADIUS};
                 padding: 14px;
                 font-family: {Theme.FONT_MONO};
                 font-size: 12px;
-                line-height: 1.6;
             }}
         """)
         layout.addWidget(self.log_view, 1)
@@ -707,12 +706,12 @@ class MonitorTab(QWidget):
         layout.setSpacing(12)
 
         title = QLabel("System Monitor")
-        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
+        title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent;")
         layout.addWidget(title)
 
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
+        sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 0.5px;")
         layout.addWidget(sep)
 
         self.monitor = SystemMonitorCard()
@@ -752,27 +751,11 @@ class MainWindow(QMainWindow):
         content_layout.setSpacing(0)
 
         self.tabs = QTabWidget()
+        self.tabs.tabBar().hide()
         self.tabs.setStyleSheet(f"""
             QTabWidget::pane {{
                 border: none;
                 background-color: transparent;
-            }}
-            QTabBar::tab {{
-                background-color: transparent;
-                color: {Theme.TEXT_MUTED};
-                padding: 12px 28px;
-                border: none;
-                border-bottom: 2px solid transparent;
-                font-size: 13px;
-                font-weight: 500;
-                letter-spacing: 0.3px;
-            }}
-            QTabBar::tab:selected {{
-                color: {Theme.ACCENT_PRIMARY};
-                border-bottom: 2px solid {Theme.ACCENT_PRIMARY};
-            }}
-            QTabBar::tab:hover {{
-                color: {Theme.TEXT_SECONDARY};
             }}
         """)
         content_layout.addWidget(self.tabs)

@@ -17,7 +17,7 @@ class SplashScreen(QSplashScreen):
         self.widget.setGeometry(0, 0, 440, 260)
         self.widget.setStyleSheet(f"""
             background-color: {Theme.BG_PRIMARY};
-            border: 1px solid {Theme.BORDER};
+            border: 0.5px solid {Theme.BORDER};
             border-radius: 20px;
         """)
 
@@ -29,15 +29,15 @@ class SplashScreen(QSplashScreen):
         title = QLabel("Jarvis")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet(f"""
-            color: {Theme.TEXT_PRIMARY}; font-size: 36px; font-weight: 800;
-            letter-spacing: -1px; background: transparent;
+            color: {Theme.TEXT_PRIMARY}; font-size: 36px; font-weight: 700;
+            background: transparent;
         """)
         layout.addWidget(title)
 
         subtitle = QLabel("Linux Assistant")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setStyleSheet(f"""
-            color: {Theme.ACCENT_PRIMARY}; font-size: 14px; font-weight: 500;
+            color: {Theme.ACCENT_PRIMARY}; font-size: 14px; font-weight: 400;
             letter-spacing: 4px; background: transparent;
         """)
         layout.addWidget(subtitle)
@@ -55,7 +55,7 @@ class SplashScreen(QSplashScreen):
         self.progress.setRange(0, 0)
         self.progress.setFixedHeight(3)
         self.progress.setStyleSheet(f"""
-            QProgressBar {{ background-color: rgba(50,50,80,0.3); border: none; border-radius: 2px; }}
+            QProgressBar {{ background-color: rgba(255,255,255,0.08); border: none; border-radius: 2px; }}
             QProgressBar::chunk {{ background-color: {Theme.ACCENT_PRIMARY}; border-radius: 2px; }}
         """)
         layout.addWidget(self.progress)

@@ -47,8 +47,8 @@ class CommandPalette(QWidget):
         outer = QWidget()
         outer.setStyleSheet(f"""
             QWidget {{
-                background-color: rgba(14, 14, 26, 0.95);
-                border: 1px solid {Theme.BORDER};
+                background-color: rgba(28, 28, 30, 0.96);
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 14px;
             }}
         """)
@@ -60,9 +60,9 @@ class CommandPalette(QWidget):
         self.search_input.setPlaceholderText("Type a command...")
         self.search_input.setStyleSheet(f"""
             QLineEdit {{
-                background-color: rgba(20, 20, 40, 0.6);
+                background-color: {Theme.BG_SECONDARY};
                 color: {Theme.TEXT_PRIMARY};
-                border: 1px solid {Theme.ACCENT_PRIMARY}33;
+                border: 0.5px solid {Theme.ACCENT_PRIMARY}44;
                 border-radius: 8px;
                 padding: 12px 16px;
                 font-size: 14px;
@@ -88,11 +88,11 @@ class CommandPalette(QWidget):
                 font-size: 13px;
             }}
             QListWidget::item:selected {{
-                background-color: rgba(124, 106, 255, 0.15);
+                background-color: rgba(0, 122, 255, 0.15);
                 color: {Theme.TEXT_PRIMARY};
             }}
             QListWidget::item:hover {{
-                background-color: rgba(124, 106, 255, 0.08);
+                background-color: rgba(0, 122, 255, 0.08);
                 color: {Theme.TEXT_PRIMARY};
             }}
         """)

@@ -84,7 +84,7 @@ class StatBar(QWidget):
         layout.setSpacing(8)
 
         self.name_label = QLabel(self._label)
-        self.name_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 11px; font-weight: 500; background: transparent;")
+        self.name_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 11px; font-weight: 400; background: transparent;")
         self.name_label.setFixedWidth(50)
         layout.addWidget(self.name_label)
 
@@ -95,7 +95,7 @@ class StatBar(QWidget):
         self.progress.setFixedHeight(6)
         self.progress.setStyleSheet(f"""
             QProgressBar {{
-                background-color: rgba(30, 30, 55, 0.5);
+                background-color: rgba(255, 255, 255, 0.08);
                 border: none;
                 border-radius: 3px;
             }}
@@ -107,7 +107,7 @@ class StatBar(QWidget):
         layout.addWidget(self.progress, 1)
 
         self.value_label = QLabel("0%")
-        self.value_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 600; background: transparent;")
+        self.value_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; font-weight: 500; background: transparent;")
         self.value_label.setFixedWidth(36)
         self.value_label.setAlignment(Qt.AlignmentFlag.AlignRight)
         layout.addWidget(self.value_label)
@@ -129,8 +129,8 @@ class SystemMonitorCard(QWidget):
     def setup_ui(self):
         self.setStyleSheet(f"""
             SystemMonitorCard {{
-                background-color: rgba(12, 12, 22, 0.5);
-                border: 1px solid {Theme.BORDER};
+                background-color: {Theme.BG_CARD_SOLID};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: {Theme.CARD_RADIUS};
             }}
         """)
@@ -140,7 +140,7 @@ class SystemMonitorCard(QWidget):
         layout.setSpacing(8)
 
         header = QLabel("System Monitor")
-        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 700; background: transparent;")
+        header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 13px; font-weight: 600; background: transparent;")
         layout.addWidget(header)
 
         self.cpu_bar = StatBar("CPU", Theme.ACCENT_PRIMARY)

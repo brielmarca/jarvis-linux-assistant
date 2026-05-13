@@ -28,7 +28,7 @@ class CommandInput(QWidget):
         self.mic_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {Theme.BG_CARD};
-                border: 1px solid {Theme.BORDER};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 22px;
                 font-size: 18px;
                 padding: 0;
@@ -45,7 +45,7 @@ class CommandInput(QWidget):
             QLineEdit {{
                 background-color: {Theme.BG_CARD};
                 color: {Theme.TEXT_PRIMARY};
-                border: 1px solid {Theme.BORDER};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 22px;
                 padding: 11px 20px;
                 font-size: 14px;
@@ -53,7 +53,7 @@ class CommandInput(QWidget):
             }}
             QLineEdit:focus {{
                 border-color: {Theme.ACCENT_PRIMARY};
-                background-color: rgba(124, 106, 255, 0.04);
+                background-color: rgba(0, 122, 255, 0.04);
             }}
         """)
         self.input_field.returnPressed.connect(self._submit)

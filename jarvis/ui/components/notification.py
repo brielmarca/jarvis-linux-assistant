@@ -6,10 +6,10 @@ from jarvis.ui.theme import Theme
 
 
 NOTIFICATION_TYPES = {
-    "info": (Theme.ACCENT_INFO, "i"),
-    "success": (Theme.ACCENT_SUCCESS, "+"),
-    "warning": (Theme.ACCENT_WARNING, "!"),
-    "error": (Theme.ACCENT_ERROR, "x"),
+    "info": (Theme.ACCENT_INFO, ""),
+    "success": (Theme.ACCENT_SUCCESS, ""),
+    "warning": (Theme.ACCENT_WARNING, ""),
+    "error": (Theme.ACCENT_ERROR, ""),
 }
 
 
@@ -26,11 +26,11 @@ class NotificationWidget(QWidget):
         self._start_animation()
 
     def setup_ui(self):
-        color, icon = NOTIFICATION_TYPES.get(self._type, NOTIFICATION_TYPES["info"])
+        color, _ = NOTIFICATION_TYPES.get(self._type, NOTIFICATION_TYPES["info"])
         self.setStyleSheet(f"""
             NotificationWidget {{
-                background-color: rgba(16, 16, 32, 0.92);
-                border: 1px solid {color}44;
+                background-color: rgba(28, 28, 30, 0.95);
+                border: 0.5px solid {color}44;
                 border-radius: 10px;
             }}
         """)
@@ -39,11 +39,6 @@ class NotificationWidget(QWidget):
         layout = QHBoxLayout(self)
         layout.setContentsMargins(14, 0, 14, 0)
         layout.setSpacing(10)
-
-        icon_label = QLabel(icon)
-        icon_label.setStyleSheet(f"color: {color}; font-size: 13px; font-weight: 700; background: transparent;")
-        icon_label.setFixedWidth(18)
-        layout.addWidget(icon_label)
 
         msg_label = QLabel(self._message)
         msg_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 12px; background: transparent;")

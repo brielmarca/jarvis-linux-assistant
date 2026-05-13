@@ -61,11 +61,7 @@ class ThinkingAnimation(QWidget):
             color = QColor(Theme.ACCENT_PRIMARY)
             color.setAlpha(alpha)
 
-            gradient = QRadialGradient(QPointF(x, y), r)
-            gradient.setColorAt(0, QColor(255, 255, 255, 200))
-            gradient.setColorAt(0.5, color)
-            gradient.setColorAt(1, color.darker(130))
-            painter.setBrush(gradient)
+            painter.setBrush(color)
             painter.setPen(Qt.PenStyle.NoPen)
             painter.drawEllipse(QPointF(x, y), r, r)
 

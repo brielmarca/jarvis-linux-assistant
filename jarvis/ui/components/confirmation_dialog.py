@@ -23,7 +23,7 @@ class ConfirmationDialog(QDialog):
         self.setStyleSheet(f"""
             QDialog {{
                 background-color: {Theme.BG_CARD_SOLID};
-                border: 1px solid {Theme.BORDER};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 16px;
             }}
         """)
@@ -41,13 +41,8 @@ class ConfirmationDialog(QDialog):
         header = QHBoxLayout()
         header.setSpacing(10)
 
-        icon = QLabel("!")
-        icon.setStyleSheet(f"font-size: 20px; color: {Theme.ACCENT_WARNING}; background: transparent; font-weight: 700;")
-        icon.setFixedWidth(28)
-        header.addWidget(icon)
-
         title = QLabel("Confirm Command")
-        title.setStyleSheet(f"font-size: 17px; font-weight: 700; color: {Theme.TEXT_PRIMARY}; background: transparent;")
+        title.setStyleSheet(f"font-size: 17px; font-weight: 600; color: {Theme.TEXT_PRIMARY}; background: transparent;")
         header.addWidget(title, 1)
 
         layout.addLayout(header)
@@ -55,8 +50,8 @@ class ConfirmationDialog(QDialog):
         cmd_box = QFrame()
         cmd_box.setStyleSheet(f"""
             QFrame {{
-                background-color: rgba(255, 64, 112, 0.08);
-                border: 1px solid rgba(255, 64, 112, 0.2);
+                background-color: rgba(255, 69, 58, 0.08);
+                border: 0.5px solid rgba(255, 69, 58, 0.2);
                 border-radius: 8px;
                 padding: 10px 14px;
             }}
@@ -72,7 +67,7 @@ class ConfirmationDialog(QDialog):
         cmd_text = QLabel(self.command)
         cmd_text.setStyleSheet(f"""
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 600;
             color: {Theme.ACCENT_ERROR};
             font-family: {Theme.FONT_MONO};
             background: transparent;
@@ -95,16 +90,16 @@ class ConfirmationDialog(QDialog):
         cancel_btn = QPushButton("Cancel")
         cancel_btn.setStyleSheet(f"""
             QPushButton {{
-                background-color: rgba(255, 64, 112, 0.1);
-                border: 1px solid rgba(255, 64, 112, 0.3);
-                border-radius: 8px;
+                background-color: rgba(255, 69, 58, 0.08);
+                border: 0.5px solid rgba(255, 69, 58, 0.3);
+                border-radius: 18px;
                 padding: 10px 24px;
                 font-size: 13px;
-                font-weight: 600;
+                font-weight: 500;
                 color: {Theme.ACCENT_ERROR};
             }}
             QPushButton:hover {{
-                background-color: rgba(255, 64, 112, 0.2);
+                background-color: rgba(255, 69, 58, 0.15);
             }}
         """)
         cancel_btn.clicked.connect(self._cancel)
@@ -112,20 +107,20 @@ class ConfirmationDialog(QDialog):
 
         buttons.addStretch()
 
-        confirm_btn = QPushButton("Confirm & Execute")
+        confirm_btn = QPushButton("Confirm and Execute")
         confirm_btn.setObjectName("accent")
         confirm_btn.setStyleSheet(f"""
             QPushButton {{
                 background-color: {Theme.ACCENT_PRIMARY};
                 border: none;
-                border-radius: 8px;
+                border-radius: 18px;
                 padding: 10px 24px;
                 font-size: 13px;
-                font-weight: 600;
+                font-weight: 500;
                 color: white;
             }}
             QPushButton:hover {{
-                background-color: #8a7aff;
+                background-color: #0066CC;
             }}
         """)
         confirm_btn.clicked.connect(self._confirm)

@@ -44,7 +44,7 @@ class SidebarButton(QPushButton):
                     border-radius: 6px;
                     padding: 5px 12px;
                     font-size: 12px;
-                    font-weight: 600;
+                    font-weight: 500;
                     color: {Theme.TEXT_PRIMARY};
                     text-align: left;
                 }}
@@ -86,7 +86,7 @@ class Sidebar(QWidget):
         self.setStyleSheet(f"""
             Sidebar {{
                 background-color: {Theme.BG_SIDEBAR};
-                border-right: 1px solid {Theme.SEPARATOR};
+                border-right: 0.5px solid {Theme.SEPARATOR};
             }}
         """)
 
@@ -96,8 +96,8 @@ class Sidebar(QWidget):
 
         logo = QLabel("Jarvis")
         logo.setStyleSheet(f"""
-            color: {Theme.TEXT_PRIMARY}; font-size: 16px; font-weight: 700;
-            letter-spacing: -0.3px; background: transparent; padding: 8px 12px 18px 12px;
+            color: {Theme.TEXT_PRIMARY}; font-size: 16px; font-weight: 600;
+            background: transparent; padding: 8px 12px 18px 12px;
         """)
         layout.addWidget(logo)
 

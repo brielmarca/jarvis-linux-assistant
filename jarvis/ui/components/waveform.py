@@ -54,13 +54,6 @@ class WaveformWidget(QWidget):
         gap = bar_width * 0.3
         bar_w = bar_width - gap
 
-        gradient = QLinearGradient(0, 0, 0, h)
-        gradient.setColorAt(0, QColor(Theme.ACCENT_PRIMARY))
-        gradient.setColorAt(0.5, QColor(Theme.ACCENT_SECONDARY))
-        gradient.setColorAt(1, QColor(Theme.ACCENT_PRIMARY))
-        painter.setBrush(gradient)
-        painter.setPen(Qt.PenStyle.NoPen)
-
         for i in range(self._bars):
             t = i / self._bars
             angle = t * math.pi * 2 + self._phase
@@ -77,6 +70,7 @@ class WaveformWidget(QWidget):
             bar_color = QColor(Theme.ACCENT_PRIMARY)
             bar_color.setAlpha(alpha)
             painter.setBrush(bar_color)
+            painter.setPen(Qt.PenStyle.NoPen)
 
             radius = bar_w / 2
             painter.drawRoundedRect(int(x), int(y), int(bar_w), int(bar_h), radius, radius)

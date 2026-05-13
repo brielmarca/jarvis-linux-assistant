@@ -22,7 +22,7 @@ class ToggleSwitch(QWidget):
         h = self.height()
         w = self.width()
 
-        track_color = Theme.ACCENT_PRIMARY if self._checked else Theme.BORDER
+        track_color = Theme.ACCENT_PRIMARY if self._checked else "rgba(255,255,255,0.15)"
         track = QColor(track_color)
         painter.setPen(Qt.PenStyle.NoPen)
 
@@ -68,13 +68,13 @@ class SkillCard(QWidget):
     def setup_ui(self):
         self.setStyleSheet(f"""
             SkillCard {{
-                background-color: rgba(20, 20, 38, 0.7);
-                border: 1px solid {Theme.BORDER};
+                background-color: {Theme.BG_CARD_SOLID};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 10px;
             }}
             SkillCard:hover {{
-                background-color: rgba(30, 30, 55, 0.8);
-                border-color: rgba(124, 106, 255, 0.3);
+                background-color: rgba(255, 255, 255, 0.05);
+                border-color: rgba(0, 122, 255, 0.3);
             }}
         """)
         self.setMinimumHeight(74)
@@ -85,7 +85,8 @@ class SkillCard(QWidget):
 
         icon_label = QLabel(self._get_icon())
         icon_label.setStyleSheet(f"""
-            font-size: 20px;
+            font-size: 16px;
+            color: {Theme.TEXT_SECONDARY};
             background: transparent;
             border: none;
         """)
@@ -100,7 +101,7 @@ class SkillCard(QWidget):
         t_layout.setSpacing(2)
 
         name_label = QLabel(self.skill_name.capitalize())
-        name_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 700; background: transparent; border: none;")
+        name_label.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent; border: none;")
         t_layout.addWidget(name_label)
 
         desc = self._description or self._default_description()
@@ -115,7 +116,7 @@ class SkillCard(QWidget):
         badge.setStyleSheet(f"""
             color: {badge_color};
             font-size: 10px;
-            font-weight: 600;
+            font-weight: 500;
             background-color: {badge_color}1f;
             border: none;
             border-radius: 4px;
@@ -129,22 +130,14 @@ class SkillCard(QWidget):
         layout.addWidget(self.toggle)
 
     def _get_icon(self):
-        icons = {
-            "system": "#",
-            "apps": "▸",
-            "browser": "○",
-            "media": "♪",
-            "dev": "<>",
-            "opencode": "◇",
-        }
-        return icons.get(self.skill_name, "")
+        return ""
 
     def _default_description(self):
         descs = {
             "system": "System info, time, date, shutdown",
             "apps": "Launch apps, open projects, Docker",
             "browser": "Web search, open URLs",
-            "media": "Volume & media playback control",
+            "media": "Volume and media playback control",
             "dev": "Dev mode, open projects, git",
             "opencode": "AI-assisted code changes",
         }

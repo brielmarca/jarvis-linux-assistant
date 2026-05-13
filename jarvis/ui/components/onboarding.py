@@ -28,21 +28,21 @@ class OnboardingWizard(QWizard):
                 background: transparent;
             }}
             QPushButton {{
-                background-color: rgba(124, 106, 255, 0.1);
-                border: 1px solid {Theme.ACCENT_PRIMARY}44;
-                border-radius: 8px;
+                background-color: rgba(0, 122, 255, 0.08);
+                border: 0.5px solid {Theme.ACCENT_PRIMARY}44;
+                border-radius: 16px;
                 padding: 8px 24px;
                 font-size: 13px;
-                font-weight: 500;
+                font-weight: 400;
                 color: {Theme.TEXT_PRIMARY};
             }}
             QPushButton:hover {{
-                background-color: rgba(124, 106, 255, 0.2);
+                background-color: rgba(0, 122, 255, 0.15);
             }}
             QLineEdit {{
-                background-color: rgba(12, 12, 22, 0.6);
+                background-color: rgba(28, 28, 30, 0.6);
                 color: {Theme.TEXT_PRIMARY};
-                border: 1px solid {Theme.BORDER};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 8px;
                 padding: 10px 14px;
                 font-size: 13px;
@@ -51,9 +51,9 @@ class OnboardingWizard(QWizard):
                 border-color: {Theme.ACCENT_PRIMARY};
             }}
             QComboBox {{
-                background-color: rgba(12, 12, 22, 0.6);
+                background-color: rgba(28, 28, 30, 0.6);
                 color: {Theme.TEXT_PRIMARY};
-                border: 1px solid {Theme.BORDER};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 8px;
                 padding: 8px 12px;
                 font-size: 13px;
@@ -93,12 +93,12 @@ class WelcomePage(QWizardPage):
 
         title = QLabel("Welcome to Jarvis")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        title.setStyleSheet(f"font-size: 28px; font-weight: 800; color: {Theme.TEXT_PRIMARY}; letter-spacing: -0.5px;")
+        title.setStyleSheet(f"font-size: 28px; font-weight: 700; color: {Theme.TEXT_PRIMARY};")
         layout.addWidget(title)
 
         subtitle = QLabel("Your AI-powered Linux Desktop Assistant")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        subtitle.setStyleSheet(f"font-size: 14px; color: {Theme.ACCENT_PRIMARY}; font-weight: 500; letter-spacing: 2px;")
+        subtitle.setStyleSheet(f"font-size: 14px; color: {Theme.ACCENT_PRIMARY}; font-weight: 400; letter-spacing: 2px;")
         layout.addWidget(subtitle)
 
         layout.addSpacing(12)
@@ -106,9 +106,9 @@ class WelcomePage(QWizardPage):
         features = [
             "Contextual AI with semantic memory",
             "Voice control with wake word",
-            "Desktop awareness & automation",
+            "Desktop awareness and automation",
             "Workflow orchestration",
-            "Code & terminal integration",
+            "Code and terminal integration",
         ]
         for f in features:
             lbl = QLabel(f)

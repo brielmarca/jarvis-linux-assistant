@@ -103,12 +103,8 @@ class TerminalWidget(QWidget):
         h_layout = QHBoxLayout(header)
         h_layout.setContentsMargins(0, 0, 0, 0)
 
-        self.status_icon = QLabel("")
-        self.status_icon.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 14px; background: transparent;")
-        h_layout.addWidget(self.status_icon)
-
         self.status_label = QLabel("Ready")
-        self.status_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-weight: 500; background: transparent;")
+        self.status_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-weight: 400; background: transparent;")
         h_layout.addWidget(self.status_label)
 
         self.timer_label = QLabel("")
@@ -125,20 +121,20 @@ class TerminalWidget(QWidget):
         clear_btn = QPushButton("Clear")
         clear_btn.setFixedHeight(26)
         clear_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: rgba(255,64,112,0.08); color: {Theme.ACCENT_ERROR};
-            border: 1px solid rgba(255,64,112,0.2); border-radius: 4px; padding: 2px 12px; font-size: 10px; font-weight: 500; }}
-            QPushButton:hover {{ background-color: rgba(255,64,112,0.18); }}
+            QPushButton {{ background-color: rgba(255,69,58,0.08); color: {Theme.ACCENT_ERROR};
+            border: 0.5px solid rgba(255,69,58,0.2); border-radius: 12px; padding: 2px 12px; font-size: 10px; font-weight: 400; }}
+            QPushButton:hover {{ background-color: rgba(255,69,58,0.15); }}
         """)
         clear_btn.clicked.connect(self.clear_output)
         h_layout.addWidget(clear_btn)
 
-        self.stop_btn = QPushButton("▸ Stop")
+        self.stop_btn = QPushButton("Stop")
         self.stop_btn.setFixedHeight(26)
         self.stop_btn.setEnabled(False)
         self.stop_btn.setStyleSheet(f"""
-            QPushButton {{ background-color: rgba(255,64,112,0.12); color: {Theme.ACCENT_ERROR};
-            border: 1px solid rgba(255,64,112,0.3); border-radius: 4px; padding: 2px 12px; font-size: 10px; font-weight: 600; }}
-            QPushButton:hover {{ background-color: rgba(255,64,112,0.25); }}
+            QPushButton {{ background-color: rgba(255,69,58,0.08); color: {Theme.ACCENT_ERROR};
+            border: 0.5px solid rgba(255,69,58,0.3); border-radius: 12px; padding: 2px 12px; font-size: 10px; font-weight: 500; }}
+            QPushButton:hover {{ background-color: rgba(255,69,58,0.2); }}
             QPushButton:disabled {{ opacity: 0.3; }}
         """)
         self.stop_btn.clicked.connect(self.stop_command)
@@ -152,7 +148,7 @@ class TerminalWidget(QWidget):
             QTextEdit {{
                 background-color: rgba(8, 8, 14, 0.85);
                 color: {Theme.TEXT_PRIMARY};
-                border: 1px solid {Theme.BORDER};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 6px;
                 padding: 10px;
                 font-family: {Theme.FONT_MONO};
@@ -171,7 +167,7 @@ class TerminalWidget(QWidget):
         input_layout.setSpacing(6)
 
         prompt_label = QLabel("$")
-        prompt_label.setStyleSheet(f"color: {Theme.ACCENT_SECONDARY}; font-size: 13px; font-weight: 600; background: transparent; font-family: {Theme.FONT_MONO};")
+        prompt_label.setStyleSheet(f"color: {Theme.ACCENT_SECONDARY}; font-size: 13px; font-weight: 500; background: transparent; font-family: {Theme.FONT_MONO};")
         prompt_label.setFixedWidth(14)
         input_layout.addWidget(prompt_label)
 
@@ -179,9 +175,9 @@ class TerminalWidget(QWidget):
         self.input_line.setPlaceholderText("Enter command...")
         self.input_line.setStyleSheet(f"""
             QLineEdit {{
-                background-color: rgba(12, 12, 22, 0.6);
+                background-color: rgba(28, 28, 30, 0.6);
                 color: {Theme.TEXT_PRIMARY};
-                border: 1px solid {Theme.BORDER};
+                border: 0.5px solid {Theme.BORDER};
                 border-radius: 6px;
                 padding: 8px 12px;
                 font-size: 13px;
@@ -197,9 +193,9 @@ class TerminalWidget(QWidget):
         run_btn.setFixedHeight(32)
         run_btn.setStyleSheet(f"""
             QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
-            border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 600; color: white; }}
-            QPushButton:hover {{ background-color: #8a7aff; }}
-            QPushButton:disabled {{ background-color: rgba(124,106,255,0.3); }}
+            border-radius: 16px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: white; }}
+            QPushButton:hover {{ background-color: #0066CC; }}
+            QPushButton:disabled {{ background-color: rgba(0,122,255,0.3); }}
         """)
         run_btn.clicked.connect(self._submit_command)
         input_layout.addWidget(run_btn)
@@ -252,9 +248,8 @@ class TerminalWidget(QWidget):
         self._command_buffer = ""
         self._output_buffer = ""
 
-        self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 14px; background: transparent;")
         self.status_label.setText("Running")
-        self.status_label.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 600; background: transparent;")
+        self.status_label.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 500; background: transparent;")
         self.stop_btn.setEnabled(True)
         self.status_changed.emit("running")
 
@@ -283,13 +278,11 @@ class TerminalWidget(QWidget):
         self.stop_btn.setEnabled(False)
 
         if exit_code == 0:
-            self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 14px; background: transparent;")
             self.status_label.setText(f"Done ({elapsed:.1f}s)")
-            self.status_label.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 500; background: transparent;")
+            self.status_label.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 400; background: transparent;")
         else:
-            self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 14px; background: transparent;")
             self.status_label.setText(f"Exit {exit_code} ({elapsed:.1f}s)")
-            self.status_label.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 11px; font-weight: 500; background: transparent;")
+            self.status_label.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 11px; font-weight: 400; background: transparent;")
 
         self.command_executed.emit(self._command_buffer, exit_code)
         self.status_changed.emit("idle")
@@ -298,9 +291,8 @@ class TerminalWidget(QWidget):
         self._timer.stop()
         self._running = False
         self.stop_btn.setEnabled(False)
-        self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 14px; background: transparent;")
         self.status_label.setText("Error")
-        self.status_label.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 11px; font-weight: 500; background: transparent;")
+        self.status_label.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 11px; font-weight: 400; background: transparent;")
         self._append_output(f"[ERROR] {self._process.errorString()}\n", "error")
         self.status_changed.emit("error")
 
@@ -334,9 +326,8 @@ class TerminalWidget(QWidget):
             self._timer.stop()
             self._running = False
             self.stop_btn.setEnabled(False)
-            self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 14px; background: transparent;")
             self.status_label.setText("Killed")
-            self.status_label.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 11px; font-weight: 500; background: transparent;")
+            self.status_label.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 11px; font-weight: 400; background: transparent;")
             self._append_output("\n[KILLED]\n", "error")
             self.status_changed.emit("cancelled")
 
