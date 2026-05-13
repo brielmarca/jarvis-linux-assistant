@@ -10,6 +10,7 @@ from PyQt6.QtCore import Qt, QTimer, QProcess, pyqtSignal
 from PyQt6.QtGui import QColor, QTextCursor
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 from jarvis.dev.command_sandbox import CommandSandbox
 
 
@@ -107,7 +108,7 @@ class TerminalWidget(QWidget):
         self.status_icon.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 14px; background: transparent;")
         h_layout.addWidget(self.status_icon)
 
-        self.status_label = QLabel("Ready")
+        self.status_label = QLabel(t("terminal.ready"))
         self.status_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; font-weight: 500; background: transparent;")
         h_layout.addWidget(self.status_label)
 
@@ -117,12 +118,12 @@ class TerminalWidget(QWidget):
 
         h_layout.addStretch()
 
-        self.sandbox_cb = QCheckBox("Sandbox")
+        self.sandbox_cb = QCheckBox(t("terminal.sandbox"))
         self.sandbox_cb.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 11px; spacing: 4px;")
         self.sandbox_cb.stateChanged.connect(self._toggle_sandbox)
         h_layout.addWidget(self.sandbox_cb)
 
-        clear_btn = QPushButton("Clear")
+        clear_btn = QPushButton(t("terminal.clear"))
         clear_btn.setFixedHeight(26)
         clear_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(255,64,112,0.08); color: {Theme.ACCENT_ERROR};
@@ -132,7 +133,7 @@ class TerminalWidget(QWidget):
         clear_btn.clicked.connect(self.clear_output)
         h_layout.addWidget(clear_btn)
 
-        self.stop_btn = QPushButton("■ Stop")
+        self.stop_btn = QPushButton("■ " + t("terminal.stop"))
         self.stop_btn.setFixedHeight(26)
         self.stop_btn.setEnabled(False)
         self.stop_btn.setStyleSheet(f"""
@@ -170,13 +171,13 @@ class TerminalWidget(QWidget):
         input_layout.setContentsMargins(0, 0, 0, 0)
         input_layout.setSpacing(6)
 
-        prompt_label = QLabel("$")
+        prompt_label = QLabel(t("terminal.prompt"))
         prompt_label.setStyleSheet(f"color: {Theme.ACCENT_SECONDARY}; font-size: 13px; font-weight: 600; background: transparent; font-family: {Theme.FONT_MONO};")
         prompt_label.setFixedWidth(14)
         input_layout.addWidget(prompt_label)
 
         self.input_line = QLineEdit()
-        self.input_line.setPlaceholderText("Enter command...")
+        self.input_line.setPlaceholderText(t("terminal.placeholder"))
         self.input_line.setStyleSheet(f"""
             QLineEdit {{
                 background-color: rgba(12, 12, 22, 0.6);
@@ -193,7 +194,7 @@ class TerminalWidget(QWidget):
         self.input_line.keyPressEvent = self._input_key_press
         input_layout.addWidget(self.input_line, 1)
 
-        run_btn = QPushButton("Run")
+        run_btn = QPushButton(t("terminal.run"))
         run_btn.setFixedHeight(32)
         run_btn.setStyleSheet(f"""
             QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
@@ -235,16 +236,16 @@ class TerminalWidget(QWidget):
 
     def execute_command(self, command: str, cwd: str | None = None):
         if self._running:
-            self._append_output("[ERROR] A command is already running\n", "error")
+            self._append_output(t("terminal.err_running") + "\n", "error")
             return
 
         if self._sandbox_mode:
             result = sandbox.execute(command, cwd)
             if result.blocked:
-                self._append_output(f"[BLOCKED] {result.block_reason}\n", "error")
+                self._append_output(f"[{t('terminal.blocked')}] {result.block_reason}\n", "error")
                 return
             self._append_output(f"$ {command}\n", "prompt")
-            self._append_output(f"[SANDBOX MODE] Would execute: {command}\n", "info")
+            self._append_output(t("terminal.sandbox_mode", command=command) + "\n", "info")
             return
 
         self._running = True
@@ -253,7 +254,7 @@ class TerminalWidget(QWidget):
         self._output_buffer = ""
 
         self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 14px; background: transparent;")
-        self.status_label.setText("Running")
+        self.status_label.setText(t("terminal.running"))
         self.status_label.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 600; background: transparent;")
         self.stop_btn.setEnabled(True)
         self.status_changed.emit("running")
@@ -284,11 +285,11 @@ class TerminalWidget(QWidget):
 
         if exit_code == 0:
             self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 14px; background: transparent;")
-            self.status_label.setText(f"Done ({elapsed:.1f}s)")
+            self.status_label.setText(t("terminal.done", time=f"{elapsed:.1f}"))
             self.status_label.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; font-weight: 500; background: transparent;")
         else:
             self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 14px; background: transparent;")
-            self.status_label.setText(f"Exit {exit_code} ({elapsed:.1f}s)")
+            self.status_label.setText(t("terminal.exit", code=exit_code, time=f"{elapsed:.1f}"))
             self.status_label.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 11px; font-weight: 500; background: transparent;")
 
         self.command_executed.emit(self._command_buffer, exit_code)
@@ -299,7 +300,7 @@ class TerminalWidget(QWidget):
         self._running = False
         self.stop_btn.setEnabled(False)
         self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 14px; background: transparent;")
-        self.status_label.setText("Error")
+        self.status_label.setText(t("terminal.error"))
         self.status_label.setStyleSheet(f"color: {Theme.ACCENT_ERROR}; font-size: 11px; font-weight: 500; background: transparent;")
         self._append_output(f"[ERROR] {self._process.errorString()}\n", "error")
         self.status_changed.emit("error")
@@ -335,9 +336,9 @@ class TerminalWidget(QWidget):
             self._running = False
             self.stop_btn.setEnabled(False)
             self.status_icon.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 14px; background: transparent;")
-            self.status_label.setText("Killed")
+            self.status_label.setText(t("terminal.killed"))
             self.status_label.setStyleSheet(f"color: {Theme.ACCENT_WARNING}; font-size: 11px; font-weight: 500; background: transparent;")
-            self._append_output("\n[KILLED]\n", "error")
+            self._append_output(t("terminal.killed_msg"), "error")
             self.status_changed.emit("cancelled")
 
     def clear_output(self):

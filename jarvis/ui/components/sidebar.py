@@ -3,21 +3,22 @@ from PyQt6.QtCore import Qt, pyqtSignal, QPropertyAnimation, QEasingCurve
 from PyQt6.QtGui import QColor
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 NAV_ITEMS = [
-    ("Dashboard", "◉", 0),
-    ("Skills", "⚡", 1),
-    ("Settings", "⚙", 2),
-    ("Logs", "≡", 3),
-    ("Monitor", "◎", 4),
-    ("Dev Mode", "◆", 5),
-    ("Voice", "♪", 6),
-    ("Memory", "◈", 7),
-    ("Desktop", "⊞", 8),
-    ("Workflows", "⚡", 9),
-    ("Diagnostics", "◉", 10),
-    ("Health", "♥", 11),
+    (t("sidebar.dashboard"), "◉", 0),
+    (t("sidebar.skills"), "⚡", 1),
+    (t("sidebar.settings"), "⚙", 2),
+    (t("sidebar.logs"), "≡", 3),
+    (t("sidebar.monitor"), "◎", 4),
+    (t("sidebar.dev_mode"), "◆", 5),
+    (t("sidebar.voice"), "♪", 6),
+    (t("sidebar.memory"), "◈", 7),
+    (t("sidebar.desktop"), "⊞", 8),
+    (t("sidebar.workflows"), "⚡", 9),
+    (t("sidebar.diagnostics"), "◉", 10),
+    (t("sidebar.health"), "♥", 11),
 ]
 
 
@@ -96,7 +97,7 @@ class Sidebar(QWidget):
         layout.setContentsMargins(10, 16, 10, 16)
         layout.setSpacing(4)
 
-        logo = QLabel("JARVIS")
+        logo = QLabel(t("sidebar.logo"))
         logo.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 18px; font-weight: 800; letter-spacing: 2px; background: transparent; padding: 8px 6px 16px 6px;")
         layout.addWidget(logo)
 
@@ -108,7 +109,7 @@ class Sidebar(QWidget):
 
         layout.addStretch()
 
-        version = QLabel("v1.0")
+        version = QLabel(t("app.version"))
         version.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; background: transparent; padding: 8px 6px;")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(version)

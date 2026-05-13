@@ -8,6 +8,7 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QColor
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 def _hex_to_rgba(hex_color: str, alpha: float = 0.1) -> str:
@@ -38,7 +39,7 @@ class WorkflowCard(QWidget):
         desc_lbl.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;")
         info.addWidget(desc_lbl)
         if steps:
-            step_lbl = QLabel(f"{steps} step{'s' if steps != 1 else ''}")
+            step_lbl = QLabel(t("workflows.step_count", count=steps))
             step_lbl.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 10px; background: transparent;")
             info.addWidget(step_lbl)
         layout.addLayout(info, 1)
@@ -83,7 +84,7 @@ class WorkflowsTab(QWidget):
         header.setStyleSheet("background: transparent;")
         hl = QHBoxLayout(header)
         hl.setContentsMargins(0, 0, 0, 0)
-        title = QLabel("Workflows")
+        title = QLabel(t("workflows.title"))
         title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
         hl.addWidget(title)
         hl.addStretch()
@@ -92,7 +93,7 @@ class WorkflowsTab(QWidget):
         self.status_label.setStyleSheet(f"color: {Theme.ACCENT_SUCCESS}; font-size: 11px; background: transparent;")
         hl.addWidget(self.status_label)
 
-        create_btn = QPushButton("+ New Workflow")
+        create_btn = QPushButton(t("workflows.new"))
         create_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(124,106,255,0.1); border: 1px solid {Theme.ACCENT_PRIMARY}44;
             border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
@@ -116,7 +117,7 @@ class WorkflowsTab(QWidget):
         left_layout.setContentsMargins(0, 0, 0, 0)
         left_layout.setSpacing(8)
 
-        templates_btn = QPushButton("Load Templates")
+        templates_btn = QPushButton(t("workflows.load_templates"))
         templates_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(92,224,208,0.08); border: 1px solid {Theme.ACCENT_SECONDARY}44;
             border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_SECONDARY}; }}
@@ -144,7 +145,7 @@ class WorkflowsTab(QWidget):
         right_layout.setContentsMargins(12, 0, 0, 0)
         right_layout.setSpacing(8)
 
-        self.detail_name = QLabel("Select a workflow")
+        self.detail_name = QLabel(t("workflows.select_hint"))
         self.detail_name.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 18px; font-weight: 700; background: transparent;")
         right_layout.addWidget(self.detail_name)
 
@@ -177,34 +178,34 @@ class WorkflowsTab(QWidget):
         form = QVBoxLayout(self.create_panel)
         form.setContentsMargins(16, 12, 16, 12)
         form.setSpacing(8)
-        form_title = QLabel("Create New Workflow")
+        form_title = QLabel(t("workflows.create_title"))
         form_title.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 14px; font-weight: 600; background: transparent;")
         form.addWidget(form_title)
 
         name_row = QHBoxLayout()
-        name_row.addWidget(QLabel("Name:"))
+        name_row.addWidget(QLabel(t("workflows.name")))
         self.create_name = QLineEdit()
-        self.create_name.setPlaceholderText("my_workflow")
+        self.create_name.setPlaceholderText(t("workflows.name_placeholder"))
         name_row.addWidget(self.create_name)
         form.addLayout(name_row)
 
         desc_row = QHBoxLayout()
-        desc_row.addWidget(QLabel("Description:"))
+        desc_row.addWidget(QLabel(t("workflows.description")))
         self.create_desc = QLineEdit()
-        self.create_desc.setPlaceholderText("What this workflow does")
+        self.create_desc.setPlaceholderText(t("workflows.desc_placeholder"))
         desc_row.addWidget(self.create_desc)
         form.addLayout(desc_row)
 
         steps_row = QHBoxLayout()
-        steps_row.addWidget(QLabel("Steps (one per line):"))
+        steps_row.addWidget(QLabel(t("workflows.steps_label")))
         self.create_steps = QTextEdit()
-        self.create_steps.setPlaceholderText("open terminal\nrun: ls -la\nwait: 2")
+        self.create_steps.setPlaceholderText(t("workflows.steps_placeholder"))
         self.create_steps.setMaximumHeight(80)
         steps_row.addWidget(self.create_steps)
         form.addLayout(steps_row)
 
         btn_row = QHBoxLayout()
-        save_btn = QPushButton("Save")
+        save_btn = QPushButton(t("workflows.save"))
         save_btn.setStyleSheet(f"""
             QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none; border-radius: 6px;
             padding: 8px 24px; font-size: 12px; font-weight: 600; color: white; }}
@@ -213,7 +214,7 @@ class WorkflowsTab(QWidget):
         save_btn.clicked.connect(self._save_workflow)
         btn_row.addWidget(save_btn)
 
-        cancel_btn = QPushButton("Cancel")
+        cancel_btn = QPushButton(t("workflows.cancel"))
         cancel_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(255,64,112,0.08); border: 1px solid {Theme.ACCENT_ERROR}44;
             border-radius: 6px; padding: 8px 24px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_ERROR}; }}
@@ -234,7 +235,7 @@ class WorkflowsTab(QWidget):
         desc = self.create_desc.text().strip()
         steps_text = self.create_steps.toPlainText().strip()
         if not name:
-            QMessageBox.warning(self, "Validation", "Workflow name is required.")
+            QMessageBox.warning(self, t("workflows.validation_title"), t("workflows.name_required"))
             return
         steps = [s.strip() for s in steps_text.split("\n") if s.strip()]
         steps_data = []
@@ -252,14 +253,14 @@ class WorkflowsTab(QWidget):
         mgr.create_workflow(name, steps_data, description=desc)
         self._refresh_list()
         self.create_panel.setVisible(False)
-        self.status_label.setText(f"✓ Created '{name}'")
+        self.status_label.setText("✓ " + t("workflows.created", name=name))
         QTimer.singleShot(3000, lambda: self.status_label.setText(""))
 
     def _load_templates(self):
         from jarvis.automation.workflows import load_default_templates
         load_default_templates()
         self._refresh_list()
-        self.status_label.setText("✓ Templates loaded")
+        self.status_label.setText("✓ " + t("workflows.templates_loaded"))
         QTimer.singleShot(3000, lambda: self.status_label.setText(""))
 
     def _refresh_list(self):
@@ -271,7 +272,7 @@ class WorkflowsTab(QWidget):
         except Exception:
             workflows = {}
         if not workflows:
-            item = QListWidgetItem("No workflows yet. Create one or load templates.")
+            item = QListWidgetItem(t("workflows.no_workflows"))
             item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsSelectable)
             self.workflow_list.addItem(item)
         else:
@@ -290,7 +291,7 @@ class WorkflowsTab(QWidget):
             mgr = self._get_manager()
             wf = mgr.get_workflow(name)
         except Exception:
-            self.detail_name.setText("Error loading workflow")
+            self.detail_name.setText(t("workflows.error_loading"))
             return
         if wf:
             self.detail_name.setText(wf.name)
@@ -299,7 +300,7 @@ class WorkflowsTab(QWidget):
                 f"{i+1}. [{s.get('action','?')}] {s.get('params',{})}"
                 for i, s in enumerate(getattr(wf, 'steps', []))
             )
-            self.detail_steps.setText(steps_text or "No steps")
+            self.detail_steps.setText(steps_text or t("workflows.no_steps"))
 
     def _run_workflow(self, name):
         try:
@@ -309,8 +310,8 @@ class WorkflowsTab(QWidget):
             if wf:
                 executor = WorkflowExecutor(wf)
                 executor.run()
-                self.status_label.setText(f"▶ Running '{name}'")
+                self.status_label.setText("▶ " + t("workflows.running", name=name))
                 QTimer.singleShot(3000, lambda: self.status_label.setText(""))
         except Exception as e:
-            self.status_label.setText(f"✕ Error: {e}")
+            self.status_label.setText("✕ " + t("workflows.error", error=str(e)))
             QTimer.singleShot(5000, lambda: self.status_label.setText(""))

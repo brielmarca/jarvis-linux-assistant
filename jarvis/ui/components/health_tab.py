@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 from jarvis.core.health import HealthChecker
 from jarvis.core.config_validator import validate_config
 
@@ -32,7 +33,7 @@ class HealthTab(QWidget):
         layout.setContentsMargins(24, 20, 24, 20)
         layout.setSpacing(12)
 
-        header = QLabel("Health & Diagnostics")
+        header = QLabel(t("health.title"))
         header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
         layout.addWidget(header)
 
@@ -41,17 +42,17 @@ class HealthTab(QWidget):
         sep.setStyleSheet(f"background-color: {Theme.BORDER}; border: none; max-height: 1px;")
         layout.addWidget(sep)
 
-        desc = QLabel("System health, dependency checks, configuration validation")
+        desc = QLabel(t("health.description"))
         desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; background: transparent;")
         layout.addWidget(desc)
 
-        self.summary_label = QLabel("Run a health check to see results")
+        self.summary_label = QLabel(t("health.run_hint"))
         self.summary_label.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 13px; background: transparent;")
         layout.addWidget(self.summary_label)
 
         self.table = QTableWidget()
         self.table.setColumnCount(3)
-        self.table.setHorizontalHeaderLabels(["Component", "Status", "Message"])
+        self.table.setHorizontalHeaderLabels([t("health.col_component"), t("health.col_status"), t("health.col_message")])
         self.table.setStyleSheet(f"""
             QTableWidget {{ background-color: rgba(12,12,22,0.5); border: 1px solid {Theme.BORDER};
             border-radius: 8px; color: {Theme.TEXT_SECONDARY}; font-size: 12px;
@@ -69,7 +70,7 @@ class HealthTab(QWidget):
 
         btn_row = QHBoxLayout()
 
-        health_btn = QPushButton("Run Health Check")
+        health_btn = QPushButton(t("health.run_check"))
         health_btn.setStyleSheet(f"""
             QPushButton {{ background-color: {Theme.ACCENT_PRIMARY}; border: none;
             border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; color: white; }}
@@ -78,7 +79,7 @@ class HealthTab(QWidget):
         health_btn.clicked.connect(self._run_health_check)
         btn_row.addWidget(health_btn)
 
-        config_btn = QPushButton("Validate Config")
+        config_btn = QPushButton(t("health.validate_config"))
         config_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(92,224,208,0.15); border: 1px solid {Theme.ACCENT_SECONDARY}44;
             border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; color: {Theme.ACCENT_SECONDARY}; }}
@@ -122,11 +123,11 @@ class HealthTab(QWidget):
 
         total = len(results)
         parts = []
-        parts.append(f"✓ {ok_count}/{total} passed")
+        parts.append(t("health.passed", ok=ok_count, total=total))
         if warn_count:
-            parts.append(f"⚠ {warn_count} warnings")
+            parts.append(t("health.warnings", count=warn_count))
         if err_count:
-            parts.append(f"✗ {err_count} errors")
+            parts.append(t("health.errors", count=err_count))
         self.summary_label.setText(" | ".join(parts))
         self.summary_label.setStyleSheet(
             f"color: {Theme.ACCENT_ERROR if err_count else Theme.ACCENT_SUCCESS}; font-size: 13px; font-weight: 600; background: transparent;"
@@ -148,7 +149,7 @@ class HealthTab(QWidget):
             for f in result.fixed:
                 items.append(("config", "ok", f))
         if not items:
-            items.append(("config", "ok", "Configuration is valid"))
+            items.append(("config", "ok", t("health.config_valid")))
 
         self.table.setRowCount(len(items))
         for i, (comp, status, msg) in enumerate(items):

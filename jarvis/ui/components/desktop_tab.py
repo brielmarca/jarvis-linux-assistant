@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QTimer
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 class StatCard(QWidget):
@@ -58,11 +59,11 @@ class DesktopTab(QWidget):
         layout.setContentsMargins(28, 24, 28, 24)
         layout.setSpacing(12)
 
-        header = QLabel("Desktop Awareness")
+        header = QLabel(t("desktop.title"))
         header.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 22px; font-weight: 700; background: transparent; letter-spacing: -0.3px;")
         layout.addWidget(header)
 
-        desc = QLabel("Real-time desktop state, active apps, system resources, and peripherals")
+        desc = QLabel(t("desktop.description"))
         desc.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 13px; background: transparent;")
         layout.addWidget(desc)
 
@@ -84,14 +85,14 @@ class DesktopTab(QWidget):
 
         self.cards = {}
         card_defs = [
-            ("active_app", "Active App", "⚡", Theme.ACCENT_INFO),
-            ("active_window", "Active Window", "⊞", Theme.ACCENT_SECONDARY),
-            ("workspace", "Workspace", "◻", Theme.ACCENT_PRIMARY),
-            ("battery", "Battery", "🔋", Theme.ACCENT_SUCCESS),
-            ("network", "Network", "🌐", Theme.ACCENT_INFO),
-            ("media", "Media", "♪", Theme.ACCENT_WARNING),
-            ("monitors", "Monitors", "🖥", Theme.ACCENT_PRIMARY),
-            ("cpu_top", "Top CPU", "⚙", Theme.ACCENT_ERROR),
+            ("active_app", t("desktop.active_app"), "⚡", Theme.ACCENT_INFO),
+            ("active_window", t("desktop.active_window"), "⊞", Theme.ACCENT_SECONDARY),
+            ("workspace", t("desktop.workspace"), "◻", Theme.ACCENT_PRIMARY),
+            ("battery", t("desktop.battery"), "🔋", Theme.ACCENT_SUCCESS),
+            ("network", t("desktop.network"), "🌐", Theme.ACCENT_INFO),
+            ("media", t("desktop.media"), "♪", Theme.ACCENT_WARNING),
+            ("monitors", t("desktop.monitors"), "🖥", Theme.ACCENT_PRIMARY),
+            ("cpu_top", t("desktop.cpu_top"), "⚙", Theme.ACCENT_ERROR),
         ]
         for i, (key, label, icon, color) in enumerate(card_defs):
             card = StatCard(label, "...", icon, color)
@@ -102,7 +103,7 @@ class DesktopTab(QWidget):
         scroll.setWidget(container)
         layout.addWidget(scroll, 1)
 
-        refresh_btn = QPushButton("Refresh Now")
+        refresh_btn = QPushButton(t("desktop.refresh"))
         refresh_btn.setStyleSheet(f"""
             QPushButton {{ background-color: rgba(124,106,255,0.1); border: 1px solid {Theme.ACCENT_PRIMARY}44;
             border-radius: 6px; padding: 6px 18px; font-size: 12px; font-weight: 500; color: {Theme.ACCENT_PRIMARY}; }}
@@ -119,9 +120,9 @@ class DesktopTab(QWidget):
         except Exception:
             desk = {}
 
-        self.cards["active_app"].set_value(desk.get("active_app", "N/A") or "N/A")
-        self.cards["active_window"].set_value(desk.get("active_window", "N/A")[:60] or "N/A")
-        self.cards["workspace"].set_value(desk.get("workspace", "N/A") or "N/A")
+        self.cards["active_app"].set_value(desk.get("active_app", t("dashboard.na")) or t("dashboard.na"))
+        self.cards["active_window"].set_value(desk.get("active_window", t("dashboard.na"))[:60] or t("dashboard.na"))
+        self.cards["workspace"].set_value(desk.get("workspace", t("dashboard.na")) or t("dashboard.na"))
 
         batt = desk.get("battery", {})
         if isinstance(batt, dict):
@@ -153,7 +154,7 @@ class DesktopTab(QWidget):
             txt = ", ".join(f"{m.get('w','?')}x{m.get('h','?')}" for m in monitors[:2])
             self.cards["monitors"].set_value(txt)
         else:
-            self.cards["monitors"].set_value("N/A")
+            self.cards["monitors"].set_value(t("dashboard.na"))
 
         cpu_top = desk.get("cpu_top", [])
         if isinstance(cpu_top, list) and cpu_top:
@@ -162,4 +163,4 @@ class DesktopTab(QWidget):
                 lines.append(f"{p.get('name','?')} {p.get('cpu','?')}%")
             self.cards["cpu_top"].set_value(" | ".join(lines))
         else:
-            self.cards["cpu_top"].set_value("N/A")
+            self.cards["cpu_top"].set_value(t("dashboard.na"))

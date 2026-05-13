@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont, QColor, QPainter
 
 from jarvis.ui.theme import Theme
+from jarvis.i18n import t
 
 
 class SplashScreen(QSplashScreen):
@@ -26,7 +27,7 @@ class SplashScreen(QSplashScreen):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.setSpacing(8)
 
-        title = QLabel("Jarvis")
+        title = QLabel(t("splash.title"))
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet(f"""
             color: {Theme.TEXT_PRIMARY}; font-size: 36px; font-weight: 800;
@@ -34,7 +35,7 @@ class SplashScreen(QSplashScreen):
         """)
         layout.addWidget(title)
 
-        subtitle = QLabel("Linux Assistant")
+        subtitle = QLabel(t("splash.subtitle"))
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle.setStyleSheet(f"""
             color: {Theme.ACCENT_PRIMARY}; font-size: 14px; font-weight: 500;
@@ -44,7 +45,7 @@ class SplashScreen(QSplashScreen):
 
         layout.addSpacing(12)
 
-        self.status_label = QLabel("Initializing...")
+        self.status_label = QLabel(t("splash.initializing"))
         self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.status_label.setStyleSheet(f"""
             color: {Theme.TEXT_MUTED}; font-size: 11px; background: transparent;
@@ -60,7 +61,7 @@ class SplashScreen(QSplashScreen):
         """)
         layout.addWidget(self.progress)
 
-        version = QLabel("v1.0")
+        version = QLabel(t("app.version"))
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 9px; background: transparent;")
         layout.addWidget(version)
