@@ -178,6 +178,33 @@ class SemanticMemory:
         self._save_all()
         return entry_id
 
+    def store_batch(self, items: list[dict]) -> list[str]:
+        ids = []
+        for item in items:
+            eid = f"sem_{int(self._now_ts() * 1000)}_{len(self._entries)}"
+            entry = {
+                "id": eid,
+                "text": item.get("text", ""),
+                "source": item.get("source", "user"),
+                "tags": item.get("tags", []),
+                "metadata": item.get("metadata", {}),
+                "created": self._now_ts(),
+                "accessed": self._now_ts(),
+                "access_count": 0,
+                "importance": item.get("importance", 0.5),
+                "pinned": False,
+            }
+            self._entries.append(entry)
+            self._embeddings[eid] = self._embed(entry["text"])
+            ids.append(eid)
+
+        if len(self._entries) > self._max_entries:
+            self._trim_oldest()
+
+        self._rebuild_idf()
+        self._save_all()
+        return ids
+
     def search(self, query: str, n: int = 10, min_score: float = 0.05) -> list[dict]:
         query_embedding = self._embed(query)
         scored = []
