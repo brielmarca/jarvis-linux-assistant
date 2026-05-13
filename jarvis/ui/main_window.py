@@ -976,17 +976,13 @@ class MainWindow(QMainWindow):
             else:
                 dialog.cancelled.connect(lambda: jarvis_log.info("Command cancelled by user"))
             dialog.exec()
-        else:
-            self.dashboard.add_timeline_entry(result)
 
     def _execute_confirmed(self, command):
-        result = self.assistant.process(command, _skip_intent_gate=True)
-        self.dashboard.add_timeline_entry(result)
+        self.assistant.process(command, _skip_intent_gate=True)
 
     def _handle_gate_cancellation(self, command):
         jarvis_log.info(f"Gate confirmation cancelled, routing '{command}' to AI")
-        result = self.assistant.process(command, _force_ai=True)
-        self.dashboard.add_timeline_entry(result)
+        self.assistant.process(command, _force_ai=True)
 
     def start_refresh_timer(self):
         self.timer = QTimer(self)
