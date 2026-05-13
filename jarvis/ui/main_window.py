@@ -98,7 +98,6 @@ class DashboardTab(QWidget):
         self._mic_status = None
         self._ai_status = None
         self._quick_action_btns = []
-        self._response_label = None
         self.setup_ui()
         tr.languageChanged.connect(self.retranslate_ui)
 
@@ -118,7 +117,10 @@ class DashboardTab(QWidget):
         self.thinking_anim.setVisible(False)
         layout.addWidget(self.thinking_anim, 0, Qt.AlignmentFlag.AlignCenter)
 
-        self._build_stats_row(layout)
+        self.command_input = CommandInput()
+        self.command_input.command_submitted.connect(self.main.process_command)
+        layout.addWidget(self.command_input)
+
         self._build_timeline(layout)
 
     def retranslate_ui(self):
@@ -138,12 +140,8 @@ class DashboardTab(QWidget):
         ]
         for i, (btn, (label_text, _)) in enumerate(zip(self._quick_action_btns, actions)):
             btn.setText(label_text)
-        for key in ["CPU", "Mem", "Disk"]:
-            if key in self.stats_labels:
-                pass
         self.command_input.set_placeholder(t("dashboard.placeholder"))
         self.command_input.send_btn.setText(t("dashboard.send"))
-        self.response_label.setText("")
 
     def _build_header(self, layout):
         header = QWidget()
@@ -235,79 +233,12 @@ class DashboardTab(QWidget):
 
         layout.addWidget(actions_widget)
 
-    def _build_stats_row(self, layout):
-        row = QWidget()
-        row.setStyleSheet("background: transparent;")
-        rl = QHBoxLayout(row)
-        rl.setContentsMargins(0, 0, 0, 0)
-        rl.setSpacing(14)
-
-        self.command_input = CommandInput()
-        self.command_input.command_submitted.connect(self.main.process_command)
-        rl.addWidget(self.command_input, 3)
-
-        stats_card = self._make_mini_stats()
-        rl.addWidget(stats_card, 2)
-
-        layout.addWidget(row)
-
-    def _make_mini_stats(self):
-        card = QWidget()
-        card.setStyleSheet(f"""
-            QWidget {{
-                background-color: {Theme.BG_CARD_SOLID};
-                border: 0.5px solid {Theme.BORDER};
-                border-radius: {Theme.CARD_RADIUS};
-            }}
-        """)
-        card.setMinimumHeight(44)
-        layout = QHBoxLayout(card)
-        layout.setContentsMargins(14, 8, 14, 8)
-        layout.setSpacing(12)
-
-        self.stats_labels = {}
-        for key in ["CPU", "Mem", "Disk"]:
-            block = QWidget()
-            block.setStyleSheet("background: transparent;")
-            bl = QVBoxLayout(block)
-            bl.setContentsMargins(0, 0, 0, 0)
-            bl.setSpacing(1)
-            k = QLabel(key)
-            k.setStyleSheet(f"color: {Theme.TEXT_MUTED}; font-size: 9px; background: transparent;")
-            k.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            bl.addWidget(k)
-            v = QLabel("...")
-            v.setStyleSheet(f"color: {Theme.TEXT_PRIMARY}; font-size: 11px; font-weight: 500; background: transparent;")
-            v.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            bl.addWidget(v)
-            self.stats_labels[key] = v
-            layout.addWidget(block)
-
-        layout.addStretch()
-
-        self.response_label = QLabel("")
-        self.response_label.setStyleSheet(f"color: {Theme.TEXT_SECONDARY}; font-size: 12px; background: transparent;")
-        self.response_label.setWordWrap(True)
-        self.response_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        layout.addWidget(self.response_label, 1)
-
-        return card
-
     def _build_timeline(self, layout):
         self.timeline = TimelineCard()
         layout.addWidget(self.timeline, 1)
 
-    def update_stats(self, info):
-        cpu = info.get("cpu", t("app.na"))
-        if len(cpu) > 12:
-            cpu = cpu.split("@")[0].strip() if "@" in cpu else cpu[:12]
-        self.stats_labels["CPU"].setText(cpu)
-        self.stats_labels["Mem"].setText(info.get("memory", t("app.na")))
-        self.stats_labels["Disk"].setText(info.get("disk", t("app.na")))
-
     def add_timeline_entry(self, entry):
         self.timeline.add_entry(entry)
-        self.response_label.setText(entry.get("response", "")[:120])
 
 
 class SkillsTab(QWidget):
@@ -1031,13 +962,4 @@ class MainWindow(QMainWindow):
         self.dashboard.add_timeline_entry(result)
 
     def start_refresh_timer(self):
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self._refresh_stats)
-        self.timer.start(5000)
-
-    def _refresh_stats(self):
-        try:
-            info = linux_auto.get_system_info()
-            self.dashboard.update_stats(info)
-        except Exception:
-            pass
+        pass
