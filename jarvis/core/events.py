@@ -60,3 +60,7 @@ class EventBus:
                 handler(data)
             except Exception:
                 pass
+
+    def emit_async(self, event_type, data=None):
+        from threading import Thread
+        Thread(target=self.emit, args=(event_type, data), daemon=True).start()
